@@ -1,0 +1,259 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+
+:root {
+  --fontFamily: "Poppins", sans-serif;
+  --fontFamily1: "Poppins", sans-serif;
+  --bodyText: 16px;
+  --subTitle: 18px;
+  --title: 24px;
+  --white: #ffffff;
+  --black: #000000;
+  --textClr: #333333;
+  
+  /* 更新主色调为蓝色渐变系 */
+  --primaryClr: #0b80c3; /* 主要蓝色 */
+  --secondaryClr: #e6f7ff; /* 浅蓝色背景 */
+  --accentClr: #0261b2; /* 辅助蓝色 */
+  --bgClr: #e6f4ff; /* 更浅的背景色 */
+  
+  --bs-box-shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  --bs-box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  --bs-box-shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+
+  --smallText: 12px;
+  
+  /* 添加新的变量用于现代旅行网站设计 */
+  --sectionPadding: 50px 0;
+  --cardRadius: 12px;
+  --transitionSpeed: 0.3s;
+
+  /* 自定义Bootstrap主题色 */
+  --bs-primary: #0ab8b6 !important;
+  --bs-primary-rgb: 10, 184, 182 !important;
+  --bs-primary-text-emphasis: #09807f !important;
+  --bs-primary-bg-subtle: #e6fffd !important;
+  --bs-primary-border-subtle: #86e9e7 !important;
+}
+
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+  font-family: var(--fontFamily);
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+  background-color: #fafafa;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+.container{
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: 0.937rem;
+	padding-right: 0.937rem;
+	max-width: 1400px;
+}
+
+.body-text,p{
+	font-size: var(--bodyText);
+	color: var(--textClr);
+	line-height: 1.6;
+}
+
+.font-bold{
+	font-weight: 800 !important;
+}
+
+/* 添加现代旅行网站常用的样式 */
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  position: relative;
+  color: var(--textClr);
+}
+
+.section-title:after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -10px;
+  width: 60px;
+  height: 3px;
+  background-color: var(--primaryClr);
+}
+
+.section-title.text-center:after {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #18a6cf 0%, #0261b2 100%);
+  border: none;
+  border-radius: 30px;
+  padding: 10px 25px;
+  font-weight: 600;
+  transition: all var(--transitionSpeed) ease;
+  box-shadow: 0 4px 10px rgba(8, 107, 178, 0.3);
+
+  --bs-btn-bg: linear-gradient(135deg, #18a6cf 0%, #0261b2 100%) !important;
+  --bs-btn-border-color: transparent !important;
+  --bs-btn-hover-bg: linear-gradient(135deg, #1599be 0%, #025099 100%) !important;
+  --bs-btn-hover-border-color: transparent !important;
+  --bs-btn-active-bg: linear-gradient(135deg, #1599be 0%, #025099 100%) !important;
+  --bs-btn-active-border-color: transparent !important;
+  --bs-btn-disabled-bg: #90cdf4 !important;
+  --bs-btn-disabled-border-color: transparent !important;
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(8, 107, 178, 0.4);
+}
+
+.card {
+  border-radius: var(--cardRadius);
+  overflow: hidden;
+  transition: all var(--transitionSpeed) ease;
+  border: none;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: #0ab8b6 !important;
+  --bs-btn-border-color: #0ab8b6 !important;
+  --bs-btn-hover-bg: #0ab8b6 !important;
+  --bs-btn-hover-border-color: #0ab8b6 !important;
+  --bs-btn-active-bg: #0ab8b6 !important;
+  --bs-btn-active-border-color: #0ab8b6 !important;
+  --bs-btn-disabled-color: #86e9e7 !important;
+  --bs-btn-disabled-border-color: #86e9e7 !important;
+}
+
+.text-primary {
+  color: #0ab8b6 !important;
+}
+
+.bg-primary {
+  background-color: #0ab8b6 !important;
+}
+
+.border-primary {
+  border-color: #0ab8b6 !important;
+}
+
+.link-primary {
+  color: #0ab8b6 !important;
+}
+
+.link-primary:hover, .link-primary:focus {
+  color: #09807f !important;
+}
+
+/* 全局容器宽度设置 - 覆盖Bootstrap的容器设置 */
+.container {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+@media (min-width: 576px) {
+  .container {
+    max-width: 540px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 620px;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    max-width: 860px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1100px !important;
+  }
+}
+
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1220px !important;
+  }
+}
+
+@media (min-width: 1600px) {
+  .container {
+    max-width: 1420px !important;
+  }
+}
+
+@media (min-width: 1800px) {
+  .container {
+    max-width: 1450px !important;
+  }
+}
+
+/* 全宽容器设置 */
+.container-fluid {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}

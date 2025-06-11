@@ -1,0 +1,162 @@
+.daily-schedule {
+  padding: 24px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+
+  .control-card {
+    margin-bottom: 16px;
+    
+    .ant-card-body {
+      padding: 16px;
+    }
+  }
+
+  .stats-card {
+    margin-bottom: 16px;
+    
+    .ant-card-body {
+      padding: 16px;
+    }
+    
+    .ant-descriptions-item-label {
+      font-weight: 500;
+      color: #666;
+    }
+  }
+
+  .schedule-group-card {
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+    .ant-card-head {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      
+      .ant-card-head-title {
+        color: white;
+        font-size: 14px;
+      }
+    }
+    
+    .schedule-table {
+      .ant-table-thead > tr > th {
+        background-color: #fafafa;
+        border-bottom: 2px solid #e8e8e8;
+        font-weight: 600;
+        font-size: 12px;
+      }
+      
+      .ant-table-tbody > tr {
+        &:hover {
+          background-color: #f0f8ff;
+        }
+        
+        td {
+          font-size: 12px;
+          padding: 8px;
+          border-right: 1px solid #e8e8e8;
+          
+          &:last-child {
+            border-right: none;
+          }
+        }
+      }
+      
+      // 特殊样式
+      .order-number {
+        font-weight: 600;
+        color: #1890ff;
+      }
+      
+      .passenger-name {
+        font-weight: 500;
+      }
+      
+      .contact-phone {
+        font-family: 'Courier New', monospace;
+      }
+      
+      .remarks-highlight {
+        color: #ff4d4f;
+        font-weight: 500;
+      }
+    }
+  }
+
+  .empty-card {
+    text-align: center;
+    
+    .ant-card-body {
+      padding: 50px;
+    }
+  }
+
+  // 打印样式
+  @media print {
+    padding: 0;
+    background-color: white;
+    
+    .control-card {
+      display: none;
+    }
+    
+    .schedule-group-card {
+      margin-bottom: 20px;
+      box-shadow: none;
+      border: 1px solid #000;
+      
+      .ant-card-head {
+        background: #f0f0f0 !important;
+        color: #000 !important;
+        
+        .ant-card-head-title {
+          color: #000 !important;
+        }
+      }
+      
+      .schedule-table {
+        .ant-table-thead > tr > th {
+          background-color: #f0f0f0 !important;
+          color: #000;
+          border: 1px solid #000;
+        }
+        
+        .ant-table-tbody > tr td {
+          border: 1px solid #000;
+          color: #000;
+        }
+      }
+    }
+    
+    .stats-card {
+      border: 1px solid #000;
+      margin-bottom: 20px;
+    }
+    
+    .empty-card {
+      display: none;
+    }
+  }
+
+  // 响应式设计
+  @media (max-width: 768px) {
+    padding: 12px;
+    
+    .control-card {
+      .ant-row {
+        flex-direction: column;
+        gap: 12px;
+        
+        .ant-col {
+          width: 100%;
+        }
+      }
+    }
+    
+    .schedule-table {
+      .ant-table {
+        font-size: 11px;
+      }
+    }
+  }
+} 

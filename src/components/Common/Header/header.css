@@ -1,0 +1,426 @@
+/* 顶部信息栏 - 已移除 */
+.top-info-bar {
+  display: none;
+  height: 0;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+}
+
+/* 主导航栏 */
+.header-section {
+  position: relative;
+  background-color: transparent;
+  box-shadow: none;
+  z-index: 999;
+  margin-bottom: 0;
+  margin-top: 0;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+/* 导航栏容器 */
+.header-section .container,
+.header-section .container-fluid {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+@media (min-width: 1800px) {
+  .header-section .container {
+    max-width: 1680px;
+  }
+}
+
+@media (min-width: 1600px) and (max-width: 1799px) {
+  .header-section .container {
+    max-width: 1520px;
+  }
+}
+
+@media (min-width: 1400px) and (max-width: 1599px) {
+  .header-section .container {
+    max-width: 1320px;
+  }
+}
+
+@media (min-width: 1200px) and (max-width: 1399px) {
+  .header-section .container {
+    max-width: 1200px;
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  .header-section .container {
+    max-width: 960px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .header-section .container {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 767px) {
+  .header-section .container {
+    max-width: 540px;
+  }
+}
+
+/* Homepage specific header styles */
+.home-page .header-section {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: transparent;
+}
+
+/* sticky menu  */
+.is-sticky {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  animation: smothScroll 1s forwards;
+  background: rgba(255, 255, 255, 0.95);
+  z-index: 999;
+  box-shadow: var(--bs-box-shadow-sm) !important;
+  border-bottom: 1px solid rgba(200, 62, 62, 0.1);
+
+}
+
+@keyframes smothScroll {
+  0% {
+    transform: translateY(-40px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* 首页导航栏文字为白色 */
+.home-page .navbar .navbar-brand a,
+.home-page .navbar .offcanvas-body a {
+  color: var(--white) !important;
+  transition: color 0.3s ease;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* 其他页面导航栏文字为黑色 */
+body:not(.home-page) .navbar .navbar-brand a,
+body:not(.home-page) .navbar .offcanvas-body a {
+  color: #000000 !important;
+  transition: color 0.3s ease;
+  text-shadow: none;
+}
+
+.is-sticky .navbar .navbar-brand a,
+.is-sticky .navbar .offcanvas-body a {
+  color: var(--textClr) !important;
+  text-shadow: none;
+}
+
+.navbar .offcanvas-body a:hover {
+  color: var(--primaryClr) !important;
+}
+
+/* 首页切换按钮为白色 */
+.home-page .toggle_btn {
+  color: var(--white) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* 其他页面切换按钮为黑色 */
+body:not(.home-page) .toggle_btn {
+  color: #000000 !important;
+  text-shadow: none;
+}
+
+.is-sticky .toggle_btn {
+  color: var(--textClr) !important;
+  text-shadow: none;
+}
+
+.navbar .offcanvas-body .dropdown-menu a {
+  color: #333 !important;
+}
+
+.navbar .navbar-brand a {
+  font-size: 22px;
+  line-height: 150%;
+  font-family: var(--fontFamily1);
+  font-weight: bold;
+  text-transform: capitalize;
+  text-decoration: none;
+}
+
+.navbar .offcanvas-body a {
+  font-size: 14px;
+  line-height: 150%;
+  font-family: var(--fontFamily);
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.navbar .offcanvas-body .dropdown-menu {
+  min-width: 12rem;
+}
+
+.navbar .offcanvas-body .dropdown-menu .dropdown-item {
+  color: #333 !important;
+}
+
+@media only screen and (max-width: 991px) {
+  .navbar .toggle_btn {
+    font-size: var(--bodyText);
+    color: #333;
+    border: 2px solid #333;
+    padding: 7px 10px;
+  }
+
+  .offcanvas-header {
+    border: 1px solid gainsboro;
+  }
+
+  .offcanvas-header .logo{
+    font-size: 26px;
+    color: var(--black) !important;
+    font-family: var(--fontFamily1);
+    font-weight: bold;
+    text-decoration: none;
+  }
+
+  .offcanvas-body .nav-link {
+    padding: 12px 0px;
+    color: #333;
+  }
+
+  .offcanvas-body .dropdown-item{
+    padding: 12px 10px;
+    color: #333;
+  }
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.brand-logo {
+  max-height: 70px;
+  width: auto;
+  transition: all 0.3s ease;
+}
+
+.is-sticky .brand-logo {
+  max-height: 55px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .brand-logo {
+    max-height: 60px;
+  }
+  
+  .is-sticky .brand-logo {
+    max-height: 50px;
+  }
+  
+  .contact-info a {
+    margin-right: 10px;
+    font-size: 12px;
+  }
+  
+  .social-links a {
+    margin-left: 10px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .brand-logo {
+    max-height: 55px;
+  }
+  
+  .is-sticky .brand-logo {
+    max-height: 45px;
+  }
+  
+  .top-info-content {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .contact-info {
+    margin-bottom: 5px;
+  }
+  
+  .contact-info a {
+    margin-right: 8px;
+    font-size: 11px;
+  }
+}
+
+/* 标志容器 */
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+/* 移动端标志容器样式 */
+.logo-container-mobile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-logo {
+  height: 75px;
+  width: auto;
+}
+
+@media (max-width: 768px) {
+  .mobile-logo {
+    height: 70px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mobile-logo {
+    height: 60px;
+  }
+}
+
+/* 立即预定按钮样式 */
+.booking-btn {
+  background: linear-gradient(135deg, #18a6cf 0%, #0261b2 100%) !important;
+  color: var(--white) !important;
+  border-radius: 30px;
+  padding: 8px 20px !important;
+  font-weight: 600 !important;
+  transition: all var(--transitionSpeed) ease;
+  border: none !important;
+  text-shadow: none !important;
+  box-shadow: 0 4px 10px rgba(8, 107, 178, 0.3) !important;
+}
+
+/* 登录按钮样式 */
+.login-btn {
+  background-color: transparent !important;
+  color: var(--textClr) !important;
+  border-radius: 30px;
+  padding: 8px 20px !important;
+  font-weight: 600 !important;
+  transition: all var(--transitionSpeed) ease;
+  border: 2px solid var(--textClr);
+  text-shadow: none !important;
+  text-decoration: none !important;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* 首页登录按钮样式 */
+.home-page .login-btn {
+  color: var(--white) !important;
+  border-color: var(--white);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Sticky状态下登录按钮样式 */
+.is-sticky .login-btn {
+  color: var(--textClr) !important;
+  border-color: var(--textClr);
+  text-shadow: none;
+}
+
+.login-btn:hover {
+  background-color: var(--textClr) !important;
+  color: var(--white) !important;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.home-page .login-btn:hover,
+.is-sticky .login-btn:hover {
+  background-color: var(--textClr) !important;
+  color: var(--white) !important;
+}
+
+.booking-btn:hover {
+  background: linear-gradient(135deg, #1599be 0%, #025099 100%) !important;
+  color: var(--white) !important;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(8, 107, 178, 0.4) !important;
+}
+
+/* 用户下拉菜单样式 */
+.user-dropdown {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  color: var(--textClr);
+  background: none;
+  border: none;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+/* 代理商用户名样式 */
+.user-name.agent {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  color: #28a745;
+}
+
+/* 折扣徽章样式 */
+.discount-badge {
+  font-size: 0.75rem;
+  margin-top: 2px;
+  padding: 1px 5px;
+  background-color: #28a745;
+  color: white;
+  border-radius: 10px;
+  display: inline-block;
+}
+
+.user-dropdown:hover,
+.user-dropdown:focus {
+  background-color: #e9ecef;
+  color: #333;
+}
+
+.user-dropdown::after {
+  margin-left: 0.5rem;
+}
+
+.dropdown-menu {
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: none;
+  padding: 0.5rem 0;
+}
+
+.dropdown-item {
+  padding: 0.5rem 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.dropdown-divider {
+  margin: 0.25rem 0;
+}

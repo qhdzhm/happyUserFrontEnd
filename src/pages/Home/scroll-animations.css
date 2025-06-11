@@ -1,0 +1,510 @@
+/* 滚动动画样式 */
+
+/* 新的目的地卡片样式 - 更具体的选择器 */
+.home-content .destination-card,
+.day-tours-section .destination-card,
+.group-tours-section .destination-card {
+  background-color: #fff !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  transition: all 0.3s ease !important;
+  height: 620px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  position: relative !important;
+  opacity: 0;
+  cursor: default !important;
+  transform: translateY(30px) !important;
+}
+
+/* 更新媒体查询，确保在不同屏幕尺寸下卡片宽度适应 */
+@media (min-width: 992px) {
+  .home-content .row .col-lg-4,
+  .day-tours-section .row .col-lg-4,
+  .group-tours-section .row .col-lg-4 {
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .home-content .destination-card,
+  .day-tours-section .destination-card,
+  .group-tours-section .destination-card {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.home-content .destination-card.visible,
+.day-tours-section .destination-card.visible,
+.group-tours-section .destination-card.visible {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  transition: opacity 0.6s ease, transform 0.6s ease !important;
+}
+
+.home-content .destination-card:hover,
+.day-tours-section .destination-card:hover,
+.group-tours-section .destination-card:hover {
+  transform: translateY(-10px) !important;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
+}
+
+.home-content .destination-image,
+.day-tours-section .destination-image,
+.group-tours-section .destination-image {
+  height: 300px !important; /* 增加图片区域高度,约占48% */
+  overflow: hidden !important;
+  position: relative !important;
+  flex-shrink: 0 !important;
+}
+
+.home-content .destination-image img,
+.day-tours-section .destination-image img,
+.group-tours-section .destination-image img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  transition: transform 0.5s ease !important;
+}
+
+.home-content .destination-card:hover .destination-image img,
+.day-tours-section .destination-card:hover .destination-image img,
+.group-tours-section .destination-card:hover .destination-image img {
+  transform: scale(1.1) !important;
+}
+
+.home-content .destination-content,
+.day-tours-section .destination-content,
+.group-tours-section .destination-content {
+  padding: 24px !important;
+  flex-grow: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background-color: #fff !important;
+  position: relative !important;
+  overflow: hidden !important;
+  height: 320px !important; /* 调整内容区域总高度 */
+}
+
+.home-content .destination-title,
+.day-tours-section .destination-title,
+.group-tours-section .destination-title {
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  margin-bottom: 10px !important;
+  color: #333 !important;
+  line-height: 1.4 !important;
+  height: 70px !important; /* 增加高度，约占11% */
+  display: -webkit-box !important;
+  -webkit-line-clamp: 3 !important; /* 增加到3行，更好地支持中文标题 */
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  margin-top: 5px !important;
+}
+
+.home-content .destination-location,
+.day-tours-section .destination-location,
+.group-tours-section .destination-location {
+  display: flex !important;
+  align-items: center !important;
+  color: #777 !important;
+  margin-bottom: 12px !important;
+  font-size: 15px !important;
+  height: 24px !important; /* 约占4% */
+}
+
+.home-content .destination-location svg,
+.day-tours-section .destination-location svg,
+.group-tours-section .destination-location svg {
+  margin-right: 5px !important;
+  color: #777 !important;
+}
+
+.home-content .destination-divider,
+.day-tours-section .destination-divider,
+.group-tours-section .destination-divider {
+  height: 1px !important;
+  background-color: #eee !important;
+  margin: 10px 0 15px !important;
+  width: 100% !important;
+  flex-shrink: 0 !important; /* 防止分隔线被压缩 */
+}
+
+/* 修改标签容器为纵向排列 */
+.home-content .destination-tags,
+.day-tours-section .destination-tags,
+.group-tours-section .destination-tags {
+  display: flex !important;
+  flex-direction: column !important; /* 改为纵向排列 */
+  margin-bottom: 12px !important;
+  height: auto !important; /* 自适应高度 */
+  flex-shrink: 0 !important;
+  gap: 4px !important; /* 标签之间的间距 */
+}
+
+/* 简化标签样式 */
+.home-content .tag,
+.day-tours-section .tag,
+.group-tours-section .tag {
+  padding: 0 !important;
+  border-radius: 0 !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #666 !important; /* 灰色文字 */
+  display: inline-block !important;
+  background: none !important; /* 移除背景 */
+  box-shadow: none !important; /* 移除阴影 */
+  margin-right: 0 !important;
+  text-transform: uppercase !important;
+}
+
+/* 移除所有特殊标签样式 */
+.home-content .tag.nature,
+.day-tours-section .tag.nature,
+.group-tours-section .tag.nature,
+.home-content .tag.cultural,
+.day-tours-section .tag.cultural,
+.group-tours-section .tag.cultural,
+.home-content .tag.history,
+.day-tours-section .tag.history,
+.group-tours-section .tag.history,
+.home-content .tag.food,
+.day-tours-section .tag.food,
+.group-tours-section .tag.food,
+.home-content .tag.city,
+.day-tours-section .tag.city,
+.group-tours-section .tag.city,
+.home-content .tag.adventure,
+.day-tours-section .tag.adventure,
+.group-tours-section .tag.adventure {
+  background: none !important;
+  box-shadow: none !important;
+  color: #666 !important;
+}
+
+/* 添加+1标签样式 */
+.home-content .tag.plus,
+.day-tours-section .tag.plus,
+.group-tours-section .tag.plus {
+  background-color: #0091ea !important;
+  color: white !important;
+  border-radius: 4px !important;
+  padding: 1px 6px !important;
+  font-size: 12px !important;
+  display: inline-block !important;
+  margin-left: 6px !important;
+}
+
+.home-content .destination-price,
+.day-tours-section .destination-price,
+.group-tours-section .destination-price {
+  margin-bottom: 12px !important;
+  text-align: right !important;
+  margin-top: -30px !important;
+  height: 32px !important; /* 约占5% */
+  flex-shrink: 0 !important;
+}
+
+.home-content .price-value,
+.day-tours-section .price-value,
+.group-tours-section .price-value {
+  font-size: 30px !important;
+  font-weight: 700 !important;
+  color: #333 !important;
+}
+
+.home-content .destination-description,
+.day-tours-section .destination-description,
+.group-tours-section .destination-description {
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+  color: #666 !important;
+  margin-bottom: 16px !important;
+  flex-grow: 1 !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 5 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  height: 120px !important; /* 稍微减少高度，保持总体平衡 */
+}
+
+.home-content .details-btn,
+.day-tours-section .details-btn,
+.group-tours-section .details-btn {
+  align-self: flex-start !important;
+  padding: 12px 28px !important;
+  background: linear-gradient(135deg, #3498db, #1565C0) !important; /* 蓝色渐变 */
+  border: none !important;
+  border-radius: 30px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+  text-transform: uppercase !important;
+  font-size: 14px !important;
+  letter-spacing: 1px !important;
+  margin-top: auto !important;
+  color: #fff !important;
+  box-shadow: 0 4px 10px rgba(21, 101, 192, 0.3) !important;
+  height: 44px !important;
+  flex-shrink: 0 !important;
+}
+
+.home-content .details-btn:hover,
+.day-tours-section .details-btn:hover,
+.group-tours-section .details-btn:hover {
+  background: linear-gradient(135deg, #1565C0, #0D47A1) !important; /* 悬停时深色渐变 */
+  transform: translateY(-3px) !important;
+  box-shadow: 0 6px 12px rgba(21, 101, 192, 0.4) !important;
+}
+
+/* 卡片动画效果 */
+.animate-card {
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.animate-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* 图片缩放效果 */
+.featured-image {
+  overflow: hidden;
+  position: relative;
+}
+
+.zoom-image {
+  transition: transform 0.5s ease;
+  width: 100%;
+  height: auto;
+}
+
+.animate-card:hover .zoom-image {
+  transform: scale(1.1);
+}
+
+/* 价格动画效果 */
+.animate-card:hover .tour-price h5 {
+  color: #007bff;
+  transform: scale(1.1);
+  transition: all 0.3s ease;
+}
+
+/* 按钮悬停效果 */
+.animate-card .btn {
+  transition: all 0.3s ease;
+}
+
+.animate-card:hover .btn {
+  background-color: #0056b3;
+  transform: translateX(3px);
+}
+
+/* 评价卡片动画 */
+.animate-testimonial {
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.animate-testimonial:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* 评价卡片星星动画 */
+.animate-testimonial:hover .star {
+  color: #ffcc00;
+  animation: starPulse 1.5s infinite alternate;
+}
+
+@keyframes starPulse {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.2);
+  }
+}
+
+/* 错开动画时间 */
+.animate-testimonial:hover .star:nth-child(1) {
+  animation-delay: 0s;
+}
+.animate-testimonial:hover .star:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.animate-testimonial:hover .star:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.animate-testimonial:hover .star:nth-child(4) {
+  animation-delay: 0.3s;
+}
+.animate-testimonial:hover .star:nth-child(5) {
+  animation-delay: 0.4s;
+}
+
+/* 联系我们按钮效果增强 */
+.secondary_btn.bounce {
+  animation: bounce 2s infinite;
+  animation-play-state: paused;
+}
+
+.secondary_btn.bounce:hover {
+  animation-play-state: running;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+/* 视口进入动画 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 滚动加载动画 - 错开效果 */
+.row .col:nth-child(1) .destination-card {
+  transition-delay: 0s !important;
+}
+.row .col:nth-child(2) .destination-card {
+  transition-delay: 0.1s !important;
+}
+.row .col:nth-child(3) .destination-card {
+  transition-delay: 0.2s !important;
+}
+
+/* 卡片悬停特效 */
+.tour-card-container {
+  perspective: 1000px;
+  margin-bottom: 30px;
+}
+
+.featured-tour-card {
+  transition: transform 0.5s;
+  transform-style: preserve-3d;
+}
+
+.featured-tour-card:hover {
+  transform: rotateY(5deg);
+}
+
+/* 按钮特效 */
+.view-more-btn {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.view-more-btn:hover {
+  transform: translateY(-3px);
+}
+
+.view-more-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #007bff;
+  transform: scaleX(0);
+  transform-origin: bottom right;
+  transition: transform 0.3s ease;
+}
+
+.view-more-btn:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+/* 加载指示器动画 */
+.spinner-border {
+  animation-duration: 0.8s !important;
+}
+
+/* 滚动到顶部按钮动画 */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 123, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
+  }
+}
+
+/* 应用到滚动到顶部按钮上的动画 */
+button[style*="bottom: 20px"] {
+  animation: pulse 2s infinite;
+}
+
+/* 搜索按钮渐变色 */
+button[class*="search"] {
+  background: linear-gradient(135deg, #3498db, #1565C0) !important;
+  border: none !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 10px rgba(21, 101, 192, 0.3) !important;
+}
+
+button[class*="search"]:hover {
+  background: linear-gradient(135deg, #1565C0, #0D47A1) !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 6px 12px rgba(21, 101, 192, 0.4) !important;
+} 

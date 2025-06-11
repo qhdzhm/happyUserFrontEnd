@@ -1,0 +1,2404 @@
+.home-content {
+  margin-top: 0;
+  overflow: visible;
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  background-color: #fff;
+  opacity: 1;
+}
+
+/* 动画效果：内容从下向上滑入 */
+.home-content.animate-content {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* 显示剩余内容时才显示 home-content */
+.show-remaining-content.home-content {
+  display: block;
+}
+
+/* 卡片通用样式 - 轮播版本 */
+.tour-card {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: none;
+  height: 100%;
+  margin: 0;
+  background-color: #fff;
+}
+
+.tour-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.tour-card .tour-card-img-container {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.tour-card .tour-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.tour-card:hover .tour-card-img {
+  transform: scale(1.05);
+}
+
+.tour-card .tour-duration-overlay {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background-color: rgba(255, 255, 255, 0.95);
+  color: #333;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  z-index: 1;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.tour-card .discount-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #e74c3c;
+  color: white;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-weight: 600;
+  z-index: 1;
+}
+
+.tour-card .tour-card-body {
+  padding: 12px 15px;
+  display: flex;
+  flex-direction: column;
+  height: 220px; /* 增加卡片正文高度 */
+}
+
+.tour-card .tour-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.3;
+  margin-bottom: 6px;
+  height: 40px; /* 调整标题高度 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.tour-card .rating-stars {
+  background-color: rgba(255, 193, 7, 0.08);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 12px;
+}
+
+.tour-card .tour-card-description {
+  color: #777;
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 8px 0;
+  height: 70px; /* 增加描述高度 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 4; /* 增加显示行数 */
+  -webkit-box-orient: vertical;
+}
+
+.tour-card .tour-price-container {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+
+.tour-card .tour-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #e74c3c;
+  margin-right: 3px;
+}
+
+.tour-card .tour-price-original {
+  text-decoration: line-through;
+  color: #999;
+  font-size: 14px;
+  margin-right: 5px;
+}
+
+.tour-card .view-details-btn {
+  border-radius: 4px;
+  font-size: 14px;
+  padding: 4px 10px;
+  border-color: #e74c3c;
+  background-color: transparent;
+  color: #e74c3c;
+  transition: all 0.3s;
+  font-weight: 600;
+}
+
+.tour-card .view-details-btn:hover {
+  background-color: #e74c3c;
+  color: white;
+}
+
+/* 一日游卡片特有样式 */
+.daytour-card {
+  background-color: #fff;
+}
+
+/* 跟团游卡片特有样式 */
+.grouptour-card {
+  background-color: #fff;
+}
+
+/* 修改轮播容器样式 */
+.tour-slider-container {
+  margin: 0 12px;
+  padding: 5px 0 25px;
+  position: relative;
+  overflow: visible;
+}
+
+/* 轮播导航点样式 */
+.slick-dots {
+  bottom: -5px;
+}
+
+.slick-dots li button:before {
+  font-size: 8px;
+  color: #ddd;
+  opacity: 0.8;
+}
+
+.slick-dots li.slick-active button:before {
+  color: #e74c3c;
+  opacity: 1;
+}
+
+/* 轮播箭头样式 */
+.slider-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: white;
+  color: #555;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 20;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  font-size: 16px;
+}
+
+.slider-arrow:hover {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.slider-arrow-left {
+  left: -5px;
+}
+
+.slider-arrow-right {
+  right: -5px;
+}
+
+/* 调整轮播项目样式 */
+.tour-slide-item {
+  padding: 8px;
+  height: 100%;
+}
+
+/* 确保轮播正常工作 */
+.slick-list {
+  margin: 0 -8px;
+}
+
+.slick-track {
+  display: flex !important;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.slick-slide {
+  height: auto !important;
+  display: flex !important;
+}
+
+.slick-slide > div {
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 992px) {
+  .tour-card .tour-card-img-container {
+    height: 180px;
+  }
+  
+  .tour-card .tour-card-body {
+    height: 250px; /* 在中等屏幕上增加高度 */
+  }
+}
+
+@media (max-width: 768px) {
+  .tour-card .tour-card-img-container {
+    height: 200px;
+  }
+}
+
+@media (max-width: 576px) {
+  .tour-card .tour-card-img-container {
+    height: 180px;
+  }
+  
+  .tour-card .tour-card-body {
+    height: 260px; /* 在小屏幕上增加高度 */
+  }
+}
+
+.tours_section {
+  padding: 40px 0;
+  background: var(--white);
+  margin-top: 40px;
+  position: relative;
+}
+
+.tours_section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23f9e9e9' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
+  opacity: 0.5;
+  z-index: 0;
+}
+
+.tours_section .container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+@media (min-width: 1920px) {
+  .tours_section .container {
+    max-width: 1440px;
+  }
+}
+
+@media (min-width: 1600px) and (max-width: 1919px) {
+  .tours_section .container {
+    max-width: 1320px;
+  }
+}
+
+@media (min-width: 1400px) and (max-width: 1599px) {
+  .tours_section .container {
+    max-width: 1240px;
+  }
+}
+
+@media (min-width: 1200px) and (max-width: 1399px) {
+  .tours_section .container {
+    max-width: 1140px;
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  .tours_section .container {
+    max-width: 960px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .tours_section .container {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 767px) {
+  .tours_section .container {
+    max-width: 540px;
+  }
+}
+
+@media (min-width: 375px) and (max-width: 575px) {
+  .tours_section .container {
+    padding: 0 15px;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 374px) {
+  .tours_section .container {
+    padding: 0 10px;
+    max-width: 100%;
+  }
+}
+
+.call_us {
+  background: url("../../assets/images/slider/1.jpg") no-repeat;
+  padding: 80px 0;
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  position: relative;
+  z-index: 1;
+  margin-top: 50px;
+}
+
+.call_us .section-title {
+  text-align: left;
+}
+
+.call_us .section-title h5.title {
+  color: #ffffff;
+  font-style: normal;
+  font-size: 1rem;
+  margin-bottom: 10px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.call_us .section-title h2.heading {
+  font-size: 2.5rem;
+  color: #ffffff;
+  line-height: 1.3;
+  text-align: left;
+  font-weight: 600;
+  padding: 5px 0 20px 0;
+  text-shadow: none;
+  letter-spacing: -0.5px;
+  margin-bottom: 15px;
+}
+
+.call_us .section-title h2.heading:after {
+  left: 0;
+  transform: none;
+  background-color: var(--white);
+}
+
+.call_us .section-title p.text {
+  font-size: 1.2rem;
+  color: #ffffff;
+  line-height: 1.6;
+  text-shadow: none;
+  margin-bottom: 30px;
+  font-weight: 400;
+}
+
+.call_us .secondary_btn {
+  background: none;
+  font-size: 1rem;
+  color: #ffffff;
+  display: inline-block;
+  border: 2px solid #ffffff;
+  padding: 12px 30px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-radius: 30px;
+  font-weight: 600;
+}
+
+.call_us .secondary_btn:hover {
+  background: var(--primaryClr, #e74c3c);
+  border-color: var(--primaryClr, #e74c3c);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.bounce {
+  animation: bounce 2s infinite;
+}
+
+.overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: -1;
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-30px);
+  }
+  60% {
+    transform: translateY(-15px);
+  }
+}
+
+@media only screen and (max-width: 1199px) {
+  .call_us {
+    overflow: hidden;
+  }
+
+  .call_us .section-title h2.heading {
+    font-size: 2.2rem;
+    line-height: 1.3;
+    padding: 5px 0 15px 0;
+  }
+}
+
+@media only screen and (max-width: 420px) {
+  .call_us {
+    overflow: hidden;
+    padding: 70px 0;
+  }
+  .call_us .section-title h2.heading {
+    font-size: 1.8rem;
+  }
+}
+
+.gallery {
+    background-color: var(--secondaryClr);
+    overflow: hidden;
+  padding: 40px 0;
+  margin-top: 50px;
+}
+
+.gallery .styles_thumbpanel__1sa4E {
+    /* 移除旧样式，保留注释作为引用点 */
+}
+
+.gallery .styles_lightroom__1X2qE{
+    /* 移除旧样式，保留注释作为引用点 */
+}
+
+/* 新图片库样式 */
+.gallery-container {
+  padding: 20px 0;
+}
+
+.gallery-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  height: 100%;
+  margin-bottom: 20px;
+}
+
+.gallery-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.gallery-card img {
+  height: 200px;
+  object-fit: cover;
+}
+
+.yarl__container {
+  z-index: 9999;
+}
+
+.popular {
+  margin-top: 50px;
+  background-color: var(--white);
+  padding: 40px 0;
+}
+
+/* 一日游和跟团游部分样式 */
+.day-tours-section, .group-tours-section {
+  padding: 40px 0 30px;
+}
+
+/* 一日游section底部间距 */
+.day-tours-section {
+  padding-bottom: 0;
+}
+
+/* 跟团游section顶部间距 */
+.group-tours-section {
+  margin-top: -25px;
+  padding-top: 25px;
+}
+
+/* 背景样式 */
+.group-tours-section.bg-light {
+  background-color: #f7f9fc !important;
+  border-radius: 0;
+  position: relative;
+}
+
+/* 添加装饰线 */
+.group-tours-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.1), transparent);
+}
+
+/* 轮播容器样式 */
+.tour-slider-container {
+  margin-top: 10px;
+}
+
+.day-tours, .group-tours {
+  margin-bottom: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+/* 跟团游部分背景 */
+.group-tours-section {
+  background-color: #f7f9fc;
+  margin-top: 0px;
+}
+
+.group-tours {
+  background: transparent;
+  border-radius: 0;
+  padding: 15px 0;
+}
+
+.group-tours::before {
+  display: none;
+}
+
+/* slick轮播样式覆盖 */
+.slick-track {
+  display: flex !important;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.slick-slide {
+  height: auto !important;
+  display: flex !important;
+}
+
+.slick-slide > div {
+  width: 100%;
+  height: 100%;
+}
+
+/* 确保轮播中的卡片高度一致 */
+.slick-slide .tour-slide-item {
+  display: flex !important;
+  height: 100%;
+}
+
+.slick-slide .tour-slide-item > div {
+  width: 100%;
+}
+
+/* 调整一日游和跟团游之间的间距 */
+.section-spacing {
+  margin-bottom: 20px;
+}
+
+/* 标题样式 */
+.section-header {
+  position: relative;
+  padding-bottom: 5px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  transform: translateY(0);
+  opacity: 1;
+  transition: transform 0.8s ease, opacity 0.8s ease;
+}
+
+.section-header.animate {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.section-title-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 0;
+  position: relative;
+  display: inline-block;
+}
+
+.section-subtitle {
+  font-size: 0.85rem;
+  color: #777;
+  margin-top: 3px;
+  margin-bottom: 0;
+}
+
+/* 居中对齐的标题样式 */
+.section-title.text-center {
+  text-align: left;
+}
+
+.section-title.text-center h2:after {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* 卡片样式 */
+.featured-tour-card {
+  border-radius: 15px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  background-color: #fff;
+}
+
+.featured-tour-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.featured-image {
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+}
+
+.featured-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.featured-tour-card:hover .featured-image img {
+  transform: scale(1.05);
+}
+
+.tour-duration {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  background-color: var(--primaryClr, #e74c3c);
+  color: white;
+  padding: 6px 15px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+  z-index: 2;
+}
+
+.tour-location {
+  display: flex;
+  align-items: center;
+  color: #6c757d;
+  font-size: 14px;
+  margin-top: 12px;
+}
+
+.tour-location svg {
+  color: var(--primaryClr, #e74c3c);
+  margin-right: 6px;
+}
+
+.tour-rating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.tour-rating svg {
+  color: #ffc107;
+}
+
+.featured-tour-card .card-body {
+  padding: 20px;
+}
+
+.featured-tour-card .card-title {
+  font-weight: 700;
+  margin-bottom: 12px;
+  font-size: 18px;
+  color: #333;
+  line-height: 1.4;
+  height: 50px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.featured-tour-card .card-text {
+  color: #666;
+  margin-bottom: 15px;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  height: 72px;
+}
+
+.featured-tour-card .card-footer {
+  background-color: white;
+  border-top: 1px solid rgba(0,0,0,0.05);
+  padding: 15px 20px;
+}
+
+.tour-price {
+  display: flex;
+  flex-direction: column;
+}
+
+.tour-price span {
+  font-size: 13px;
+  color: #888;
+}
+
+.tour-price h5 {
+  color: var(--primaryClr, #e74c3c);
+  font-weight: 700;
+  margin: 0;
+}
+
+.featured-tour-card .btn-primary {
+  background-color: var(--primaryClr, #e74c3c);
+  border-color: var(--primaryClr, #e74c3c);
+  border-radius: 30px;
+  padding: 8px 20px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.featured-tour-card .btn-primary:hover {
+  background-color: #c0392b;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(231, 76, 60, 0.2);
+}
+
+/* 主题卡片样式 */
+.theme-card {
+  border-radius: 15px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  border: none;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  height: 100%;
+  margin-bottom: 20px;
+}
+
+.theme-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+
+.theme-image {
+  height: 180px;
+  overflow: hidden;
+  position: relative;
+}
+
+.theme-image::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+  z-index: 1;
+}
+
+.theme-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.theme-card:hover .theme-image img {
+  transform: scale(1.08);
+}
+
+.theme-card .card-body {
+  padding: 20px;
+  text-align: center;
+}
+
+.theme-card h4 {
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--primaryClr);
+}
+
+.theme-card p {
+  color: #666;
+  margin-bottom: 20px;
+  line-height: 1.6;
+  height: 50px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.theme-card .btn-outline-primary {
+  border-color: var(--primaryClr);
+  color: var(--primaryClr);
+  border-radius: 30px;
+  padding: 8px 20px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.theme-card .btn-outline-primary:hover {
+  background-color: var(--primaryClr);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(241, 75, 54, 0.2);
+}
+
+/* 响应式调整 */
+@media (max-width: 992px) {
+  .featured-image, .theme-image {
+    height: 180px;
+  }
+  
+  .section-title {
+    font-size: 1.6rem;
+  }
+  
+  .call_us .section-title h2.heading {
+    font-size: 2.2rem;
+  }
+  
+  .day-tours-section, .group-tours-section, .theme-section {
+    padding: 40px 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .featured-image, .theme-image {
+    height: 160px;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+  }
+  
+  .call_us .section-title h2.heading {
+    font-size: 2rem;
+  }
+  
+  .featured-tour-card .card-title {
+    font-size: 16px;
+    height: 44px;
+  }
+  
+  .featured-tour-card .card-text {
+    font-size: 14px;
+    height: 66px;
+  }
+  
+  .theme-card h4 {
+    font-size: 18px;
+  }
+  
+  .theme-card p {
+    font-size: 14px;
+    height: 44px;
+  }
+}
+
+@media (max-width: 576px) {
+  .view-more-btn {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+  
+  .featured-tour-card .btn-primary,
+  .theme-card .btn-outline-primary {
+    padding: 6px 15px;
+    font-size: 14px;
+  }
+  
+  .section-title {
+    font-size: 1.4rem;
+  }
+  
+  .call_us .section-title h2.heading {
+    font-size: 1.8rem;
+  }
+  
+  .call_us .section-title h5.title {
+    font-size: 1rem;
+  }
+  
+  .call_us .section-title p.text {
+    font-size: 1rem;
+  }
+}
+
+/* 全屏部分样式 */
+.fullscreen-section {
+  height: 100vh;
+  width: 100%;
+  position: relative;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  overflow: hidden;
+}
+
+.fullscreen-section.section-hidden {
+  opacity: 0;
+  transform: translateY(50px);
+}
+
+.fullscreen-section.section-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 修复右侧滚动条问题 */
+html.fullscreen-scroll-active,
+html.fullscreen-scroll-active body {
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  scroll-behavior: smooth;
+  overscroll-behavior: none;
+}
+
+/* 创建一个伪全屏容器来管理滚动 */
+.fullscreen-container {
+  width: 100%;
+  height: 100vh;
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+  background-color: #fff;
+}
+
+/* 只有需要显示的部分才使用显示，其余隐藏 */
+.call_us,
+.testimonials-redesigned,
+.gallery-redesigned {
+  position: relative;
+  z-index: 10;
+}
+
+/* 当显示所有内容时，允许滚动 */
+.show-remaining-content {
+  height: auto;
+  min-height: 100vh;
+  overflow: visible;
+  position: relative;
+  z-index: 10;
+  background-color: #fff;
+}
+
+/* 全屏滚动相关样式 */
+.fullscreen-tour-section {
+  height: 100vh;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 防止全屏模式下底部白条 */
+html.fullscreen-scroll-active body::after {
+  content: '';
+  display: none;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .fullscreen-tour-section {
+    height: auto;
+    min-height: 100vh;
+    padding: 60px 0;
+  }
+  
+  .fullscreen-indicator {
+    display: none;
+  }
+  
+  /* 在移动设备上显示所有内容 */
+  .call_us,
+  .testimonials-redesigned,
+  .gallery-redesigned {
+    display: block;
+  }
+  
+  /* 移动设备上允许正常滚动 */
+  html.fullscreen-scroll-active,
+  html.fullscreen-scroll-active body {
+    height: auto;
+    overflow: auto;
+  }
+  
+  .fullscreen-container {
+    height: auto;
+    overflow: visible;
+  }
+  
+  .show-remaining-content {
+    height: auto;
+    overflow: visible;
+  }
+}
+
+/* 全局标题样式 */
+.section-title-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  position: relative;
+}
+
+.section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+  position: relative;
+  padding-bottom: 8px;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 40px;
+  height: 3px;
+  background-color: #e74c3c;
+  border-radius: 3px;
+}
+
+.view-all-link {
+  display: inline-flex;
+  align-items: center;
+  color: #e74c3c;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.view-all-link:hover {
+  color: #c0392b;
+  transform: translateX(3px);
+}
+
+.view-all-link::after {
+  content: '';
+  display: none;
+}
+
+/* 卡片网格布局 */
+.tour-grid {
+  margin: 0 -8px;
+}
+
+.tour-grid [class*="col-"] {
+  padding: 0 8px;
+  margin-bottom: 16px;
+}
+
+/* 分类标签样式 */
+.category-tags {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 20px 0;
+  gap: 10px;
+}
+
+.category-tag {
+  padding: 8px 16px;
+  background-color: #f5f5f5;
+  border-radius: 20px;
+  font-size: 14px;
+  color: #555;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.category-tag:hover, .category-tag.active {
+  background-color: #e74c3c;
+  color: white;
+}
+
+/* 加载和错误信息样式 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 0;
+  width: 100%;
+}
+
+.loader {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #e74c3c;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-message, .no-data-message {
+  text-align: center;
+  padding: 30px;
+  color: #777;
+  font-size: 16px;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.error-message {
+  border-left: 4px solid #e74c3c;
+}
+
+.no-data-message {
+  border-left: 4px solid #f39c12;
+}
+
+/* 响应式布局 */
+@media (max-width: 1200px) {
+  .tour-card-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .tour-card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .section-title {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .tour-card-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .section-title-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .view-all-link {
+    margin-top: 10px;
+  }
+}
+
+/* 响应式布局 */
+@media (max-width: 1200px) {
+  .tour-card-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .tour-card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .section-title {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .tour-card-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .section-title-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .view-all-link {
+    margin-top: 10px;
+  }
+}
+
+/* bg-light 样式 */
+.bg-light {
+  background-color: #f8f9fa !important;
+  position: relative;
+}
+
+.bg-light::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e74c3c' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.3;
+  z-index: 0;
+}
+
+/* 网格布局样式 */
+.tour-grid {
+  margin-top: 10px;
+}
+
+/* 查看更多按钮样式 */
+.view-more-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  background-color: transparent;
+  color: var(--primaryClr);
+  border: 1px solid var(--primaryClr);
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.view-more-btn:hover {
+  background-color: var(--primaryClr);
+  color: white;
+}
+
+.view-more-btn .ms-2 {
+  transition: transform 0.3s ease;
+}
+
+.view-more-btn:hover .ms-2 {
+  transform: translateX(3px);
+}
+
+@media (max-width: 576px) {
+  .view-more-btn {
+    padding: 8px 20px;
+    font-size: 14px;
+  }
+}
+
+/* 自定义容器宽度控制 - 统一所有section */
+.day-tours-section .container,
+.group-tours-section .container,
+.testimonials-section .container,
+.gallery .container,
+.call_us .container,
+.features-container,
+.testimonials-redesigned .container,
+.gallery-redesigned .container {
+  width: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* 超大屏幕 - 1920px及以上 */
+@media (min-width: 1920px) {
+  .day-tours-section .container,
+  .group-tours-section .container,
+  .testimonials-section .container,
+  .gallery .container,
+  .call_us .container,
+  .features-container,
+  .testimonials-redesigned .container,
+  .gallery-redesigned .container {
+    max-width: 1440px;
+  }
+}
+
+/* 大屏幕 - 1600px到1919px */
+@media (min-width: 1600px) and (max-width: 1919px) {
+  .day-tours-section .container,
+  .group-tours-section .container,
+  .testimonials-section .container,
+  .gallery .container,
+  .call_us .container,
+  .features-container,
+  .testimonials-redesigned .container,
+  .gallery-redesigned .container {
+    max-width: 1320px;
+  }
+}
+
+/* 中大屏幕 - 1400px到1599px */
+@media (min-width: 1400px) and (max-width: 1599px) {
+  .day-tours-section .container,
+  .group-tours-section .container,
+  .testimonials-section .container,
+  .gallery .container,
+  .call_us .container,
+  .features-container,
+  .testimonials-redesigned .container,
+  .gallery-redesigned .container {
+    max-width: 1240px;
+  }
+}
+
+/* 常规大屏幕 - 1200px到1399px */
+@media (min-width: 1200px) and (max-width: 1399px) {
+  .day-tours-section .container,
+  .group-tours-section .container,
+  .testimonials-section .container,
+  .gallery .container,
+  .call_us .container,
+  .features-container,
+  .testimonials-redesigned .container,
+  .gallery-redesigned .container {
+    max-width: 1140px;
+  }
+}
+
+/* 中等屏幕 - 992px到1199px */
+@media (min-width: 992px) and (max-width: 1199px) {
+  .day-tours-section .container,
+  .group-tours-section .container,
+  .testimonials-section .container,
+  .gallery .container,
+  .call_us .container,
+  .features-container,
+  .testimonials-redesigned .container,
+  .gallery-redesigned .container {
+    max-width: 960px;
+  }
+}
+
+/* 平板设备 - 768px到991px */
+@media (min-width: 768px) and (max-width: 991px) {
+  .day-tours-section .container,
+  .group-tours-section .container,
+  .testimonials-section .container,
+  .gallery .container,
+  .call_us .container,
+  .features-container,
+  .testimonials-redesigned .container,
+  .gallery-redesigned .container {
+    max-width: 720px;
+  }
+  
+  .tour-grid [class*="col-"] {
+    padding: 0 8px;
+  }
+}
+
+/* 大型手机 - 576px到767px */
+@media (min-width: 576px) and (max-width: 767px) {
+  .day-tours-section .container,
+  .group-tours-section .container,
+  .testimonials-section .container,
+  .gallery .container,
+  .call_us .container,
+  .features-container,
+  .testimonials-redesigned .container,
+  .gallery-redesigned .container {
+    max-width: 540px;
+  }
+  
+  .tour-grid [class*="col-"] {
+    padding: 0 6px;
+  }
+}
+
+/* 手机设备 - 375px到575px */
+@media (min-width: 375px) and (max-width: 575px) {
+  .day-tours-section .container,
+  .group-tours-section .container,
+  .testimonials-section .container,
+  .gallery .container,
+  .call_us .container,
+  .features-container,
+  .testimonials-redesigned .container,
+  .gallery-redesigned .container {
+    padding: 0 15px;
+    max-width: 100%;
+  }
+  
+  .tour-grid {
+    margin: 0 -5px;
+  }
+  
+  .tour-grid [class*="col-"] {
+    padding: 0 5px;
+  }
+}
+
+/* 小型手机 - 374px及以下 */
+@media (max-width: 374px) {
+  .day-tours-section .container,
+  .group-tours-section .container,
+  .testimonials-section .container,
+  .gallery .container,
+  .call_us .container,
+  .features-container,
+  .testimonials-redesigned .container,
+  .gallery-redesigned .container {
+    padding: 0 10px;
+    max-width: 100%;
+  }
+  
+  .tour-grid {
+    margin: 0 -4px;
+  }
+  
+  .tour-grid [class*="col-"] {
+    padding: 0 4px;
+  }
+  
+  .section-title {
+    font-size: 1.2rem;
+  }
+  
+  .section-subtitle {
+    font-size: 0.85rem;
+  }
+}
+
+/* 产品卡片布局优化 */
+.tour-grid {
+  margin: 0 -8px;
+}
+
+.tour-grid [class*="col-"] {
+  padding: 0 8px;
+  margin-bottom: 16px;
+}
+
+/* 产品部分整体样式优化 */
+.day-tours-section {
+  padding: 50px 0 30px;
+}
+
+.group-tours-section {
+  padding: 50px 0 30px;
+  background-color: #f7f9fc;
+}
+
+/* 部分间距优化 */
+.group-tours-section {
+  margin-top: 0;
+}
+
+/* 查看更多按钮优化 */
+.view-more-btn {
+  margin-top: 10px;
+  padding: 8px 22px;
+  font-size: 0.95rem;
+}
+
+/* 区块标题样式优化 */
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  position: relative;
+}
+
+.section-subtitle {
+  font-size: 0.95rem;
+  color: #777;
+  margin-bottom: 15px;
+}
+
+.view-all-link {
+  color: var(--primaryClr);
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.view-all-link:hover {
+  color: var(--secondaryClr);
+  text-decoration: none;
+}
+
+.view-all-link::after {
+  content: '';
+  display: none;
+}
+
+/* 响应式调整 */
+@media (max-width: 991px) {
+  .day-tours-section,
+  .group-tours-section {
+    padding: 40px 0 20px;
+  }
+  
+  .section-title {
+    font-size: 1.4rem;
+  }
+  
+  .section-subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 767px) {
+  .day-tours-section,
+  .group-tours-section {
+    padding: 30px 0 15px;
+  }
+  
+  .view-more-btn {
+    margin-top: 5px;
+    padding: 7px 20px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 575px) {
+  .section-title-container {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .section-title {
+    font-size: 1.3rem;
+  }
+  
+  .section-subtitle {
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+  }
+  
+  .view-all-link {
+    font-size: 0.85rem;
+  }
+}
+
+/* 统一section样式 */
+.day-tours-section,
+.group-tours-section,
+.gallery,
+.features-section {
+  padding: 50px 0 40px;
+}
+
+/* call_us section特殊样式保留，但调整内边距 */
+.call_us {
+  padding: 80px 0;
+  margin-top: 0;
+}
+
+/* 调整section之间的间距 */
+.features-section + .day-tours-section,
+.day-tours-section + .group-tours-section,
+.group-tours-section + .call_us,
+.call_us + .testimonials-redesigned,
+.testimonials-redesigned + .gallery-redesigned {
+  margin-top: 0;
+}
+
+/* 统一背景和边框样式 */
+.bg-light {
+  background-color: #f7f9fc !important;
+}
+
+.gallery {
+  background-color: var(--secondaryClr);
+  margin-top: 0;
+}
+
+/* 响应式调整 */
+@media (max-width: 991px) {
+  .day-tours-section,
+  .group-tours-section,
+  .gallery,
+  .features-section {
+    padding: 40px 0 30px;
+  }
+  
+  .call_us {
+    padding: 60px 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .day-tours-section,
+  .group-tours-section,
+  .gallery,
+  .features-section {
+    padding: 30px 0 25px;
+  }
+  
+  .call_us {
+    padding: 50px 0;
+  }
+}
+
+/* 确保Features部分与其他部分保持一致 */
+.features-section {
+  background-color: white;
+  padding: 50px 0 30px;
+}
+
+/* 优化图标区域 - 如图中所示 */
+.feature-item {
+  text-align: center;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.feature-icon {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feature-icon img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.feature-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.feature-text {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* 全局section样式优化 */
+.day-tours-section,
+.group-tours-section {
+  padding: 40px 0 30px;
+}
+
+/* 更紧凑的标题布局 */
+.section-header {
+  position: relative;
+  padding-bottom: 5px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.section-title-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 0;
+  position: relative;
+  display: inline-block;
+}
+
+.section-subtitle {
+  font-size: 0.85rem;
+  color: #777;
+  margin-top: 3px;
+  margin-bottom: 0;
+}
+
+/* 查看全部链接样式 */
+.view-all-link {
+  color: var(--primaryClr);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.view-all-link:hover {
+  color: var(--secondaryClr);
+  transform: translateX(3px);
+}
+
+/* 卡片网格布局优化 */
+.tour-grid {
+  margin: 0 -8px;
+}
+
+.tour-grid [class*="col-"] {
+  padding: 0 8px;
+  margin-bottom: 16px;
+}
+
+/* 查看更多按钮样式更新 */
+.view-more-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  background-color: transparent;
+  color: var(--primaryClr);
+  border: 1px solid var(--primaryClr);
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.view-more-btn:hover {
+  background-color: var(--primaryClr);
+  color: white;
+}
+
+.view-more-btn .ms-2 {
+  transition: transform 0.3s ease;
+}
+
+.view-more-btn:hover .ms-2 {
+  transform: translateX(3px);
+}
+
+/* 响应式调整 */
+@media (min-width: 992px) and (max-width: 1199px) {
+  .section-title {
+    font-size: 1.3rem;
+  }
+  
+  .section-subtitle {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 991px) {
+  .day-tours-section,
+  .group-tours-section {
+    padding: 30px 0 20px;
+  }
+  
+  .section-title {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .day-tours-section,
+  .group-tours-section {
+    padding: 25px 0 15px;
+  }
+  
+  .section-header {
+    margin-bottom: 15px;
+  }
+  
+  .section-title {
+    font-size: 1.2rem;
+  }
+  
+  .section-subtitle {
+    font-size: 0.75rem;
+  }
+  
+  .view-all-link {
+    font-size: 0.8rem;
+  }
+  
+  .view-more-btn {
+    padding: 6px 15px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 575px) {
+  .section-header {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  
+  .view-all-link {
+    align-self: flex-end;
+    margin-top: -30px;
+  }
+}
+
+/* 客户评价部分的现代化设计 */
+.testimonials-redesigned {
+  position: relative;
+  background-color: #f8f9fc;
+  padding: 50px 0;
+  overflow: hidden;
+}
+
+.testimonial-bg-element {
+  position: absolute;
+  border-radius: 50%;
+  z-index: 0;
+  opacity: 0.02;
+  background: var(--primaryClr, #e74c3c);
+}
+
+.bg-element-1 {
+  width: 300px;
+  height: 300px;
+  top: -150px;
+  right: -100px;
+}
+
+.bg-element-2 {
+  width: 200px;
+  height: 200px;
+  bottom: -80px;
+  left: -80px;
+}
+
+/* 标题样式 */
+.testimonial-card-redesigned {
+  position: relative;
+  background-color: #fff;
+  border-radius: 12px;
+  border: none;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.testimonial-card-redesigned:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.testimonial-card-redesigned::before {
+  content: "";
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background-color: var(--primaryClr, #e74c3c);
+  opacity: 0.05;
+  border-radius: 50%;
+  top: -50px;
+  right: -30px;
+  z-index: 1;
+}
+
+/* 卡片内容样式 */
+.testimonial-card-redesigned .card-body {
+  padding: 25px;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+/* 引号图标 */
+.testimonial-quote-icon {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 50px;
+  color: rgba(231, 76, 60, 0.06);
+  z-index: 1;
+}
+
+/* 评分星星样式 */
+.testimonial-rating-redesigned {
+  display: flex;
+  margin-bottom: 15px;
+}
+
+.testimonial-rating-redesigned .star {
+  color: #ffb400;
+  font-size: 16px;
+  margin-right: 2px;
+}
+
+/* 评价文本样式 */
+.testimonial-text-redesigned {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #555;
+  margin-bottom: 20px;
+  flex-grow: 1;
+  position: relative;
+  z-index: 2;
+  font-style: italic;
+}
+
+/* 评价者信息样式 */
+.testimonial-author-redesigned {
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  padding-top: 15px;
+  display: flex;
+  align-items: center;
+  margin-top: auto;
+}
+
+.testimonial-author-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: rgba(231, 76, 60, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--primaryClr, #e74c3c);
+}
+
+.testimonial-author-info-redesigned {
+  flex: 1;
+}
+
+.testimonial-author-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 3px;
+}
+
+.testimonial-author-location {
+  font-size: 13px;
+  color: #777;
+}
+
+/* 响应式设计 */
+@media (max-width: 991px) {
+  .testimonials-redesigned {
+    padding: 40px 0;
+  }
+  
+  .testimonials-redesigned .section-title {
+    font-size: 24px;
+  }
+  
+  .testimonials-redesigned .section-subtitle {
+    font-size: 14px;
+  }
+  
+  .testimonial-card-redesigned .card-body {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 767px) {
+  .testimonials-redesigned {
+    padding: 30px 0;
+  }
+  
+  .testimonials-redesigned .section-title {
+    font-size: 22px;
+  }
+  
+  .testimonial-text-redesigned {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 575px) {
+  .testimonials-redesigned .section-title {
+    font-size: 20px;
+  }
+  
+  .testimonial-card-redesigned .card-body {
+    padding: 15px;
+  }
+  
+  .testimonial-author-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+  
+  .testimonial-author-name {
+    font-size: 15px;
+  }
+}
+
+/* 精彩瞬间部分的现代化设计 */
+.gallery-redesigned {
+  position: relative;
+  background-color: #f5f5f5;
+  padding: 50px 0;
+  overflow: hidden;
+}
+
+.gallery-bg-element {
+  position: absolute;
+  border-radius: 50%;
+  z-index: 0;
+  opacity: 0.02;
+  background: var(--primaryClr, #e74c3c);
+}
+
+/* 查看更多按钮样式 */
+.view-more-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 24px;
+  background-color: transparent;
+  color: var(--primaryClr, #e74c3c);
+  border: 1px solid var(--primaryClr, #e74c3c);
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 16px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.view-more-btn:hover {
+  background-color: var(--primaryClr, #e74c3c);
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(231, 76, 60, 0.2);
+}
+
+.view-more-btn .ms-2 {
+  transition: transform 0.3s ease;
+}
+
+.view-more-btn:hover .ms-2 {
+  transform: translateX(3px);
+}
+
+/* 加载和错误信息样式 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 0;
+  width: 100%;
+}
+
+.loader {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #e74c3c;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-message, .no-data-message {
+  text-align: center;
+  padding: 30px;
+  color: #777;
+  font-size: 16px;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.error-message {
+  border-left: 4px solid #e74c3c;
+}
+
+.no-data-message {
+  border-left: 4px solid #f39c12;
+}
+
+/* 响应式布局 */
+@media (max-width: 992px) {
+  .section-title {
+    font-size: 24px;
+  }
+  
+  .section-subtitle {
+    font-size: 15px;
+  }
+  
+  .call_us .section-title h2.heading {
+    font-size: 2.2rem;
+  }
+  
+  .featured-tour-card .card-title {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 768px) {
+  .section-padding {
+    padding: 40px 0;
+  }
+  
+  .section-title {
+    font-size: 22px;
+  }
+  
+  .call_us {
+    padding: 60px 0;
+  }
+  
+  .call_us .section-title h2.heading {
+    font-size: 2rem;
+  }
+  
+  .view-more-btn {
+    padding: 8px 20px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 576px) {
+  .section-padding {
+    padding: 30px 0;
+  }
+  
+  .section-title {
+    font-size: 20px;
+  }
+  
+  .section-subtitle {
+    font-size: 14px;
+  }
+  
+  .call_us {
+    padding: 50px 0;
+  }
+  
+  .call_us .section-title h2.heading {
+    font-size: 1.8rem;
+  }
+  
+  .call_us .section-title p.text {
+    font-size: 1rem;
+  }
+  
+  .view-more-btn {
+    padding: 6px 16px;
+    font-size: 14px;
+  }
+}
+
+/* 普通模式样式 */
+.normal-banner {
+  height: 70vh;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.section-padding {
+  padding: 60px 0;
+}
+
+/* 普通模式下的tour section */
+.show-remaining-content .day-tours-section,
+.show-remaining-content .group-tours-section {
+  height: auto;
+  min-height: auto;
+}
+
+/* 确保图片正确显示 */
+.featured-image {
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+}
+
+.featured-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Banner占满整个屏幕，但允许滚动 */
+.banner-section {
+  width: 100%;
+  position: relative;
+  margin-bottom: 0;
+  /* 移除 height: 100vh 和 overflow: hidden 以允许滚动 */
+}
+
+/* 产品部分动画效果 */
+.section-header {
+  transform: translateY(0);
+  opacity: 1;
+  transition: transform 0.8s ease, opacity 0.8s ease;
+}
+
+.section-header.animate {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.tour-card-container {
+  transform: translateY(0);
+  opacity: 1;
+  transition: transform 0.8s ease, opacity 0.8s ease;
+}
+
+.tour-card-container.animate {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* 添加延迟效果，使卡片依次显示 */
+.tour-card-container:nth-child(1) {
+  transition-delay: 0.2s;
+}
+
+.tour-card-container:nth-child(2) {
+  transition-delay: 0.3s;
+}
+
+.tour-card-container:nth-child(3) {
+  transition-delay: 0.4s;
+}
+
+.tour-card-container:nth-child(4) {
+  transition-delay: 0.5s;
+}
+
+/* 全局加载器样式 */
+.global-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.global-loader .loader-container {
+  text-align: center;
+  background: white;
+  padding: 3rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 90%;
+}
+
+.global-loader .loader-spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1.5rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.global-loader .loader-title {
+  color: #333;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(45deg, #007bff, #6610f2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.global-loader .loader-text {
+  color: #666;
+  font-size: 1rem;
+  margin: 0;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* 响应式设计 */
+@media (max-width: 576px) {
+  .global-loader .loader-container {
+    padding: 2rem;
+    margin: 1rem;
+  }
+  
+  .global-loader .loader-title {
+    font-size: 1.5rem;
+  }
+  
+  .global-loader .loader-text {
+    font-size: 0.9rem;
+  }
+}
+

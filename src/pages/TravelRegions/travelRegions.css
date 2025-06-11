@@ -1,0 +1,350 @@
+/* 旅游区域页面样式 */
+
+/* 区域卡片 */
+.region-card {
+  position: relative;
+  border-radius: 15px;
+  overflow: hidden;
+  margin-bottom: 30px;
+  height: 300px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.region-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.region-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: all 0.5s ease;
+}
+
+.region-card:hover img {
+  transform: scale(1.1);
+}
+
+.region-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+.region-card:hover .region-overlay {
+  padding-bottom: 30px;
+}
+
+.region-overlay h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.region-overlay p {
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+  opacity: 0.9;
+}
+
+/* 区域导航 */
+.region-nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+.region-nav .nav-link {
+  margin: 0 5px 10px;
+  padding: 10px 25px;
+  border-radius: 30px;
+  color: #666;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.region-nav .nav-link.active {
+  background-color: var(--primaryClr);
+  color: #fff;
+}
+
+/* 区域卡片 */
+.region-image {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.region-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.region-card:hover .region-image img {
+  transform: scale(1.1);
+}
+
+.favorite-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background-color: rgba(255, 255, 255, 0.8);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ccc;
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.favorite-btn:hover, .favorite-btn.active {
+  color: #ff5a5f;
+  background-color: #fff;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.region-info {
+  margin-top: 15px;
+}
+
+.region-info .info-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.region-info .info-item svg {
+  color: var(--primaryClr);
+  margin-right: 10px;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+/* 季节选项卡 */
+.season-nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+.season-nav .nav-link {
+  margin: 0 5px 10px;
+  padding: 10px 25px;
+  border-radius: 5px;
+  color: #666;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.season-nav .nav-link.active {
+  background-color: var(--primaryClr);
+  color: #fff;
+}
+
+.season-content {
+  padding: 30px;
+  background-color: #f9f9f9;
+  border-radius: 15px;
+}
+
+.season-image {
+  border-radius: 15px;
+  overflow: hidden;
+  height: 300px;
+  object-fit: cover;
+}
+
+.season-description {
+  padding: 20px;
+}
+
+.season-description h3 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primaryClr);
+  margin-bottom: 15px;
+}
+
+.season-description p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.season-description h4 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.season-description ul {
+  margin-bottom: 20px;
+  padding-left: 20px;
+}
+
+.season-description ul li {
+  margin-bottom: 10px;
+  color: #666;
+}
+
+/* 旅行灵感卡片 */
+.inspiration-card {
+  position: relative;
+  border-radius: 15px;
+  overflow: hidden;
+  height: 350px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.inspiration-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.inspiration-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: all 0.5s ease;
+}
+
+.inspiration-card:hover img {
+  transform: scale(1.1);
+}
+
+.inspiration-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+.inspiration-card:hover .inspiration-content {
+  padding-bottom: 30px;
+}
+
+.inspiration-content h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.inspiration-content p {
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+  opacity: 0.9;
+}
+
+.inspiration-content .btn-link {
+  color: #fff;
+  padding: 0;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.inspiration-content .btn-link:hover {
+  color: var(--secondaryClr);
+}
+
+/* 响应式调整 */
+@media (max-width: 992px) {
+  .region-card {
+    height: 250px;
+  }
+  
+  .region-overlay h3 {
+    font-size: 1.3rem;
+  }
+  
+  .region-overlay p {
+    font-size: 0.8rem;
+  }
+  
+  .season-image {
+    height: 250px;
+    margin-bottom: 20px;
+  }
+  
+  .season-description {
+    padding: 0;
+  }
+  
+  .season-description h3 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .region-nav .nav-link {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+  }
+  
+  .season-nav .nav-link {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+  }
+  
+  .inspiration-card {
+    height: 300px;
+  }
+}
+
+@media (max-width: 576px) {
+  .region-card {
+    height: 200px;
+  }
+  
+  .region-overlay h3 {
+    font-size: 1.2rem;
+  }
+  
+  .region-overlay p {
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+  }
+  
+  .region-overlay .btn {
+    font-size: 0.8rem;
+    padding: 5px 10px;
+  }
+  
+  .season-image {
+    height: 200px;
+  }
+  
+  .season-description h3 {
+    font-size: 1.3rem;
+  }
+  
+  .inspiration-card {
+    height: 250px;
+  }
+  
+  .inspiration-content h3 {
+    font-size: 1.3rem;
+  }
+} 

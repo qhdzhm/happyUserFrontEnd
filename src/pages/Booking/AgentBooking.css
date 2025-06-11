@@ -1,0 +1,443 @@
+/* 中介订单页面样式 */
+.agent-booking-page {
+  background: #f8f9fa;
+  min-height: 100vh;
+  padding: 2rem 0;
+  overflow: visible !important;
+  contain: none !important;
+}
+
+.agent-booking-page .container {
+  overflow: visible !important;
+}
+
+.agent-booking-page .row {
+  overflow: visible !important;
+}
+
+.agent-booking-page .col-lg-4 {
+  overflow: visible !important;
+}
+
+.agent-booking-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.agent-booking-header h2 {
+  color: #2d3748;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.agent-booking-header p {
+  color: #718096;
+  font-size: 1.1rem;
+}
+
+/* 产品信息卡片 */
+.tour-info-card {
+  position: -webkit-sticky !important; /* Safari support */
+  position: sticky !important;
+  top: 0px !important; /* 尝试最小的top值 */
+  max-height: calc(100vh - 140px) !important; /* 调整最大高度 */
+  overflow-y: auto !important;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  z-index: 998 !important; /* 低于header的999但足够高 */
+  /* 调试用 - 可以临时添加边框看效果 */
+  /* border: 3px solid red !important; */
+}
+
+.tour-image img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.tour-title {
+  color: #2d3748;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.tour-type-badge {
+  margin-bottom: 1rem;
+}
+
+.tour-type-badge .badge {
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+}
+
+.tour-highlights h6 {
+  color: #4a5568;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.tour-highlights ul {
+  padding-left: 1.2rem;
+  margin-bottom: 0;
+}
+
+.tour-highlights li {
+  color: #718096;
+  margin-bottom: 0.3rem;
+  line-height: 1.4;
+}
+
+/* 地点展示样式 */
+.tour-locations h6 {
+  color: #4a5568;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.location-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.location-tag {
+  font-size: 0.85rem !important;
+  padding: 0.5rem 0.75rem !important;
+  border-radius: 15px !important;
+  border: 1px solid #e2e8f0 !important;
+  background-color: #f8f9fa !important;
+  color: #2d3748 !important;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.location-tag:hover {
+  background-color: #e9ecef !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 代理商价格显示样式 */
+.agent-price-display {
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%) !important;
+  border: 2px solid #1976d2 !important;
+  border-radius: 12px !important;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.agent-price-display:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(25, 118, 210, 0.15);
+}
+
+.agent-price-display h6 {
+  color: #1976d2 !important;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.agent-price-display .price-amount {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+.agent-price-display .price-amount .currency {
+  font-size: 1.5rem;
+  color: #1976d2;
+  font-weight: 700;
+  margin-right: 0.3rem;
+}
+
+.agent-price-display .price-amount .amount {
+  font-size: 2.5rem;
+  color: #1976d2;
+  font-weight: 800;
+  line-height: 1;
+  font-family: 'Arial', sans-serif;
+}
+
+.agent-price-display small {
+  color: #666 !important;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* 预订表单卡片 */
+.booking-form-card {
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+}
+
+.booking-form-card h5 {
+  color: #2d3748;
+  font-weight: 600;
+  border-bottom: 2px solid #f7fafc;
+  padding-bottom: 1rem;
+}
+
+/* 填写说明提示 */
+.booking-form-card .alert-info {
+  background-color: #e6f3ff;
+  border-color: #4299e1;
+  color: #2b6cb0;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+}
+
+.booking-form-card .alert-info strong {
+  color: #1a365d;
+}
+
+/* 表单样式 */
+.form-label {
+  color: #4a5568;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.form-label svg {
+  color: #718096;
+}
+
+.form-control,
+.form-select {
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+}
+
+/* 乘客信息部分 */
+.passengers-section h6 {
+  color: #2d3748;
+  font-weight: 600;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.passenger-card {
+  border: 2px solid #f7fafc;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.passenger-card:hover {
+  border-color: #e2e8f0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.passenger-card h6 {
+  color: #2d3748;
+  font-weight: 600;
+  border-bottom: none;
+  margin-bottom: 1rem;
+  padding-bottom: 0;
+}
+
+.passenger-card h6 svg {
+  color: #4299e1;
+}
+
+.passenger-card .badge {
+  font-size: 0.75rem;
+  padding: 0.3rem 0.6rem;
+}
+
+.passenger-card .form-group {
+  margin-bottom: 1rem;
+}
+
+.passenger-card .form-label {
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+/* 提交按钮 */
+.btn-primary {
+  background: linear-gradient(135deg, #4299e1, #3182ce);
+  border: none;
+  border-radius: 10px;
+  padding: 1rem 2rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(66, 153, 225, 0.3);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #3182ce, #2c5282);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(66, 153, 225, 0.4);
+}
+
+.btn-primary:disabled {
+  background: #a0aec0;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 返回按钮 */
+.btn-outline-secondary {
+  border: 2px solid #e2e8f0;
+  color: #4a5568;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-secondary:hover {
+  background: #f7fafc;
+  border-color: #cbd5e0;
+  color: #2d3748;
+}
+
+/* React DatePicker 样式调整 */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__input-container input {
+  width: 100%;
+  border: 2px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  padding: 0.75rem 1rem !important;
+  font-size: 0.95rem !important;
+}
+
+.react-datepicker__input-container input:focus {
+  border-color: #4299e1 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1) !important;
+}
+
+/* 响应式设计 */
+@media (max-width: 991px) {
+  .tour-info-card {
+    position: sticky;
+    top: 80px; /* 中等屏幕header高度 */
+    max-height: calc(100vh - 100px);
+    z-index: 998;
+    margin-bottom: 2rem;
+  }
+  
+  .agent-booking-page {
+    padding: 1rem 0;
+  }
+  
+  .price-amount .amount {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .tour-info-card {
+    position: static !important; /* 在小屏幕上禁用粘性定位 */
+    max-height: none !important;
+    overflow-y: visible !important;
+    z-index: auto !important;
+  }
+  
+  .agent-booking-header h2 {
+    font-size: 1.75rem;
+  }
+  
+  .tour-image img {
+    height: 150px;
+  }
+  
+  .passenger-card .row {
+    margin: 0;
+  }
+  
+  .passenger-card .col-md-4 {
+    padding: 0 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .btn-primary {
+    font-size: 1rem;
+    padding: 0.875rem 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .agent-booking-page {
+    padding: 0.5rem 0;
+  }
+  
+  .container {
+    padding: 0 1rem;
+  }
+  
+  .tour-info-card .card-body,
+  .booking-form-card .card-body {
+    padding: 1.5rem;
+  }
+  
+  .price-amount {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .price-amount .currency {
+    margin-right: 0;
+    margin-bottom: 0.25rem;
+  }
+}
+
+.alert {
+  border-radius: 10px;
+  border: none;
+  padding: 2rem;
+}
+
+.alert h4 {
+  margin-bottom: 1rem;
+}
+
+.spinner-border {
+  color: #4299e1;
+}
+
+/* JavaScript粘性定位的备选方案 */
+.tour-info-card.js-sticky {
+  position: fixed !important;
+  top: 80px !important;
+  width: 300px !important; /* 固定宽度避免布局问题 */
+  z-index: 998 !important;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 1199px) {
+  .tour-info-card.js-sticky {
+    width: 250px !important;
+  }
+}
+
+@media (max-width: 991px) {
+  .tour-info-card.js-sticky {
+    position: static !important;
+    width: auto !important;
+  }
+} 

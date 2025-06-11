@@ -1,0 +1,142 @@
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+/* Ensure main content grows to fill available space */
+.flex-grow-1 {
+  flex-grow: 1;
+  position: relative;
+  z-index: 5;
+} 
+
+/* Add style for home page */
+.home-page .layout-container {
+  overflow-x: hidden;
+}
+
+/* Adjust header for homepage with banner */
+.home-page header {
+  position: fixed;
+  width: 100%;
+  z-index: 100;
+  background-color: transparent;
+  top: 0;
+  left: 0;
+}
+
+/* Home content in regular layout */
+.home-page .home-content {
+  position: relative;
+  z-index: 99;
+  margin-top: 0;
+}
+
+/* 标准容器宽度 - 调整后的容器宽度设置 */
+.container-custom {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+@media (min-width: 576px) {
+  .container-custom {
+    max-width: 540px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container-custom {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 992px) {
+  .container-custom {
+    max-width: 960px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container-custom {
+    max-width: 1200px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .container-custom {
+    max-width: 1320px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .container-custom {
+    max-width: 1520px;
+  }
+}
+
+@media (min-width: 1800px) {
+  .container-custom {
+    max-width: 1680px;
+  }
+}
+
+/* 覆盖Bootstrap默认容器 */
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1200px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1320px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .container {
+    max-width: 1520px;
+  }
+}
+
+@media (min-width: 1800px) {
+  .container {
+    max-width: 1680px;
+  }
+} 
+
+/* Make sure footer stays at the bottom */
+footer {
+  position: relative;
+  z-index: 5;
+}
+
+/* Add styles for normal scrolling behavior */
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* Banner section styles */
+.banner-section {
+  width: 100%;
+  position: relative;
+  /* 移除 height: 100vh 和 overflow: hidden 以允许滚动 */
+}
+
+@media (max-width: 768px) {
+  .banner-section {
+    /* 移除固定高度以允许自然滚动 */
+  }
+} 

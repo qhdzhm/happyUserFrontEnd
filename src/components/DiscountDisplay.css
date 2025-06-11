@@ -1,0 +1,45 @@
+.discount-display {
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 0.95rem;
+}
+
+.discount-price {
+  margin-right: 10px;
+}
+
+.price-label {
+  color: #555;
+  font-weight: 500;
+}
+
+.price-value {
+  color: #d9534f;
+  font-weight: 700;
+}
+
+.discount-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.4rem;
+}
+
+.discount-loading {
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 5px;
+}
+
+.discount-loading .spinner-border {
+  margin-right: 5px;
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+.discount-error {
+  margin-top: 5px;
+  font-size: 0.8rem;
+} 

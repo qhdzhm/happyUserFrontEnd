@@ -1,0 +1,470 @@
+.about-image-content{
+    background: var(--primaryClr);
+    width: 350px;
+    line-height: 42px;
+
+}
+
+@media screen and (max-width : 575px) {
+    .about-image-content{
+    
+        width: 261px;
+        line-height: 34px;
+    
+    }
+    
+}
+
+/* 主要介绍部分样式 */
+.about-main-section {
+    padding: 60px 0;
+    background-color: #fff;
+}
+
+.about-content .section-title h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primaryClr);
+    margin-bottom: 20px;
+    position: relative;
+    display: inline-block;
+}
+
+.about-content .section-title h2:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 80px;
+    height: 4px;
+    background-color: var(--primaryClr);
+}
+
+.about-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.about-stats {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.stat-item {
+    text-align: center;
+    padding: 15px 10px;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primaryClr);
+    margin-bottom: 5px;
+}
+
+.stat-text {
+    font-size: 1rem;
+    color: #666;
+}
+
+.about-image-container {
+    position: relative;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.main-about-image {
+    width: 100%;
+    height: auto;
+    border-radius: 15px;
+    transition: transform 0.5s ease;
+}
+
+.about-image-container:hover .main-about-image {
+    transform: scale(1.05);
+}
+
+.about-image-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    padding: 30px 20px 20px;
+    color: #fff;
+}
+
+.about-image-overlay h3 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.about-image-overlay p {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+/* 我们的优势部分样式 */
+.our-advantages {
+    background-color: #f9f9f9;
+    padding: 60px 0;
+}
+
+.section-title {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.section-title h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--primaryClr);
+    margin-bottom: 15px;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 15px;
+}
+
+.section-title h2:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background-color: var(--primaryClr);
+}
+
+.section-title p {
+    font-size: 1.1rem;
+    color: #666;
+}
+
+.advantage-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.advantage-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.advantage-icon {
+    width: 70px;
+    height: 70px;
+    line-height: 70px;
+    text-align: center;
+    background-color: var(--secondaryClr);
+    color: var(--primaryClr);
+    font-size: 30px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    transition: all 0.3s ease;
+}
+
+.advantage-card:hover .advantage-icon {
+    background-color: var(--primaryClr);
+    color: #fff;
+    transform: rotateY(180deg);
+}
+
+.advantage-card .card-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.advantage-card .card-text {
+    font-size: 1rem;
+    color: #666;
+    line-height: 1.6;
+    text-align: center;
+}
+
+/* 我们的故事部分样式 */
+.our-story {
+    padding: 60px 0;
+    background-color: #fff;
+}
+
+.story-content .section-title h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--primaryClr);
+    margin-bottom: 20px;
+    position: relative;
+    display: inline-block;
+}
+
+.story-content .section-title h2:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background-color: var(--primaryClr);
+}
+
+.story-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #555;
+}
+
+.learn-more-btn {
+    padding: 10px 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 30px;
+    background-color: var(--primaryClr);
+    border-color: var(--primaryClr);
+    transition: all 0.3s ease;
+}
+
+.learn-more-btn:hover {
+    background-color: transparent;
+    color: var(--primaryClr);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.story-image-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 15px;
+    height: 500px;
+}
+
+.story-image {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.story-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.story-image:hover img {
+    transform: scale(1.1);
+}
+
+.story-image-1 {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+}
+
+.story-image-2 {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.story-image-3 {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+/* 我们的承诺部分样式 */
+.our-promise {
+    background-color: #f9f9f9;
+    padding: 60px 0;
+}
+
+.promise-card {
+    background-color: #fff;
+    padding: 30px 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.promise-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.promise-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.promise-card:hover .promise-icon {
+    background-color: var(--secondaryClr);
+    transform: rotateY(180deg);
+}
+
+.promise-card h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.promise-card p {
+    font-size: 1rem;
+    color: #666;
+    line-height: 1.6;
+}
+
+/* 加入我们部分样式 */
+.join-us {
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: #fff;
+    padding: 80px 0;
+}
+
+.join-us-content h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.join-us-content p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 30px;
+}
+
+.join-us-buttons .btn {
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+
+.join-us-buttons .btn-primary {
+    background-color: var(--primaryClr);
+    border-color: var(--primaryClr);
+}
+
+.join-us-buttons .btn-outline-primary {
+    color: #fff;
+    border-color: #fff;
+}
+
+.join-us-buttons .btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* 响应式调整 */
+@media (max-width: 992px) {
+    .about-content .section-title h2,
+    .story-content .section-title h2,
+    .join-us-content h2 {
+        font-size: 2rem;
+    }
+    
+    .about-text, .story-text {
+        font-size: 1rem;
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+    }
+    
+    .story-image-grid {
+        height: 400px;
+    }
+}
+
+@media (max-width: 768px) {
+    .about-content .section-title h2,
+    .story-content .section-title h2,
+    .section-title h2,
+    .join-us-content h2 {
+        font-size: 1.8rem;
+    }
+    
+    .about-stats {
+        margin-bottom: 30px;
+    }
+    
+    .story-image-grid {
+        height: 350px;
+        margin-bottom: 30px;
+    }
+    
+    .advantage-card, .promise-card {
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .about-content .section-title h2,
+    .story-content .section-title h2,
+    .section-title h2,
+    .join-us-content h2 {
+        font-size: 1.5rem;
+    }
+    
+    .stat-number {
+        font-size: 1.8rem;
+    }
+    
+    .story-image-grid {
+        height: 300px;
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(3, 1fr);
+    }
+    
+    .story-image-1 {
+        grid-column: 1;
+        grid-row: 1;
+    }
+    
+    .story-image-2 {
+        grid-column: 1;
+        grid-row: 2;
+    }
+    
+    .story-image-3 {
+        grid-column: 1;
+        grid-row: 3;
+    }
+    
+    .story-image-4 {
+        display: none;
+    }
+    
+    .join-us-buttons .btn {
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .join-us-buttons .btn-primary {
+        margin-right: 0 !important;
+    }
+}
+
+

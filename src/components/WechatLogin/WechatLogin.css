@@ -1,0 +1,61 @@
+.wechat-login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.wechat-login-btn i {
+  font-size: 1.2em;
+}
+
+.qrcode-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.qrcode-wrapper {
+  position: relative;
+  margin: 0 auto;
+  width: 200px;
+  height: 200px;
+}
+
+.qrcode {
+  border: 1px solid #eee;
+  padding: 10px;
+  background-color: white;
+}
+
+.qrcode.expired {
+  opacity: 0.5;
+  filter: grayscale(100%);
+}
+
+.scan-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 4px;
+}
+
+.scan-overlay.success {
+  background-color: rgba(40, 167, 69, 0.9);
+  color: white;
+}
+
+.scan-overlay.expired {
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+} 

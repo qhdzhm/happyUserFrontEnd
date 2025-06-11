@@ -1,0 +1,45 @@
+.user-info-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
+.user-info-compact {
+  padding: 0.5rem;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+}
+
+.permissions-info {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 1rem;
+}
+
+.permission-item {
+  font-size: 0.9rem;
+}
+
+.permission-item .fa {
+  width: 16px;
+  text-align: center;
+}
+
+.user-info-card .card-body {
+  padding: 1rem;
+}
+
+.user-info-card h6 {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.operator-input {
+  border-color: #6c757d;
+}
+
+.operator-input:focus {
+  border-color: #495057;
+  box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25);
+} 

@@ -1,0 +1,85 @@
+.dropdown-custom #dropdown-custom-components {
+    width: 100%;
+    background: none;
+    font-family: var(--fontFamily);
+    text-align: left;
+    padding: 5px 40px 5px 5px;
+    padding-left: 22px !important;
+    border: none;
+    font-size: var(--textFont);
+    position: relative;
+    color:var(--textClr)
+}
+
+.dropdown-custom #dropdown-custom-components span{
+    font-family: var(--fontFamily) !important; 
+    font-weight: bold;
+}
+
+.dropdown-custom #dropdown-custom-components:focus{
+    border: none;
+    outline: unset;
+    box-shadow: none;
+}
+
+.dropdown-custom .dropdown-toggle{
+    font-family: bootstrap-icons !important;
+    font-style: normal;
+    font-weight: 400 !important;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+}
+
+.dropdown-custom .dropdown-toggle::before {
+    position: absolute;
+    left: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    content: "\f52a";
+    font-size: var(--bodyText);
+    color: var(--textClr);   
+}
+
+.dropdown-custom .dropdown-toggle::after {
+    border: none;
+    position: absolute;
+    right: 20px;
+    bottom: 6px;
+    content: "\f282";
+    font-size: var(--bodyText);
+    color: var(--textClr);   
+}
+
+.dropdown-custom .dropdown-menu {
+    width: 100%;
+    padding: 10px;
+    min-width: 12rem;
+}
+
+.dropdown-custom  .list-unstyled li a {
+    padding: 10px 8px;
+    padding: 10px;
+    font-weight: 500;
+    transition: all 0.4s ease-out;
+}
+
+.dropdown-custom  .list-unstyled li:hover a{
+
+    font-weight: bold;
+}
+
+/* Banner版本的图标和按钮样式 */
+.box-search-banner .dropdown-custom .dropdown-toggle::before,
+.box-search-banner .dropdown-custom .dropdown-toggle::after {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* 确保乘客选择下拉菜单中的文本不重叠 */
+.box-search-banner .guest-dropdown button {
+    padding-left: 46px !important;
+}
+
+
+
+

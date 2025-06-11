@@ -1,0 +1,190 @@
+/* 联系我们页面样式 */
+.contact {
+  padding: 50px 0;
+}
+
+.contact h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.contact p {
+  color: #666;
+  line-height: 1.6;
+}
+
+.contact .card {
+  transition: all 0.3s ease;
+  border-radius: 10px;
+}
+
+.contact .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+.contact .card-title {
+  color: #333;
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+.contact .rounded-circle {
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.contact .btn-light {
+  transition: all 0.3s ease;
+}
+
+.contact .btn-light:hover {
+  color: #ff6b6b;
+  border-color: #ff6b6b;
+}
+
+.contact .list-group-item i {
+  font-size: 24px;
+  transition: all 0.3s ease;
+}
+
+.contact .list-group-item i:hover {
+  transform: scale(1.2);
+}
+
+/* 微信卡片样式 */
+.wechat-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 107, 107, 0.1) !important;
+}
+
+.wechat-card:hover {
+  transform: translateY(-8px) !important;
+  box-shadow: 0 15px 30px rgba(255, 107, 107, 0.15) !important;
+}
+
+/* 二维码样式 */
+.qr-code-container {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  display: inline-block;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.qr-code-image {
+  max-width: 200px;
+  height: auto;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  position: relative;
+  z-index: 2;
+}
+
+/* 二维码上的水印效果 */
+.qr-code-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* 联系方式模态框样式 */
+.theme-modal .modal-content {
+  border-radius: 15px;
+  overflow: hidden;
+  border: none;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.theme-modal .modal-header {
+  padding: 20px 25px;
+}
+
+.theme-modal .modal-header .close {
+  color: #999;
+}
+
+.theme-modal .qr-code-info {
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+.qr-code-info h5 {
+  font-weight: 600;
+}
+
+/* 按钮悬停效果 */
+.theme-modal button:hover {
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+  transform: translateY(-2px);
+}
+
+.contact .form-box {
+  padding: 10px;
+}
+
+.contact .form-control {
+  border-radius: 5px;
+  border: 1px solid #ced4da;
+}
+
+.contact .form-control:focus {
+  border-color: #ff6b6b;
+  box-shadow: 0 0 0 0.25rem rgba(255, 107, 107, 0.25);
+}
+
+.contact .form-floating label {
+  color: #666;
+}
+
+.contact button[type="button"] {
+  border-radius: 30px;
+  padding: 10px 30px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.contact button[type="button"]:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+}
+
+.contact-hint {
+  display: inline-flex;
+  align-items: center;
+  background-color: #ffe8e8;
+  color: #ff6b6b;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 10px;
+  transition: all 0.3s ease;
+}
+
+.wechat-card:hover .contact-hint {
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .contact {
+    padding: 30px 0;
+  }
+  
+  .contact h1 {
+    font-size: 28px;
+  }
+} 

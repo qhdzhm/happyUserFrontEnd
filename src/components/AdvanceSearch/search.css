@@ -1,0 +1,1644 @@
+.box-search-advance {
+    margin-top: -70px;
+    position: relative;
+    z-index: 101;
+    padding: 0 15px;
+    margin-bottom: 30px;
+}
+
+.box-search {
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--cardRadius);
+    display: flex;
+    flex-wrap: wrap;
+    padding: 25px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.box-search:hover {
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px);
+}
+
+.item-search {
+    flex: 1;
+    padding: 0 15px;
+    border-right: 1px solid #e9e9e9;
+}
+
+.item-search-2 {
+    flex: 1.5;
+}
+
+.bd-none {
+    border-right: none;
+}
+
+.item-search-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--textClr);
+    margin-bottom: 5px;
+}
+
+.react-datepicker-wrapper {
+    width: 100%;
+}
+
+.react-datepicker__input-container input {
+    width: 100%;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--textClr);
+    padding: 5px 0;
+}
+
+.react-datepicker__input-container input:focus {
+    outline: none;
+}
+
+.flex-even {
+    flex: 1;
+}
+
+/* 旅客选择器样式 - 使用更高优先级 */
+.guest-selector-content {
+    padding: 20px !important;
+    min-width: 250px !important;
+    background-color: white !important;
+    z-index: 99999 !important; /* 使用更高的z-index */
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.guest-type {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 20px !important;
+}
+
+.guest-type:last-child {
+    margin-bottom: 0 !important;
+}
+
+.guest-type span {
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    color: #333 !important;
+}
+
+.guest-controls {
+    display: flex !important;
+    align-items: center !important;
+    gap: 15px !important;
+}
+
+.guest-btn {
+    width: 32px !important;
+    height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    border: 2px solid #0b80c3 !important;
+    background-color: white !important;
+    color: #0b80c3 !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    outline: none !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+.guest-btn span {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    line-height: 1 !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+}
+
+.guest-btn:hover:not(:disabled) {
+    background-color: #0b80c3 !important;
+    color: white !important;
+    transform: scale(1.05) !important;
+}
+
+.guest-btn:disabled {
+    opacity: 0.4 !important;
+    cursor: not-allowed !important;
+    border-color: #ddd !important;
+    color: #999 !important;
+}
+
+.guest-btn:disabled:hover {
+    background-color: white !important;
+    color: #999 !important;
+    transform: none !important;
+}
+
+.guest-count {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #333 !important;
+    min-width: 30px !important;
+    text-align: center !important;
+}
+
+.item-search .primaryBtn {
+    padding: 15px 32px !important;
+    font-size: 16px;
+    line-height: 26px !important;
+    align-items: center;
+    width: fit-content;
+    display: flex;
+    border: none;
+    font-weight: 600;
+    background-color: var(--primaryClr);
+    color: var(--white);
+    transition: all 0.3s ease;
+    border-radius: 30px;
+}
+
+.item-search .primaryBtn:hover {
+    background-color: var(--accentClr);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 991px) {
+    .box-search-advance {
+        margin-top: -60px;
+    }
+
+    .box-search {
+        flex-direction: column;
+    }
+
+    .item-search {
+        width: 100%;
+        margin-bottom: 15px;
+        border-right: none;
+        border-bottom: 1px solid #e9e9e9;
+        padding-bottom: 15px;
+    }
+
+    .item-search:last-child {
+        margin-bottom: 0;
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+}
+
+@media (max-width : 1199px){
+    .box-search-advance .box-search {
+        flex-wrap: wrap;
+    }
+    .box-search-advance .box-search .item-search:last-child{
+        width: 100%;
+        justify-content: center !important;
+        padding: 20px;
+    }
+
+    .box-search-advance .box-search .item-search:last-child .primaryBtn{
+        width: 100%;
+        justify-content: center !important;
+    }
+
+    .box-search-advance .box-search .item-search{
+        width: 25%;
+    }
+}
+
+@media (max-width : 575px){
+    .box-search-advance {
+        margin-top: -40px;
+    }
+    
+    .box-search-advance .box-search .item-search{
+        width: 100%;
+        border-bottom: 1px solid var(--bs-border-color);
+        padding: 10px;
+    }
+    .box-search-advance .box-search .item-search::before{
+        display: none;
+    }
+}
+
+/* Banner内搜索框样式 */
+.box-search-banner {
+    width: 100%;
+    max-width: 1800px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    padding: 24px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 10000; /* 提高banner的z-index */
+}
+
+.box-search-banner:hover {
+    background: rgba(255,255,255,0.2);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+}
+
+.box-search-row {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    gap: 0;
+}
+
+/* 新的搜索项布局 */
+.search-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 0 16px;
+    flex: 1;
+    border-right: 1px solid rgba(255,255,255,0.15);
+}
+
+.search-item:last-of-type {
+    border-right: none;
+}
+
+.search-item label {
+    font-size: 13px;
+    color: rgba(255,255,255,0.8);
+    font-weight: 500;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+}
+
+/* 搜索项内容布局 */
+.search-item-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: relative;
+    z-index: 10;
+}
+
+/* 按钮区域处理 */
+.button-group {
+    display: flex;
+    align-items: center;
+    margin-left: 16px;
+    flex: 0.8; /* 按钮区域宽度 */
+}
+
+.search-submit-btn, .reset-btn {
+    height: 52px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+}
+
+.search-submit-btn {
+    background: linear-gradient(135deg, #18a6cf 0%, #0261b2 100%);
+    color: #fff;
+    border: none;
+    padding: 0 24px;
+    min-width: 100px;
+    box-shadow: 0 4px 10px rgba(8, 107, 178, 0.3);
+    border-radius: 30px;
+}
+
+.search-submit-btn:hover {
+    background: linear-gradient(135deg, #1599be 0%, #025099 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(8, 107, 178, 0.4);
+}
+
+.search-submit-btn svg {
+    margin-right: 8px;
+}
+
+.reset-btn {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    padding: 0 16px;
+    margin-left: 10px;
+    min-width: 60px;
+}
+
+.reset-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* 在小屏幕上调整按钮 */
+@media (max-width: 991px) {
+    .box-search-row {
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+    
+    .search-item {
+        min-width: 48%;
+        flex: 0 0 48% !important; /* 覆盖上面的flex值 */
+        border-right: none;
+        padding: 0 10px;
+    }
+
+    .button-group {
+        width: 100%;
+        margin: 16px 10px 0;
+        justify-content: space-between;
+        flex: 1 0 100% !important;
+    }
+    
+    .search-submit-btn, .reset-btn {
+        min-width: 48%;
+        margin: 0;
+    }
+}
+
+/* 输入框样式调整 */
+.banner-datepicker, 
+.banner-dropdown,
+.keyword-input-wrapper {
+    border-radius: 12px;
+    background: rgba(255,255,255,0.15) !important;
+    border: 1px solid rgba(255,255,255,0.3) !important;
+    height: 52px;
+    transition: all 0.3s ease;
+    color: #fff !important;
+}
+
+.banner-datepicker:hover, 
+.banner-dropdown:hover,
+.keyword-input-wrapper:hover {
+    background: rgba(255,255,255,0.25) !important;
+    border-color: rgba(255,255,255,0.4) !important;
+}
+
+.banner-datepicker:focus, 
+.banner-dropdown:focus,
+.keyword-input:focus {
+    background: rgba(255,255,255,0.3) !important;
+    border-color: rgba(255,255,255,0.5) !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.keyword-input {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
+    padding: 0 12px 0 46px; /* 增加左边距，避免与图标重叠 */
+    font-weight: 500;
+    width: 100%;
+    height: 100%;
+    transition: all 0.3s ease;
+}
+
+.keyword-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* 响应式布局 */
+@media (max-width: 1200px) {
+    .box-search-banner {
+        padding: 20px;
+    }
+    }
+
+@media (max-width: 991px) {
+    .box-search-row {
+        flex-wrap: wrap;
+    }
+    
+    .search-item {
+        min-width: 48%;
+        flex: 0 0 48%;
+        border-right: none;
+        padding: 0 10px;
+    }
+    
+    .search-submit-btn, .reset-btn {
+        margin: 10px 5px;
+        flex: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .search-item {
+        min-width: 100%;
+        flex: 0 0 100%;
+    }
+}
+
+/* 关键字搜索框的样式 */
+.keyword-input {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 16px;
+    padding: 0;
+    font-weight: 500;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.keyword-input::placeholder {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.keyword-input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.keyword-input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.keyword-input-container {
+    position: relative;
+    width: 100%;
+    z-index: 100000 !important; /* 提高容器的z-index */
+}
+
+/* 关键词输入框包装器 - 允许下拉按钮 */
+.keyword-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding-right: 30px; /* 为下拉按钮留出空间 */
+}
+
+/* 清理重复的dropdown-toggle-btn相关样式 */
+.dropdown-toggle-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    font-size: 12px;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #999;
+}
+
+.dropdown-toggle-btn:hover {
+    color: #666;
+}
+
+.dropdown-toggle-btn.active {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+/* 常规版的下拉按钮 */
+.dropdown-toggle-btn.regular {
+    color: var(--textClr);
+}
+
+.dropdown-toggle-btn.regular:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-toggle-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.keyword-search-container {
+    position: relative;
+    width: 100%;
+    z-index: 100000 !important; /* 提高容器的z-index */
+}
+
+.keyword-regular-input-container {
+    position: relative;
+    width: 100%;
+    z-index: 100000 !important; /* 提高容器的z-index */
+}
+
+.keyword-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--textClr);
+    font-size: 14px;
+    z-index: 1;
+}
+
+.keyword-input-regular {
+    width: 100%;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--textClr);
+    padding: 5px 0 5px 25px;
+    transition: all 0.3s ease;
+}
+
+.keyword-input-regular::placeholder {
+    color: rgba(51, 51, 51, 0.6);
+}
+
+.keyword-input-regular:focus {
+    outline: none;
+}
+
+.keyword-input-regular:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* 产品建议下拉菜单 - Banner版 */
+.tour-suggestions-dropdown {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    background: white !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+    z-index: 999999 !important;
+    max-height: 280px !important; /* 增加高度到280px */
+    overflow-y: auto !important;
+    margin-top: 4px !important;
+}
+
+/* Banner版本的建议项目 - 更紧凑的样式 */
+.tour-suggestions-dropdown .tour-suggestion-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px !important; /* 稍微增加内边距 */
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    gap: 12px !important; /* 增加间距 */
+}
+
+.tour-suggestions-dropdown .tour-suggestion-img {
+    width: 45px !important; /* 稍微增大图片尺寸 */
+    height: 36px !important;
+    border-radius: 4px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-color: #f0f0f0;
+}
+
+.tour-suggestions-dropdown .tour-suggestion-name {
+    font-size: 14px !important; /* 稍微增大字体 */
+    color: var(--textClr);
+    line-height: 1.4 !important;
+    flex: 1;
+    white-space: normal;
+    word-break: break-word;
+    padding-right: 8px !important;
+}
+
+.tour-suggestions-dropdown .tour-suggestion-type {
+    font-size: 11px !important; /* 减小标签字体 */
+    color: #0b80c3;
+    font-weight: 500;
+    background-color: rgba(11, 128, 195, 0.1);
+    padding: 1px 6px !important; /* 减小标签内边距 */
+    border-radius: 10px;
+    display: inline-block;
+    width: fit-content;
+}
+
+/* Banner版本的建议列表容器 */
+.tour-suggestions-dropdown .suggestions-list {
+    max-height: 220px !important; /* 相应增加列表高度 */
+    overflow-y: auto !important;
+    padding: 3px !important; /* 减小列表内边距 */
+}
+
+/* Banner版本的建议标题 */
+.tour-suggestions-dropdown .suggestions-header {
+    padding: 8px 12px !important; /* 减小标题内边距 */
+    font-weight: 600;
+    color: var(--textClr);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, 0.03);
+    position: sticky;
+    top: 0;
+    z-index: 999999;
+    font-size: 13px !important; /* 减小标题字体 */
+}
+
+/* 加载中状态 */
+.suggestions-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    color: var(--textClr);
+}
+
+.suggestions-loading span {
+    margin-left: 10px;
+}
+
+/* 无建议状态 */
+.no-suggestions {
+    padding: 20px;
+    text-align: center;
+    color: var(--textClr);
+    opacity: 0.7;
+}
+
+/* 无匹配提示 */
+.no-matches-hint {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--primaryClr);
+    opacity: 0.9;
+}
+
+/* 高亮关键字搜索项 */
+.search-item:nth-child(2) {
+    flex: 1.2; /* 关键字搜索 - 稍微宽一些但不要太宽 */
+}
+
+.search-keyword-content {
+    position: relative !important;
+    z-index: 100000 !important; /* 提高容器的z-index */
+}
+
+/* 其他搜索项减小宽度以腾出更多空间 */
+.search-item:nth-child(1) {
+    flex: 0.8; /* 产品类型 */
+}
+
+.search-item:nth-child(3),
+.search-item:nth-child(4),
+.search-item:nth-child(5) {
+    flex: 1; /* 日期选择器 */
+    min-width: 150px; /* 确保有最小宽度 */
+}
+
+/* 不同尺寸屏幕的响应式调整 */
+@media (min-width: 992px) {
+    .tour-suggestions-dropdown,
+    .tour-suggestions-dropdown-regular {
+        width: 650px;
+        max-width: 100%;
+        right: 0;
+        left: auto;
+    }
+}
+
+@media (min-width: 1400px) {
+    .box-search-banner {
+        max-width: 2100px;
+    }
+    
+    .tour-suggestions-dropdown,
+    .tour-suggestions-dropdown-regular {
+        width: 1000px;
+    }
+}
+
+@media (min-width: 1800px) {
+    .box-search-banner {
+        max-width: 2400px;
+    }
+    
+    .tour-suggestions-dropdown,
+    .tour-suggestions-dropdown-regular {
+        width: 1200px;
+    }
+}
+
+/* 响应式调整 */
+@media (max-width: 991px) {
+    .box-search-row {
+        flex-wrap: wrap;
+    }
+    
+    .search-item {
+        width: 50%;
+        flex: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    /* 让关键字搜索项占据整行 */
+    .search-item:nth-child(2) {
+        width: 100%;
+        order: -1;
+    }
+    
+    .search-submit-btn {
+        width: 100%;
+        margin: 10px 5px;
+    }
+    
+    .tour-suggestions-dropdown,
+    .tour-suggestions-dropdown-regular {
+        max-height: 300px;
+        width: 100%;
+    }
+}
+
+@media (max-width: 767px) {
+    .tour-suggestions-dropdown,
+    .tour-suggestions-dropdown-regular {
+        max-height: 300px;
+    }
+    
+    .tour-suggestion-item {
+        padding: 10px 12px;
+        gap: 10px;
+    }
+    
+    .tour-suggestion-img {
+        width: 40px;
+        height: 32px;
+    }
+    
+    .tour-suggestion-name {
+        font-size: 13px;
+    }
+    
+    .tour-suggestion-type {
+        font-size: 11px;
+        padding: 1px 6px;
+    }
+}
+
+/* 改进常规版样式 */
+.keyword-regular-input-container .keyword-input-wrapper {
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+}
+
+.keyword-regular-input-container .keyword-input-regular {
+    background: transparent;
+    padding: 8px 8px 8px 30px;
+}
+
+/* 设置关键字搜索筛选项当前选中状态 */
+.tour-suggestion-item.active {
+    background-color: rgba(200, 62, 62, 0.15);
+    position: relative;
+}
+
+.tour-suggestion-item.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background-color: var(--primaryClr);
+}
+
+.reset-btn {
+    background-color: #fff;
+    color: var(--primaryClr);
+    border: 1px solid var(--primaryClr);
+    border-radius: 6px;
+    padding: 0 24px;
+    height: 55px;
+    font-weight: 600;
+    font-size: 16px;
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+.reset-btn:hover {
+    background-color: var(--primaryClr);
+    color: #fff;
+    border: 1px solid var(--primaryClr);
+    box-shadow: 0 5px 15px rgba(200, 62, 62, 0.08);
+}
+
+/* 日期选择器和下拉框样式 - 仅适用于banner区域 */
+.box-search-banner .react-datepicker-wrapper {
+    width: 100%;
+}
+
+.box-search-banner .react-datepicker__input-container {
+    width: 100%;
+}
+
+.banner-datepicker {
+    width: 100%;
+    text-align: left;
+    padding-left: 46px !important; /* 增加左边距，避免与图标重叠 */
+    padding-right: 8px;
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 覆盖react-datepicker的默认样式 - 仅限banner区域 */
+.box-search-banner .react-datepicker__input-container input {
+    background: transparent !important;
+    height: 52px;
+    padding-left: 46px !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-size: 15px;
+    border: none !important;
+    width: 100%;
+}
+
+.box-search-banner .react-datepicker__input-container input:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* 确保日期选择器中的文本不与图标重叠 - 仅限banner区域 */
+.box-search-banner .input-with-icon .react-datepicker-wrapper {
+    width: 100%;
+    position: relative;
+}
+
+/* 调整所有input的通用样式 - 仅限banner区域 */
+.box-search-banner .banner-datepicker, 
+.box-search-banner .banner-dropdown,
+.box-search-banner .keyword-input,
+.box-search-banner .react-datepicker__input-container input {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.box-search-banner .banner-datepicker::placeholder, 
+.box-search-banner .banner-dropdown::placeholder,
+.box-search-banner .keyword-input::placeholder,
+.box-search-banner .react-datepicker__input-container input::placeholder {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.dropdown-custom .dropdown-toggle::after {
+    margin-left: 8px;
+}
+
+/* 自定义下拉菜单样式 - 强制覆盖 */
+.dropdown-custom button {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    padding-left: 46px !important;
+    height: 52px;
+    text-align: left;
+}
+
+.dropdown-custom button::after {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* 按钮区域处理 */
+.search-submit-btn, .reset-btn {
+    margin-left: 12px;
+}
+
+@media (max-width: 991px) {
+    .search-submit-btn, .reset-btn {
+        min-width: auto;
+        flex: 1;
+        margin: 10px 5px;
+    }
+}
+
+/* 在较小屏幕上的调整 */
+@media (max-width: 1400px) {
+    .search-item {
+        padding: 0 12px;
+    }
+    
+    .search-item:nth-child(1) {
+        flex: 0.7;
+    }
+    
+    .search-item:nth-child(2) {
+        flex: 1;
+    }
+    
+    .banner-datepicker,
+    .banner-dropdown {
+        font-size: 14px;
+    }
+    
+    .button-group {
+        margin-left: 12px;
+    }
+    
+    .search-submit-btn, .reset-btn {
+        padding: 0 16px;
+        min-width: auto;
+    }
+}
+
+/* 图标相关样式 - 仅适用于banner区域 */
+.box-search-banner .search-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.8);
+    z-index: 0; /* 降低图标的层级，让文字在上面 */
+    pointer-events: none; /* 确保图标不影响点击 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    line-height: 1;
+}
+
+/* 输入框样式 - 仅适用于banner区域 */
+.box-search-banner .keyword-input {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
+    padding: 0 12px 0 46px; /* 增加左边距，避免与图标重叠 */
+    font-weight: 500;
+    width: 100%;
+    height: 100%;
+    transition: all 0.3s ease;
+}
+
+.box-search-banner .keyword-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.box-search-banner .keyword-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding-right: 30px; /* 为下拉按钮留出空间 */
+}
+
+/* 仅限于banner区域的下拉菜单按钮样式 */
+.box-search-banner .dropdown-toggle-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 12px;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.box-search-banner .dropdown-toggle-btn:hover {
+    color: white;
+}
+
+.box-search-banner .dropdown-toggle-btn.active {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+/* 自定义下拉菜单样式 - 强制覆盖 */
+.dropdown-custom .dropdown-menu {
+    border: none !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+    border-radius: 12px !important;
+    padding: 0 !important;
+    z-index: 99999 !important; /* 使用更高的z-index */
+    overflow: visible !important;
+    margin-top: 4px !important;
+    background: white !important;
+    position: absolute !important;
+}
+
+.dropdown-custom.guest-dropdown .dropdown-menu {
+    z-index: 99999 !important; /* 旅客下拉菜单层级最高 */
+    min-width: 280px !important;
+    padding: 0 !important;
+    position: absolute !important;
+}
+
+/* Banner区域的下拉菜单 - 更高层级 */
+.box-search-banner .dropdown-custom .dropdown-menu {
+    z-index: 99999 !important; /* Banner中的下拉菜单层级更高 */
+    position: absolute !important;
+}
+
+/* 确保搜索容器有正确的层级关系 */
+.search-keyword-content {
+    position: relative !important;
+    z-index: 100000 !important; /* 提高容器的z-index */
+}
+
+.keyword-input-container {
+    position: relative;
+    width: 100%;
+    z-index: 100000 !important; /* 提高容器的z-index */
+}
+
+/* 确保banner区域的下拉菜单在正确的层级 */
+.box-search-banner {
+    position: relative !important;
+    z-index: 10000; /* 提高banner的z-index */
+}
+
+.box-search-banner .search-item {
+    position: relative;
+    z-index: 10001; /* 提高搜索项的z-index */
+}
+
+/* 强制覆盖Bootstrap的下拉菜单样式 */
+.dropdown-menu.show {
+    z-index: 99999 !important;
+    position: absolute !important;
+}
+
+/* 确保下拉菜单在移动设备上正确显示 */
+@media (max-width: 991px) {
+    .box-search-banner .dropdown-custom .dropdown-menu,
+    .dropdown-custom.guest-dropdown .dropdown-menu {
+        position: fixed !important;
+        top: auto !important;
+        left: 20px !important;
+        right: 20px !important;
+        width: calc(100vw - 40px) !important;
+        max-width: none !important;
+        z-index: 99999 !important;
+        bottom: 20px !important;
+        max-height: 50vh !important;
+        overflow-y: auto !important;
+    }
+}
+
+/* 更具体的旅客选择器样式 - 确保在Banner中也能正确显示 */
+.dropdown-custom.guest-dropdown .dropdown-menu .guest-selector-content,
+.box-search-banner .dropdown-custom.guest-dropdown .dropdown-menu .guest-selector-content {
+    padding: 20px !important;
+    min-width: 250px !important;
+    background-color: white !important;
+    z-index: 99999 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.dropdown-custom.guest-dropdown .dropdown-menu .guest-selector-content .guest-type,
+.box-search-banner .dropdown-custom.guest-dropdown .dropdown-menu .guest-selector-content .guest-type {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 20px !important;
+}
+
+.dropdown-custom.guest-dropdown .dropdown-menu .guest-selector-content .guest-type:last-child,
+.box-search-banner .dropdown-custom.guest-dropdown .dropdown-menu .guest-selector-content .guest-type:last-child {
+    margin-bottom: 0 !important;
+}
+
+.dropdown-custom.guest-dropdown .dropdown-menu .guest-selector-content .guest-type span,
+.box-search-banner .dropdown-custom.guest-dropdown .dropdown-menu .guest-selector-content .guest-type span {
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    color: #333 !important;
+}
+
+.dropdown-custom.guest-dropdown .dropdown-menu .guest-selector-content .guest-controls,
+.box-search-banner .dropdown-custom.guest-dropdown .dropdown-menu .guest-selector-content .guest-controls {
+    display: flex !important;
+    align-items: center !important;
+    gap: 15px !important;
+}
+
+.dropdown-custom.guest-dropdown .dropdown-menu .guest-selector-content .guest-btn,
+.box-search-banner .dropdown-custom.guest-dropdown .dropdown-menu .guest-selector-content .guest-btn {
+    width: 32px !important;
+    height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    border: 2px solid #0b80c3 !important;
+    background-color: white !important;
+    color: #0b80c3 !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    outline: none !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+.dropdown-custom.guest-dropdown .dropdown-menu .guest-selector-content .guest-btn span,
+.box-search-banner .dropdown-custom.guest-dropdown .dropdown-menu .guest-selector-content .guest-btn span {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    line-height: 1 !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+}
+
+.dropdown-custom.guest-dropdown .dropdown-menu .guest-selector-content .guest-btn:hover:not(:disabled),
+.box-search-banner .dropdown-custom.guest-dropdown .dropdown-menu .guest-selector-content .guest-btn:hover:not(:disabled) {
+    background-color: #0b80c3 !important;
+    color: white !important;
+    transform: scale(1.05) !important;
+}
+
+.dropdown-custom.guest-dropdown .dropdown-menu .guest-selector-content .guest-btn:disabled,
+.box-search-banner .dropdown-custom.guest-dropdown .dropdown-menu .guest-selector-content .guest-btn:disabled {
+    opacity: 0.4 !important;
+    cursor: not-allowed !important;
+    border-color: #ddd !important;
+    color: #999 !important;
+}
+
+.dropdown-custom.guest-dropdown .dropdown-menu .guest-selector-content .guest-btn:disabled:hover,
+.box-search-banner .dropdown-custom.guest-dropdown .dropdown-menu .guest-selector-content .guest-btn:disabled:hover {
+    background-color: white !important;
+    color: #999 !important;
+    transform: none !important;
+}
+
+.dropdown-custom.guest-dropdown .dropdown-menu .guest-selector-content .guest-count,
+.box-search-banner .dropdown-custom.guest-dropdown .dropdown-menu .guest-selector-content .guest-count {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #333 !important;
+    min-width: 30px !important;
+    text-align: center !important;
+}
+
+/* 紧凑模式布局调整 */
+@media (max-width: 1400px) {
+    .search-icon, .dropdown-prefix-icon {
+        font-size: 14px;
+    }
+    
+    .search-icon {
+        left: 14px;
+    }
+    
+    .dropdown-prefix-icon {
+        margin-right: 8px;
+    }
+    
+    .keyword-input,
+    .banner-datepicker,
+    .banner-dropdown,
+    .react-datepicker__input-container input {
+        font-size: 14px;
+        padding-left: 38px !important;
+    }
+    
+    .dropdown-custom button {
+        font-size: 14px;
+    }
+    
+    .guest-dropdown button {
+        padding-left: 12px !important;
+    }
+    
+    .search-item label {
+        font-size: 12px;
+    }
+    
+    .search-submit-btn, .reset-btn {
+        font-size: 14px;
+    }
+}
+
+/* 移动设备布局 */
+@media (max-width: 991px) {
+    .search-icon {
+        left: 12px;
+    }
+    
+    .keyword-input,
+    .banner-datepicker,
+    .banner-dropdown,
+    .react-datepicker__input-container input,
+    .dropdown-custom button {
+        padding-left: 36px !important;
+    }
+}
+
+/* 旅客选择器样式 */
+.guest-dropdown button {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    position: relative;
+    height: 52px;
+    padding-left: 16px !important; /* 不再需要为图标留空间 */
+}
+
+/* 特别处理旅客下拉菜单中的文本 */
+.guest-dropdown button span {
+    position: relative;
+    color: rgba(255, 255, 255, 0.9) !important; /* 确保文本颜色 */
+}
+
+.dropdown-prefix-icon {
+    display: none; /* 不再需要这个样式 */
+}
+
+.guest-dropdown button span {
+    padding-left: 0; /* 移除左边距，不再需要 */
+}
+
+/* 旅客下拉菜单按钮样式调整 */
+.guest-dropdown .dropdown-toggle::after {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* 自定义下拉菜单样式 */
+.dropdown-custom button {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    padding-left: 16px !important;
+    height: 52px;
+    text-align: left;
+}
+
+.box-search-banner .banner-dropdown {
+    width: 100%;
+    text-align: left;
+    padding-left: 46px !important; /* 确保与其他输入框统一 */
+    padding-right: 8px;
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative; /* 添加相对定位 */
+    z-index: 1; /* 确保文本在图标上方 */
+}
+
+/* 输入框容器样式 - 仅适用于banner */
+.box-search-banner .input-with-icon {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+/* 修复图标与文本重叠问题 */
+.box-search-banner .input-with-icon .search-icon {
+    z-index: 0;
+}
+
+.box-search-banner .input-with-icon .banner-dropdown,
+.box-search-banner .input-with-icon input {
+    z-index: 1;
+    background-color: transparent !important;
+}
+
+/* 修复在紧凑模式下的内边距问题 - 仅适用于banner区域 */
+@media (max-width: 1400px) {
+    .box-search-banner .search-icon {
+        font-size: 14px;
+        left: 14px;
+    }
+    
+    .box-search-banner .keyword-input,
+    .box-search-banner .banner-datepicker,
+    .box-search-banner .banner-dropdown,
+    .box-search-banner .react-datepicker__input-container input {
+        font-size: 14px;
+        padding-left: 38px !important;
+    }
+    
+    .box-search-banner .dropdown-custom button {
+        font-size: 14px;
+    }
+}
+
+/* 移动设备下banner区域的样式 */
+@media (max-width: 991px) {
+    .box-search-banner .search-icon {
+        left: 12px;
+    }
+    
+    .box-search-banner .keyword-input,
+    .box-search-banner .banner-datepicker,
+    .box-search-banner .banner-dropdown,
+    .box-search-banner .react-datepicker__input-container input,
+    .box-search-banner .dropdown-custom button {
+        padding-left: 36px !important;
+    }
+}
+
+/* 自定义下拉菜单图标样式 */
+.dropdown-custom .dropdown-toggle::before {
+    position: absolute;
+    left: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    content: "\f52a";
+    font-size: var(--bodyText);
+    color: var(--textClr);
+}
+
+.box-search-banner .dropdown-custom .dropdown-toggle::before {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* 为建议项添加产品类型显示样式 */
+.tour-suggestion-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+}
+
+/* 确保搜索容器有正确的层级关系 */
+.search-keyword-content {
+    position: relative !important;
+    z-index: 100000 !important; /* 提高容器的z-index */
+}
+
+/* 关键词输入框包装器 - 允许下拉按钮 */
+.keyword-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding-right: 30px; /* 为下拉按钮留出空间 */
+}
+
+/* 清理重复的dropdown-toggle-btn相关样式 */
+.dropdown-toggle-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    font-size: 12px;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #999;
+}
+
+.dropdown-toggle-btn:hover {
+    color: #666;
+}
+
+.dropdown-toggle-btn.active {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+/* 常规版的下拉按钮 */
+.dropdown-toggle-btn.regular {
+    color: var(--textClr);
+}
+
+.dropdown-toggle-btn.regular:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-toggle-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.keyword-search-container {
+    position: relative;
+    width: 100%;
+    z-index: 100000 !important; /* 提高容器的z-index */
+}
+
+.keyword-regular-input-container {
+    position: relative;
+    width: 100%;
+    z-index: 100000 !important; /* 提高容器的z-index */
+}
+
+.keyword-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--textClr);
+    font-size: 14px;
+    z-index: 1;
+}
+
+.keyword-input-regular {
+    width: 100%;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--textClr);
+    padding: 5px 0 5px 25px;
+    transition: all 0.3s ease;
+}
+
+.keyword-input-regular::placeholder {
+    color: rgba(51, 51, 51, 0.6);
+}
+
+.keyword-input-regular:focus {
+    outline: none;
+}
+
+.keyword-input-regular:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* 产品建议下拉菜单 - 常规版 */
+.tour-suggestions-dropdown-regular {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    background: white !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+    z-index: 999999 !important;
+    max-height: 400px !important;
+    overflow-y: auto !important;
+    margin-top: 4px !important;
+}
+
+/* 最终的样式定义 - 应用于常规版和banner特定样式 */
+.tour-suggestion-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    gap: 12px;
+}
+
+.tour-suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.tour-suggestion-item:hover {
+    background-color: #f8f9fa;
+}
+
+.tour-suggestion-item.active {
+    background-color: rgba(11, 128, 195, 0.1);
+    border-left: 3px solid #0b80c3;
+}
+
+.tour-suggestion-img {
+    width: 50px;
+    height: 40px;
+    border-radius: 6px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-color: #f0f0f0;
+}
+
+.tour-suggestion-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+}
+
+.tour-suggestion-item:hover .tour-suggestion-img img {
+    transform: scale(1.05);
+}
+
+.tour-suggestion-name {
+    font-size: 15px;
+    color: var(--textClr);
+    line-height: 1.5;
+    flex: 1;
+    white-space: normal;
+    word-break: break-word;
+    padding-right: 10px;
+}
+
+.tour-suggestion-type {
+    font-size: 12px;
+    color: #0b80c3;
+    font-weight: 500;
+    background-color: rgba(11, 128, 195, 0.1);
+    padding: 2px 8px;
+    border-radius: 12px;
+    display: inline-block;
+    width: fit-content;
+}
+
+/* 建议标题和列表 */
+.suggestions-header {
+    padding: 10px 15px;
+    font-weight: 600;
+    color: var(--textClr);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, 0.03);
+    position: sticky;
+    top: 0;
+    z-index: 999999;
+}
+
+.suggestions-list {
+    max-height: 350px;
+    overflow-y: auto;
+    padding: 5px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,125 @@
+/* 支付页面样式 */
+.payment-page {
+  background-color: #f8f9fa;
+  min-height: 70vh;
+}
+
+/* 支付方式项样式 */
+.payment-method-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.payment-method-item:hover {
+  border-color: #ccc;
+  background-color: #f9f9f9;
+}
+
+.payment-method-item.active {
+  border-color: #007bff;
+  background-color: #f0f7ff;
+}
+
+/* 禁用的支付方式 */
+.payment-method-item.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #f5f5f5;
+  border-color: #e0e0e0;
+}
+
+.payment-method-item.disabled:hover {
+  border-color: #e0e0e0;
+  background-color: #f5f5f5;
+}
+
+/* 支付图标样式 */
+.payment-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+}
+
+.payment-icon-lg {
+  font-size: 1.75rem;
+}
+
+/* 支付成功状态样式 */
+.payment-success {
+  background-color: #fff;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.success-icon {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 代理商信用额度卡片样式 */
+.credit-card {
+  border-radius: 0.75rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05);
+}
+
+/* 交易历史记录样式 */
+.transaction-history {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.history-item {
+  font-size: 0.85rem;
+}
+
+.history-item:last-child {
+  border-bottom: none !important;
+}
+
+/* 信用额度申请模态框样式 */
+.modal-credit-request .form-label {
+  font-weight: 500;
+}
+
+/* 支付列表项样式 */
+.payment-tips {
+  font-size: 0.875rem;
+}
+
+/* 响应式样式 */
+@media (max-width: 992px) {
+  .payment-method-item {
+    padding: 0.75rem;
+  }
+  
+  .payment-icon-lg {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .payment-success {
+    padding: 1.5rem;
+  }
+} 

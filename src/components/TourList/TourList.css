@@ -1,0 +1,148 @@
+.tour-list {
+  margin-bottom: 2rem;
+}
+
+.tour-card {
+  transition: transform 0.3s, box-shadow 0.3s;
+  height: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tour-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.tour-image-container {
+  position: relative;
+  height: 180px;
+  overflow: hidden;
+}
+
+.tour-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.tour-card:hover .tour-image {
+  transform: scale(1.05);
+}
+
+.tour-price {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 5px 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.price-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.discounted-price {
+  font-weight: bold;
+  color: #e91e63;
+  font-size: 1rem;
+}
+
+.original-price {
+  text-decoration: line-through;
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.regular-price {
+  font-weight: bold;
+  color: #333;
+  font-size: 1rem;
+}
+
+.tour-title {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  font-weight: 600;
+  height: 2.4em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.tour-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.tour-duration, .tour-rating {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.tour-duration i, .tour-rating i {
+  color: #007bff;
+}
+
+.tour-description {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 15px;
+  height: 3.6em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .tour-image-container {
+    height: 160px;
+  }
+}
+
+@media (max-width: 576px) {
+  .tour-title {
+    font-size: 1rem;
+  }
+  
+  .tour-info {
+    font-size: 0.8rem;
+  }
+  
+  .tour-description {
+    font-size: 0.85rem;
+  }
+}
+
+/* 加载状态 */
+.tour-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  width: 100%;
+}
+
+.no-tours {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  width: 100%;
+  color: #666;
+  font-style: italic;
+} 

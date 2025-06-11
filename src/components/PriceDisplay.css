@@ -1,0 +1,116 @@
+.price-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.regular-price {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.discounted-price {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e91e63;
+}
+
+.original-price {
+  font-size: 0.85rem;
+  text-decoration: line-through;
+  color: #999;
+}
+
+.discount-badge {
+  padding: 0.25em 0.4em;
+  font-size: 75%;
+  font-weight: 700;
+}
+
+/* 尺寸样式 */
+.price-small {
+  font-size: 0.85rem;
+}
+
+.price-medium {
+  font-size: 1rem;
+}
+
+.price-large {
+  font-size: 1.25rem;
+}
+
+/* 移动端适配 */
+@media (max-width: 576px) {
+  .price-display {
+    gap: 3px;
+  }
+  
+  .price-small {
+    font-size: 0.8rem;
+  }
+  
+  .price-medium {
+    font-size: 0.9rem;
+  }
+  
+  .price-large {
+    font-size: 1.1rem;
+  }
+}
+
+.price-display.vertical {
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.price-display.horizontal {
+  flex-direction: row;
+  gap: 8px;
+  align-items: baseline;
+}
+
+/* 不同尺寸的样式 */
+.price-display.size-sm .original-price {
+  font-size: 0.8em;
+}
+.price-display.size-sm .discount-price {
+  font-size: 1em;
+}
+.price-display.size-sm .discount-badge {
+  font-size: 0.7em;
+}
+
+.price-display.size-md .original-price {
+  font-size: 0.9em;
+}
+.price-display.size-md .discount-price {
+  font-size: 1.2em;
+}
+.price-display.size-md .discount-badge {
+  font-size: 0.8em;
+}
+
+.price-display.size-lg .original-price {
+  font-size: 1.1em;
+}
+.price-display.size-lg .discount-price {
+  font-size: 1.5em;
+}
+.price-display.size-lg .discount-badge {
+  font-size: 0.9em;
+}
+
+/* 动画效果 */
+.discount-price {
+  transition: color 0.3s ease;
+}
+
+.discount-badge {
+  transition: all 0.3s ease;
+}
+
+.discount-badge:hover {
+  transform: scale(1.05);
+} 

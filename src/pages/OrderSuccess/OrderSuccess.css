@@ -1,0 +1,401 @@
+.order-success-page {
+  padding-top: 2rem;
+  padding-bottom: 4rem;
+  color: #333;
+}
+
+.success-header {
+  margin-bottom: 3rem;
+}
+
+.success-header h1 {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.order-number {
+  font-size: 1.1rem;
+  margin-top: 1rem;
+  display: inline-flex;
+  align-items: center;
+  background-color: #f8f9fa;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+}
+
+.order-number .copy-btn {
+  color: #6c757d;
+  transition: color 0.2s;
+}
+
+.order-number .copy-btn:hover {
+  color: #212529;
+}
+
+.action-buttons {
+  margin-bottom: 2.5rem;
+}
+
+.action-buttons .btn {
+  padding: 0.5rem 1.25rem;
+  margin: 0 0.5rem;
+}
+
+.order-details-card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  margin-bottom: 2rem;
+}
+
+.order-details-card .card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  padding: 1rem 1.25rem;
+}
+
+.booking-main-info {
+  margin-bottom: 1.5rem;
+}
+
+.info-item {
+  margin-bottom: 1rem;
+}
+
+.info-label {
+  font-size: 0.875rem;
+  color: #6c757d;
+  margin-bottom: 0.25rem;
+}
+
+.info-value {
+  font-weight: 500;
+}
+
+.tour-info {
+  margin-bottom: 2rem;
+}
+
+.tour-image {
+  overflow: hidden;
+  border-radius: 4px;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.tour-name {
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.tour-meta {
+  font-size: 0.9rem;
+}
+
+.payment-list .list-group-item {
+  padding: 0.75rem 0;
+  border-color: #e9ecef;
+}
+
+.voucher-info {
+  margin-top: 2rem;
+}
+
+.notice-list {
+  padding-left: 1.25rem;
+  margin-bottom: 0;
+}
+
+.notice-list li {
+  margin-bottom: 0.5rem;
+}
+
+.notice-list li:last-child {
+  margin-bottom: 0;
+}
+
+.contact-option {
+  margin-bottom: 1rem;
+}
+
+.contact-option .btn {
+  text-align: left;
+}
+
+.contact-info {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+/* 媒体查询适配移动端 */
+@media (max-width: 767.98px) {
+  .action-buttons .btn {
+    margin-bottom: 0.5rem;
+  }
+  
+  .tour-image {
+    max-width: 200px;
+    margin: 0 auto 1rem;
+  }
+}
+
+/* 添加一些动画效果 */
+.success-header svg {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 航班信息卡片样式 */
+.flight-info-card {
+  border: 1px solid #d1e7ff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+  margin-bottom: 2rem;
+}
+
+.flight-info-card .card-header,
+.pickup-info-card .card-header,
+.date-info-card .card-header,
+.hotel-info-card .card-header {
+  background-color: #f0f7ff;
+  color: #0056b3;
+  border-bottom: 1px solid #d1e7ff;
+}
+
+.flight-info-card .form-label,
+.pickup-info-card .form-label {
+  font-weight: 500;
+}
+
+.flight-info-card .text-danger,
+.pickup-info-card .text-danger {
+  font-weight: bold;
+}
+
+.flight-info-card .form-text,
+.pickup-info-card .form-text {
+  font-size: 0.8rem;
+}
+
+/* 接送信息卡片样式 */
+.pickup-info-card,
+.date-info-card,
+.hotel-info-card {
+  border: 1px solid #d1e7ff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+  margin-bottom: 2rem;
+}
+
+/* 日期选择器样式 */
+.date-input-wrapper {
+  position: relative;
+}
+
+.date-icon {
+  position: absolute;
+  right: 10px;
+  color: #6c757d;
+  pointer-events: none;
+}
+
+/* 返回产品详情链接 */
+.back-link .btn-link {
+  color: #6c757d;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0;
+}
+
+.back-link .btn-link:hover {
+  color: #343a40;
+  text-decoration: underline;
+}
+
+/* 成功图标样式 */
+.success-icon {
+  display: inline-block;
+  background-color: rgba(40, 167, 69, 0.1);
+  border-radius: 50%;
+  padding: 20px;
+  line-height: 1;
+}
+
+/* 订单状态跟踪样式 */
+.order-status {
+  margin: 40px 0;
+}
+
+.status-steps {
+  position: relative;
+  margin: 20px 0;
+}
+
+.status-step {
+  position: relative;
+  width: 20%;
+  text-align: center;
+  z-index: 2;
+}
+
+.status-step .step-icon {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+  border: 2px solid #ddd;
+  font-weight: bold;
+  color: #777;
+}
+
+.status-step.completed .step-icon {
+  background-color: #28a745;
+  border-color: #28a745;
+  color: white;
+}
+
+.status-step.active .step-icon {
+  background-color: white;
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.status-step .step-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.status-step.active .step-label {
+  color: #007bff;
+  font-weight: 500;
+}
+
+.status-step.completed .step-label {
+  color: #28a745;
+  font-weight: 500;
+}
+
+.status-line {
+  position: relative;
+  height: 2px;
+  background-color: #ddd;
+  width: calc(33.33% - 35px);
+  top: -49px; /* 调整线条的垂直位置 */
+  margin: 0 auto;
+  z-index: 1;
+}
+
+.status-step.completed + .status-line {
+  background-color: #28a745;
+}
+
+/* 卡片样式 */
+.order-success-page .card {
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.order-success-page .card-header {
+  background-color: #fff;
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.order-success-page .card-body {
+  padding: 20px;
+}
+
+/* 操作按钮样式 */
+.action-card .btn {
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+/* 产品信息样式 */
+.product-meta-item {
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+  margin-bottom: 8px;
+}
+
+/* 旅游卡片样式 */
+.tour-card {
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tour-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.tour-feature {
+  font-size: 13px;
+  color: #666;
+  display: flex;
+  align-items: center;
+}
+
+/* 支付按钮样式 */
+.pay-button {
+  padding: 12px 30px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* 移动端响应式调整 */
+@media (max-width: 768px) {
+  .status-step .step-label {
+    font-size: 12px;
+  }
+  
+  .status-step .step-icon {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .status-line {
+    top: -46px;
+  }
+  
+  .recommended-tours {
+    margin-top: 20px;
+  }
+}
+
+/* 推荐旅游卡片样式 */
+.order-tour-card {
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.order-tour-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.order-tour-card .card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.order-tour-card .btn {
+  font-size: 0.85rem;
+} 

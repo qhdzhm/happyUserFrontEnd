@@ -1,0 +1,620 @@
+/* 预订表单页面 - 参考图片布局设计 */
+.booking-form-page {
+  background: #f8f9fa;
+  min-height: 100vh;
+  padding: 2rem 0;
+}
+
+/* 主卡片容器 */
+.booking-form-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  overflow: visible;
+}
+
+/* 表单头部 */
+.form-header {
+  background: #2d3748;
+  color: white;
+  padding: 3rem 2rem 2rem;
+  text-align: center;
+}
+
+.form-header h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-header p {
+  font-size: 1.1rem;
+  margin: 0;
+  opacity: 0.9;
+}
+
+/* 表单主体 */
+.booking-form {
+  padding: 3rem 2rem 2rem;
+}
+
+/* 表单组 */
+.form-group {
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.form-group label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 0.75rem;
+}
+
+/* 产品类型按钮组 */
+.tour-type-buttons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.tour-type-btn {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #e2e8f0;
+  background: white;
+  color: #718096;
+  border-radius: 25px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.tour-type-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: all 0.5s ease;
+}
+
+.tour-type-btn:hover::before {
+  left: 100%;
+}
+
+.tour-type-btn:hover {
+  border-color: #4a5568;
+  color: #4a5568;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(74, 85, 104, 0.2);
+}
+
+.tour-type-btn.active {
+  background: #2d3748;
+  border-color: #2d3748;
+  color: white;
+  box-shadow: 0 5px 15px rgba(45, 55, 72, 0.3);
+}
+
+/* 搜索容器 */
+.search-container {
+  position: relative;
+  z-index: 1000;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.search-input-wrapper:focus-within {
+  border-color: #4a5568;
+  box-shadow: 0 0 0 3px rgba(74, 85, 104, 0.1);
+}
+
+.search-icon {
+  color: #718096;
+  margin-right: 0.75rem;
+  font-size: 1rem;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  color: #2d3748;
+  background: transparent;
+}
+
+.search-input::placeholder {
+  color: #a0aec0;
+}
+
+.clear-btn,
+.dropdown-btn {
+  background: none;
+  border: none;
+  color: #718096;
+  cursor: pointer;
+  padding: 0.25rem;
+  margin-left: 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.clear-btn:hover,
+.dropdown-btn:hover {
+  color: #4a5568;
+  background: #f7fafc;
+}
+
+.dropdown-btn.active {
+  color: #2d3748;
+  transform: rotate(180deg);
+}
+
+/* 建议下拉框 */
+.suggestions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 10001;
+}
+
+.suggestions-header {
+  padding: 0.75rem 1rem;
+  background: #f7fafc;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4a5568;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.suggestions-list {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.suggestion-item:hover {
+  background: #f7fafc;
+}
+
+.suggestion-item.active {
+  background: #edf2f7;
+  border-left: 4px solid #2d3748;
+}
+
+.suggestion-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+}
+
+.suggestion-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.suggestion-info {
+  flex: 1;
+}
+
+.suggestion-name {
+  font-weight: 500;
+  color: #2d3748;
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
+}
+
+.suggestion-type {
+  font-size: 0.8rem;
+  color: #718096;
+  background: #edf2f7;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+.loading-state,
+.no-results {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: #718096;
+  gap: 0.5rem;
+}
+
+/* 日期输入 */
+.date-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.date-input-wrapper:focus-within {
+  border-color: #4a5568;
+  box-shadow: 0 0 0 3px rgba(74, 85, 104, 0.1);
+}
+
+.date-icon {
+  color: #718096;
+  margin-right: 0.75rem;
+  font-size: 1rem;
+}
+
+.date-input {
+  width: 100%;
+  border: none !important;
+  outline: none !important;
+  font-size: 1rem !important;
+  color: #2d3748 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+}
+
+.date-input::placeholder {
+  color: #a0aec0 !important;
+}
+
+/* React DatePicker 层级和样式统一 */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__input-container {
+  width: 100%;
+}
+
+/* 统一 React DatePicker 输入框样式，避免冲突 */
+.react-datepicker__input-container input {
+  width: 100% !important;
+  border: none !important;
+  outline: none !important;
+  font-size: 1rem !important;
+  color: #2d3748 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+}
+
+.react-datepicker__input-container input::placeholder {
+  color: #a0aec0 !important;
+}
+
+/* React DatePicker 弹出层设置高z-index */
+.react-datepicker-popper {
+  z-index: 9000 !important;
+}
+
+.react-datepicker {
+  z-index: 9000 !important;
+  border: 2px solid #e2e8f0 !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 12px !important;
+}
+
+.react-datepicker__portal {
+  z-index: 9000 !important;
+}
+
+.react-datepicker__tab-loop {
+  z-index: 9000 !important;
+}
+
+/* 所有日期选择器相关的弹出层都设置统一z-index */
+.react-datepicker__month-container,
+.react-datepicker__header,
+.react-datepicker__navigation,
+.react-datepicker__day,
+.react-datepicker__day-name {
+  z-index: 9000 !important;
+}
+
+/* 旅客选择器 */
+.guest-selector {
+  position: relative;
+  z-index: 100;
+}
+
+.guest-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  color: #2d3748;
+}
+
+.guest-button:hover {
+  border-color: #4a5568;
+  box-shadow: 0 0 0 3px rgba(74, 85, 104, 0.1);
+}
+
+.guest-icon {
+  color: #718096;
+  margin-right: 0.75rem;
+}
+
+.guest-button span {
+  flex: 1;
+  text-align: left;
+}
+
+.dropdown-arrow {
+  color: #718096;
+  transition: transform 0.3s ease;
+}
+
+.dropdown-arrow.active {
+  transform: rotate(180deg);
+}
+
+/* 旅客下拉框 */
+.guest-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  z-index: 200;
+  padding: 1rem;
+}
+
+.guest-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+}
+
+.guest-item:not(:last-child) {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.guest-item span {
+  font-weight: 500;
+  color: #2d3748;
+}
+
+.guest-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.guest-control-btn {
+  width: 36px;
+  height: 36px;
+  border: 2px solid #4a5568;
+  background: white;
+  color: #4a5568;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.guest-control-btn:hover:not(:disabled) {
+  background: #4a5568;
+  color: white;
+  transform: scale(1.05);
+}
+
+.guest-control-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-color: #e2e8f0;
+  color: #a0aec0;
+}
+
+.guest-count {
+  font-weight: 600;
+  color: #2d3748;
+  min-width: 30px;
+  text-align: center;
+}
+
+/* 操作按钮 */
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.reset-button,
+.search-button {
+  padding: 0.875rem 2rem;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  min-width: 140px;
+}
+
+.reset-button {
+  background: white;
+  color: #718096;
+  border-color: #e2e8f0;
+}
+
+.reset-button:hover {
+  background: #f7fafc;
+  border-color: #a0aec0;
+  color: #4a5568;
+}
+
+.search-button {
+  background: #2d3748;
+  color: white;
+  border-color: #2d3748;
+  box-shadow: 0 4px 15px rgba(45, 55, 72, 0.3);
+}
+
+.search-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(45, 55, 72, 0.4);
+}
+
+.search-button svg {
+  margin-right: 0.5rem;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .booking-form-page {
+    padding: 1rem 0;
+  }
+
+  .form-header {
+    padding: 2rem 1rem 1.5rem;
+  }
+
+  .form-header h2 {
+    font-size: 2rem;
+  }
+
+  .booking-form {
+    padding: 2rem 1rem 1rem;
+  }
+
+  .tour-type-buttons {
+    justify-content: center;
+  }
+
+  .tour-type-btn {
+    flex: 1;
+    min-width: 80px;
+    text-align: center;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .reset-button,
+  .search-button {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .suggestions-dropdown {
+    max-height: 300px;
+  }
+
+  .suggestion-item {
+    padding: 0.75rem;
+  }
+
+  .suggestion-image {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 576px) {
+  .form-header h2 {
+    font-size: 1.75rem;
+  }
+
+  .form-header p {
+    font-size: 1rem;
+  }
+
+  .tour-type-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .search-input-wrapper,
+  .date-input-wrapper,
+  .guest-button {
+    padding: 0.625rem 0.75rem;
+  }
+
+  .guest-control-btn {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* 滚动条样式 */
+.suggestions-dropdown::-webkit-scrollbar,
+.suggestions-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.suggestions-dropdown::-webkit-scrollbar-track,
+.suggestions-list::-webkit-scrollbar-track {
+  background: #f7fafc;
+}
+
+.suggestions-dropdown::-webkit-scrollbar-thumb,
+.suggestions-list::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 3px;
+}
+
+.suggestions-dropdown::-webkit-scrollbar-thumb:hover,
+.suggestions-list::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+} 

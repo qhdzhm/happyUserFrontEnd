@@ -1,0 +1,213 @@
+/* 订单详情页样式 */
+.order-detail-page {
+  margin-bottom: 3rem;
+}
+
+.order-header {
+  position: relative;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 1rem;
+}
+
+.order-number {
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+.copy-btn {
+  color: #6c757d;
+  transition: color 0.2s;
+}
+
+.copy-btn:hover {
+  color: #0d6efd;
+}
+
+/* 日历弹出框样式 */
+.react-datepicker-wrapper,
+.react-datepicker-popper {
+  z-index: 99 !important; /* 确保日历弹出框显示在其他元素上方 */
+}
+
+.react-datepicker__input-container input {
+  z-index: 1;
+  position: relative;
+}
+
+/* 订单状态跟踪样式 */
+.order-status {
+  margin: 2.5rem 0;
+}
+
+.status-steps {
+  position: relative;
+  padding: 0 1rem;
+}
+
+.status-step {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  max-width: 20%;
+  padding: 0 10px;
+}
+
+.status-line {
+  position: relative;
+  flex: 1;
+  height: 3px;
+  background-color: #dee2e6;
+  z-index: 1;
+  margin-top: 25px;
+  max-width: 15%;
+}
+
+.status-step.completed .step-icon {
+  background-color: #28a745;
+  border-color: #28a745;
+  color: white;
+}
+
+.status-step.completed + .status-line {
+  background-color: #28a745;
+}
+
+.status-step.active .step-icon {
+  background-color: white;
+  border-color: #0d6efd;
+  color: #0d6efd;
+}
+
+.status-step.disabled .step-icon {
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
+  color: #adb5bd;
+}
+
+.status-step.disabled .step-label {
+  color: #adb5bd;
+}
+
+.step-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: white;
+  border: 2px solid #dee2e6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.step-label {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+/* 产品信息 */
+.product-meta-item {
+  display: flex;
+  align-items: center;
+}
+
+/* 支付按钮 */
+.pay-button {
+  padding: 0.75rem 2.5rem;
+  font-size: 1.1rem;
+}
+
+/* 服务信息卡片 */
+.service-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.service-icon {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.service-info {
+  flex-grow: 1;
+}
+
+.service-title {
+  margin-bottom: 0.25rem;
+}
+
+/* 取消确认框 */
+.cancel-confirm {
+  background-color: #f8f9fa;
+  border-radius: 0.25rem;
+}
+
+/* 添加订单修改模态窗的样式 */
+.order-edit-modal .modal-content {
+  border: 2px solid #ffc107;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.order-edit-modal .modal-header {
+  background-color: #ffc107 !important;
+  color: #212529 !important;
+  border-bottom: 2px solid #e0a800;
+}
+
+.order-edit-modal .modal-title {
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+.order-edit-modal .modal-footer {
+  border-top: 1px solid #dee2e6;
+  background-color: #f8f9fa;
+}
+
+.order-edit-modal .form-control:focus,
+.order-edit-modal .form-select:focus {
+  border-color: #ffc107;
+  box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+}
+
+/* 模态窗动画效果 */
+.modal.fade .modal-dialog {
+  transform: scale(0.95);
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+}
+
+.modal.show .modal-dialog {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.order-edit-form .form-control:focus,
+.order-edit-form .form-select:focus {
+  border-color: #ffc107;
+  box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+}
+
+.order-edit-form .btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.order-edit-form .btn-success:hover {
+  background-color: #218838;
+  border-color: #1e7e34;
+}
+
+/* 编辑按钮悬停效果 */
+.btn-warning:hover {
+  background-color: #e0a800;
+  border-color: #d39e00;
+} 

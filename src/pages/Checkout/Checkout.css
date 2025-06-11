@@ -1,0 +1,158 @@
+/* 粘性滚动样式 */
+.sticky-sidebar {
+  position: -webkit-sticky; /* Safari兼容性 */
+  position: sticky;
+  top: 2rem;
+  transition: all 0.3s ease-in-out;
+  z-index: 1000;
+  /* 确保父容器有足够的高度 */
+  align-self: flex-start;
+}
+
+.sticky-sidebar.sticky-active {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  transform: translateY(-3px);
+  border: 2px solid #007bff;
+}
+
+.sticky-sidebar:not(.sticky-active) {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 响应式处理 */
+@media (max-width: 991.98px) {
+  .sticky-sidebar {
+    position: relative;
+    top: auto;
+    margin-top: 2rem;
+  }
+}
+
+/* 平滑滚动效果 */
+.checkout-container {
+  scroll-behavior: smooth;
+}
+
+/* 调试样式 - 让粘性元素更明显 */
+.sticky-sidebar {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+/* 确保容器有正确的显示属性 */
+.checkout-container .row {
+  display: flex;
+  align-items: flex-start;
+}
+
+/* 订单汇总卡片动画 */
+.order-summary-card {
+  border: none;
+  border-radius: 15px;
+  overflow: hidden;
+  min-height: 400px; /* 确保有足够高度触发粘性 */
+}
+
+.order-summary-card .card-header {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: white;
+  border: none;
+  padding: 1rem 1.5rem;
+}
+
+.order-summary-card .card-body {
+  padding: 1.5rem;
+}
+
+/* 订单项目样式 */
+.order-item {
+  padding: 1rem 0;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
+}
+
+.order-item:hover {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin: 0 -0.5rem;
+  padding: 1rem 0.5rem;
+}
+
+.order-item:last-child {
+  border-bottom: none;
+}
+
+/* 总计样式 */
+.order-total {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+/* 支付按钮样式 */
+.payment-button {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(40, 167, 69, 0.3);
+}
+
+.payment-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+}
+
+/* 表单区域样式 */
+.form-section {
+  margin-bottom: 2rem;
+}
+
+/* 增加左侧内容高度，确保有足够的滚动空间 */
+.form-section:last-child {
+  margin-bottom: 50rem; /* 添加大量底部空间用于测试 */
+}
+
+.form-section .card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.3s ease;
+}
+
+.form-section .card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.form-section .card-header {
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  border-radius: 12px 12px 0 0 !important;
+  padding: 1rem 1.5rem;
+}
+
+.form-section .card-body {
+  padding: 1.5rem;
+}
+
+/* 加载动画 */
+.loading-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+} 

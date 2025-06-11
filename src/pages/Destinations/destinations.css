@@ -1,0 +1,332 @@
+/* 目的地页面样式 */
+
+/* 地图部分 */
+.map-section {
+  background-color: #f9f9f9;
+}
+
+.tasmania-map {
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* 目的地卡片 */
+.destination-card {
+  border: none;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.destination-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.destination-image {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.destination-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.destination-card:hover .destination-image img {
+  transform: scale(1.1);
+}
+
+.favorite-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background-color: rgba(255, 255, 255, 0.8);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ccc;
+  font-size: 18px;
+  transition: all 0.3s ease;
+}
+
+.favorite-btn.active {
+  color: var(--primaryClr);
+}
+
+.favorite-btn:hover {
+  background-color: #fff;
+  transform: scale(1.1);
+}
+
+.destination-card .card-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--primaryClr);
+  margin-bottom: 10px;
+}
+
+.destination-info {
+  margin-top: 15px;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.info-item svg {
+  color: var(--primaryClr);
+  margin-right: 8px;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+/* 筛选导航 */
+.destination-nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+.destination-nav .nav-link {
+  margin: 0 5px 10px;
+  padding: 8px 20px;
+  border-radius: 30px;
+  color: #666;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.destination-nav .nav-link.active {
+  background-color: var(--primaryClr);
+  color: #fff;
+}
+
+/* 季节推荐 */
+.seasonal-section {
+  background-color: #fff;
+}
+
+.season-nav {
+  display: flex;
+  justify-content: center;
+  border-bottom: none;
+}
+
+.season-nav .nav-link {
+  padding: 10px 20px;
+  color: #666;
+  font-weight: 500;
+  border: none;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.season-nav .nav-link.active {
+  color: var(--primaryClr);
+  background-color: transparent;
+  border-bottom: 2px solid var(--primaryClr);
+}
+
+.season-content {
+  padding: 30px 0;
+}
+
+.season-image {
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.season-description {
+  padding: 0 20px;
+}
+
+.season-description h3 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--primaryClr);
+  margin-bottom: 15px;
+}
+
+.season-description h4 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 20px 0 10px;
+}
+
+.season-description ul {
+  padding-left: 20px;
+  margin-bottom: 20px;
+}
+
+.season-description li {
+  margin-bottom: 8px;
+}
+
+/* 旅行灵感 */
+.inspiration-section {
+  background-color: #f9f9f9;
+}
+
+.inspiration-card {
+  position: relative;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  height: 350px;
+}
+
+.inspiration-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.inspiration-card:hover img {
+  transform: scale(1.1);
+}
+
+.inspiration-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+.inspiration-card:hover .inspiration-content {
+  padding-bottom: 30px;
+}
+
+.inspiration-content h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.inspiration-content p {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  margin-bottom: 15px;
+}
+
+.inspiration-content .btn-link {
+  color: #fff;
+  padding: 0;
+  text-decoration: none;
+  position: relative;
+}
+
+.inspiration-content .btn-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #fff;
+  transition: width 0.3s ease;
+}
+
+.inspiration-content .btn-link:hover::after {
+  width: 100%;
+}
+
+/* 区域卡片 */
+.region-card {
+  border-radius: 15px;
+  overflow: hidden;
+  position: relative;
+  height: 250px;
+  margin-bottom: 30px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.region-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.region-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.region-card:hover img {
+  transform: scale(1.1);
+}
+
+.region-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  color: #fff;
+}
+
+.region-overlay h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.region-overlay p {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  margin-bottom: 10px;
+}
+
+.region-overlay .btn {
+  padding: 5px 15px;
+  font-size: 0.9rem;
+  border-radius: 20px;
+}
+
+/* 响应式调整 */
+@media (max-width: 992px) {
+  .season-content {
+    text-align: center;
+  }
+  
+  .season-image {
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .destination-nav .nav-link {
+    padding: 6px 15px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .season-nav .nav-link {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+} 
