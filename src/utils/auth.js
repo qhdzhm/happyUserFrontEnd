@@ -476,8 +476,12 @@ export const secureLogout = async () => {
  */
 export const initializeCSRFProtection = async () => {
   try {
-    // 从后端获取CSRF Token
-    const response = await fetch('http://localhost:8080/auth/csrf-token', {
+    // 从后端获取CSRF Token - 使用环境变量或相对路径
+    const apiUrl = process.env.REACT_APP_API_URL 
+      ? `${process.env.REACT_APP_API_URL}/auth/csrf-token`
+      : '/auth/csrf-token';
+    
+    const response = await fetch(apiUrl, {
       method: 'GET',
       credentials: 'include',
       headers: {
