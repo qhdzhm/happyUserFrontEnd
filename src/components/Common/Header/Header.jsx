@@ -12,7 +12,7 @@ import {
 } from "react-bootstrap";
 import { NavLink, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../../../store/slices/authSlice";
+import { logoutUser } from "../../../store/slices/authSlice";
 import "./header.css";
 
 import logo from "../../../assets/images/logo/logo.png";
@@ -92,7 +92,22 @@ const Header = () => {
   }
 
   const handleLogout = () => {
-    dispatch(logout());
+    // 保存用户类型信息，因为logout会清空localStorage
+    const userType = user?.userType || user?.role || localStorage.getItem('userType') || 'regular';
+    const isAgentUser = userType === 'agent' || userType === 'agent_operator';
+    
+    dispatch(logoutUser()).then(() => {
+      // 使用延迟确保所有清理完成，然后统一重定向
+      setTimeout(() => {
+        if (isAgentUser) {
+          // 中介用户跳转到代理商登录页面
+          window.location.replace('/agent-login');
+        } else {
+          // 普通用户跳转到普通登录页面
+          window.location.replace('/login');
+        }
+      }, 100);
+    });
   };
  
   return (
@@ -201,7 +216,6 @@ const Header = () => {
                             {isAgent && (
                               <>
                                 <Dropdown.Item as={Link} to="/profile">代理商中心</Dropdown.Item>
-                                <Dropdown.Item as={Link} to="/test-operator">操作员测试</Dropdown.Item>
                               </>
                             )}
                             <Dropdown.Divider />
@@ -261,7 +275,6 @@ const Header = () => {
                       {isAgent && (
                         <>
                           <Dropdown.Item as={Link} to="/profile">代理商中心</Dropdown.Item>
-                          <Dropdown.Item as={Link} to="/test-operator">操作员测试</Dropdown.Item>
                         </>
                       )}
                       <Dropdown.Divider />

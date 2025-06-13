@@ -3,7 +3,7 @@ import { Button, Layout, Dropdown, Avatar, Menu, Badge, message } from 'antd';
 import { MenuUnfoldOutlined, MenuFoldOutlined, UserOutlined, LogoutOutlined, BellOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { clearToken } from '../../../../redux/user/userSlice';
+import { logoutUser } from '../../../../store/slices/authSlice';
 import './NavBar.scss';
 
 // 模拟获取店铺状态的函数
@@ -54,8 +54,22 @@ const NavBar = ({ collapsed, toggle }) => {
   };
 
   const handleLogout = () => {
-    dispatch(clearToken());
-    navigate('/login');
+    // 保存用户类型信息，因为logout会清空localStorage
+    const userType = localStorage.getItem('userType') || 'regular';
+    const isAgentUser = userType === 'agent' || userType === 'agent_operator';
+    
+    dispatch(logoutUser()).then(() => {
+      // 使用延迟确保所有清理完成，然后统一重定向
+      setTimeout(() => {
+        if (isAgentUser) {
+          // 中介用户跳转到代理商登录页面
+          window.location.replace('/agent-login');
+        } else {
+          // 普通用户跳转到普通登录页面
+          window.location.replace('/login');
+        }
+      }, 100);
+    });
   };
 
   const menu = (

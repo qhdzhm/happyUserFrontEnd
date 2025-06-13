@@ -87,7 +87,7 @@
   background-color: #fff !important;
   position: relative !important;
   overflow: hidden !important;
-  height: 320px !important; /* 调整内容区域总高度 */
+  height: 320px !important; /* 保持内容区域总高度 */
 }
 
 .home-content .destination-title,
@@ -97,7 +97,6 @@
   font-weight: 700 !important;
   margin-bottom: 10px !important;
   color: #333 !important;
-  line-height: 1.4 !important;
   height: 70px !important; /* 增加高度，约占11% */
   display: -webkit-box !important;
   -webkit-line-clamp: 3 !important; /* 增加到3行，更好地支持中文标题 */
@@ -134,19 +133,19 @@
   flex-shrink: 0 !important; /* 防止分隔线被压缩 */
 }
 
-/* 修改标签容器为纵向排列 */
+/* 标签相关样式已移除 - 不再需要 */
+/* 
 .home-content .destination-tags,
 .day-tours-section .destination-tags,
 .group-tours-section .destination-tags {
   display: flex !important;
-  flex-direction: column !important; /* 改为纵向排列 */
+  flex-direction: column !important;
   margin-bottom: 12px !important;
-  height: auto !important; /* 自适应高度 */
+  height: auto !important;
   flex-shrink: 0 !important;
-  gap: 4px !important; /* 标签之间的间距 */
+  gap: 4px !important;
 }
 
-/* 简化标签样式 */
 .home-content .tag,
 .day-tours-section .tag,
 .group-tours-section .tag {
@@ -154,15 +153,14 @@
   border-radius: 0 !important;
   font-size: 14px !important;
   font-weight: 600 !important;
-  color: #666 !important; /* 灰色文字 */
+  color: #666 !important;
   display: inline-block !important;
-  background: none !important; /* 移除背景 */
-  box-shadow: none !important; /* 移除阴影 */
+  background: none !important;
+  box-shadow: none !important;
   margin-right: 0 !important;
   text-transform: uppercase !important;
 }
 
-/* 移除所有特殊标签样式 */
 .home-content .tag.nature,
 .day-tours-section .tag.nature,
 .group-tours-section .tag.nature,
@@ -186,7 +184,6 @@
   color: #666 !important;
 }
 
-/* 添加+1标签样式 */
 .home-content .tag.plus,
 .day-tours-section .tag.plus,
 .group-tours-section .tag.plus {
@@ -198,13 +195,12 @@
   display: inline-block !important;
   margin-left: 6px !important;
 }
+*/
 
 .home-content .destination-price,
 .day-tours-section .destination-price,
 .group-tours-section .destination-price {
-  margin-bottom: 12px !important;
-  text-align: right !important;
-  margin-top: -30px !important;
+  text-align: right !important; /* 调整位置，移除标签后向上移动 */
   height: 32px !important; /* 约占5% */
   flex-shrink: 0 !important;
 }
@@ -212,7 +208,7 @@
 .home-content .price-value,
 .day-tours-section .price-value,
 .group-tours-section .price-value {
-  font-size: 30px !important;
+  font-size: 20px !important;
   font-weight: 700 !important;
   color: #333 !important;
 }
@@ -226,10 +222,10 @@
   margin-bottom: 16px !important;
   flex-grow: 1 !important;
   display: -webkit-box !important;
-  -webkit-line-clamp: 5 !important;
+  -webkit-line-clamp: 6 !important; /* 增加显示行数，利用移除标签后的空间 */
   -webkit-box-orient: vertical !important;
   overflow: hidden !important;
-  height: 120px !important; /* 稍微减少高度，保持总体平衡 */
+  height: 144px !important; /* 增加高度，利用移除标签后的空间 */
 }
 
 .home-content .details-btn,

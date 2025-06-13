@@ -1,0 +1,60 @@
+{
+  "business_name": "HTAS Tasmania Travel Services",
+  "business_type": "Travel Agency",
+  "address": {
+    "country": "Australia",
+    "state": "Tasmania", 
+    "city": "Hobart",
+    "postal_code": "7000"
+  },
+  "contact": {
+    "website": "https://www.htas.com.au",
+    "phone": "0404-XXX-XXX",
+    "email": "info@htas.com.au"
+  },
+  "services": [
+    "塔斯马尼亚一日游",
+    "塔州跟团游",
+    "自由行定制",
+    "酒店预订",
+    "接送服务",
+    "中文导游服务"
+  ],
+  "locations_served": [
+    "布鲁尼岛",
+    "摇篮山",
+    "酒杯湾",
+    "塔斯曼半岛",
+    "霍巴特",
+    "朗塞斯顿",
+    "里奇蒙",
+    "萨拉曼卡"
+  ],
+  "languages": ["中文", "英文"],
+  "operating_hours": {
+    "monday": "08:00-18:00",
+    "tuesday": "08:00-18:00", 
+    "wednesday": "08:00-18:00",
+    "thursday": "08:00-18:00",
+    "friday": "08:00-18:00",
+    "saturday": "08:00-18:00",
+    "sunday": "08:00-18:00"
+  },
+  "keywords": [
+    "HTAS",
+    "塔斯马尼亚旅游",
+    "Tasmania旅游",
+    "塔州华人旅游",
+    "塔斯马尼亚一日游",
+    "塔州跟团游",
+    "布鲁尼岛",
+    "摇篮山",
+    "酒杯湾",
+    "塔斯曼半岛",
+    "霍巴特旅游",
+    "塔州自由行",
+    "澳洲旅游",
+    "中文导游",
+    "塔斯马尼亚旅行社"
+  ]
+} 

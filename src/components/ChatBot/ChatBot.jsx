@@ -60,6 +60,60 @@ const ChatBot = ({ userType = 1, userId = null }) => {
     const lastUserIdRef = useRef(null); // 用于检测用户切换
     const lastIsLoggedInRef = useRef(null); // 用于检测登录状态切换
     
+    // 聊天记录存储key
+    const getChatStorageKey = () => {
+        const currentUser = userInfo?.agentId || userInfo?.operatorId || userInfo?.username || 'guest';
+        return `chatbot_messages_${currentUser}`;
+    };
+    
+    // 保存聊天记录到localStorage
+    const saveChatHistory = (messagesToSave) => {
+        try {
+            const storageKey = getChatStorageKey();
+            
+            // 只保存安全的用户信息，不包含敏感数据
+            const safeUserInfo = userInfo ? {
+                id: userInfo.id,
+                username: userInfo.username,
+                name: userInfo.name,
+                userType: userInfo.userType,
+                role: userInfo.role,
+                isAuthenticated: userInfo.isAuthenticated
+                // 不包含token、discountRate、agentId、operatorId等敏感信息
+            } : null;
+            
+            const chatData = {
+                messages: messagesToSave,
+                timestamp: Date.now(),
+                sessionId: sessionId,
+                userInfo: safeUserInfo
+            };
+            localStorage.setItem(storageKey, JSON.stringify(chatData));
+        } catch (error) {
+            console.error('保存聊天记录失败:', error);
+        }
+    };
+    
+    // 从localStorage加载聊天记录
+    const loadChatHistory = () => {
+        try {
+            const storageKey = getChatStorageKey();
+            const savedData = localStorage.getItem(storageKey);
+            if (savedData) {
+                const chatData = JSON.parse(savedData);
+                // 检查是否是最近的聊天记录（24小时内）
+                const isRecent = Date.now() - chatData.timestamp < 24 * 60 * 60 * 1000;
+                if (isRecent && chatData.messages && chatData.messages.length > 0) {
+                    setMessages(chatData.messages);
+                    return true;
+                }
+            }
+        } catch (error) {
+            console.error('加载聊天记录失败:', error);
+        }
+        return false;
+    };
+    
     // 检测登录状态 - 添加防抖和缓存
     const checkLoginStatus = () => {
         // 防抖：如果上次检查时间少于5秒，跳过检查
@@ -70,53 +124,83 @@ const ChatBot = ({ userType = 1, userId = null }) => {
         lastLoginCheckRef.current = now;
         
         try {
-            // 检查多种可能的token存储方式
-            const token = localStorage.getItem('token') || 
-                         localStorage.getItem('userToken') || 
-                         localStorage.getItem('agent-token') ||
-                         localStorage.getItem('authentication');
+            // 导入认证工具函数
+            const { 
+                isAuthenticated, 
+                getUserInfoFromCookie, 
+                shouldUseCookieAuth,
+                getUserType,
+                getUserDisplayName,
+                syncUserInfoToLocalStorage
+            } = require('../../utils/auth');
             
-            // 检查用户信息
-            const user = localStorage.getItem('user');
-            const userType = localStorage.getItem('userType');
-            const username = localStorage.getItem('username');
-            const agentId = localStorage.getItem('agentId');
-            const operatorId = localStorage.getItem('operatorId');
+            // 先尝试同步用户信息
+            syncUserInfoToLocalStorage();
             
-            // 判断是否已登录：有token，或者有用户类型和用户名
-            if (token || (userType && username) || agentId || operatorId) {
-                setIsLoggedIn(prev => {
-                    if (!prev) console.log('检测到用户已登录:', { userType, username, agentId, operatorId, hasToken: !!token });
-                    return true;
-                });
+            // 检查是否已认证（支持Cookie和localStorage两种模式）
+            const authenticated = isAuthenticated();
+            
+            console.log('ChatBot登录状态检查:', {
+                authenticated,
+                useCookieAuth: shouldUseCookieAuth(),
+                userType: getUserType(),
+                hasUserInfo: !!getUserInfoFromCookie(),
+                localStorageUser: !!localStorage.getItem('user')
+            });
+            
+            if (authenticated) {
+                const wasLoggedIn = isLoggedIn;
+                setIsLoggedIn(true);
                 
-                // 设置用户信息
-                let userInfo = null;
-                if (user) {
-                    try {
-                        userInfo = JSON.parse(user);
-                    } catch (e) {
-                        console.warn('解析用户信息失败:', e);
+                // 获取用户信息（优先从Cookie，回退到localStorage）
+                let userInfo = getUserInfoFromCookie();
+                
+                // 如果Cookie中没有用户信息，从localStorage构建
+                if (!userInfo) {
+                    const user = localStorage.getItem('user');
+                    const userType = localStorage.getItem('userType');
+                    const username = localStorage.getItem('username');
+                    const agentId = localStorage.getItem('agentId');
+                    const operatorId = localStorage.getItem('operatorId');
+                    
+                    if (user) {
+                        try {
+                            userInfo = JSON.parse(user);
+                        } catch (e) {
+                            console.warn('解析localStorage用户信息失败:', e);
+                        }
+                    }
+                    
+                    // 如果还是没有用户信息，使用基本信息构建
+                    if (!userInfo && (username || userType)) {
+                        userInfo = {
+                            username: username || 'user',
+                            userType: userType || 'regular',
+                            agentId: agentId ? parseInt(agentId, 10) : null,
+                            operatorId: operatorId ? parseInt(operatorId, 10) : null,
+                            name: getUserDisplayName(),
+                            isAuthenticated: true
+                        };
                     }
                 }
                 
-                // 如果没有解析到用户信息，使用localStorage中的其他信息构建
-                if (!userInfo && (userType || username)) {
-                    userInfo = {
-                        username: username,
-                        userType: userType,
-                        agentId: agentId,
-                        operatorId: operatorId,
-                        name: username // 使用用户名作为显示名称
-                    };
+                // 确保用户信息包含必要字段
+                if (userInfo) {
+                    userInfo.isAuthenticated = true;
+                    userInfo.name = userInfo.name || userInfo.username || getUserDisplayName();
+                    userInfo.userType = userInfo.userType || getUserType();
                 }
                 
                 setUserInfo(userInfo);
+                console.log('ChatBot检测到用户已登录:', userInfo);
+                
+                // 如果是新登录（之前未登录），加载聊天记录
+                if (!wasLoggedIn && userInfo) {
+                    loadChatHistory();
+                }
             } else {
-                setIsLoggedIn(prev => {
-                    if (prev) console.log('检测到用户已登出');
-                    return false;
-                });
+                console.log('ChatBot检测到用户未登录');
+                setIsLoggedIn(false);
                 setUserInfo(null);
             }
         } catch (error) {
@@ -173,14 +257,15 @@ const ChatBot = ({ userType = 1, userId = null }) => {
     };
     
     // 生成登录提醒消息
-    const generateLoginReminder = () => {
+    const generateLoginReminder = (isAgentLogin = false) => {
         return {
             id: Date.now(),
             type: 'bot',
             content: '感谢您提供详细的旅游服务信息！为了更好地为您服务和保存您的订单信息，请先登录您的账户。',
             timestamp: new Date(),
             isLoginReminder: true,
-            showLoginButton: true
+            showLoginButton: true,
+            isAgentLogin: isAgentLogin // 标识是否需要跳转到代理商登录
         };
     };
     
@@ -198,92 +283,65 @@ const ChatBot = ({ userType = 1, userId = null }) => {
         }, 100);
     };
     
-    // 强制滚动到底部（用于长消息）
+    // 强制滚动到底部
     const forceScrollToBottom = () => {
+        // 使用setTimeout确保DOM完全渲染后再滚动
         setTimeout(() => {
-            const messagesContainer = document.querySelector('.chatbot-messages');
-            if (messagesContainer) {
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }
-            // 双重保险，再用ref滚动一次
             if (messagesEndRef.current) {
                 messagesEndRef.current.scrollIntoView({ 
-                    behavior: "smooth",
+                    behavior: "auto",
                     block: "end",
                     inline: "nearest"
                 });
             }
-        }, 200);
+        }, 50);
     };
     
+    // 当messages变化时保存到localStorage
     useEffect(() => {
-        // 对于新消息，使用强制滚动确保到达底部
-        forceScrollToBottom();
-    }, [messages]);
-    
-    // 初始化时检查登录状态
-    useEffect(() => {
-        checkLoginStatus();
-        
-        // 监听localStorage变化（只能监听其他tab的变化）
-        const handleStorageChange = () => {
-            console.log('监听到localStorage变化');
-            checkLoginStatus();
-        };
-        
-        // 添加自定义事件监听，用于同tab内的登录状态变化通知
-        const handleLoginStateChange = () => {
-            console.log('监听到登录状态变化事件');
-            setTimeout(() => {
-                checkLoginStatus();
-            }, 100); // 延迟100ms确保localStorage已更新
-        };
-        
-        window.addEventListener('storage', handleStorageChange);
-        window.addEventListener('loginStateChanged', handleLoginStateChange);
-        window.addEventListener('logoutStateChanged', handleLoginStateChange);
-        
-        return () => {
-            window.removeEventListener('storage', handleStorageChange);
-            window.removeEventListener('loginStateChanged', handleLoginStateChange);
-            window.removeEventListener('logoutStateChanged', handleLoginStateChange);
-        };
-    }, []); // 确保依赖数组为空，避免重复创建定时器
-
-    // 只有当聊天窗口可见时才进行定时检查
-    useEffect(() => {
-        let checkInterval;
-        
-        if (visible) {
-            console.log('聊天窗口打开，重新检查登录状态');
-            checkLoginStatus();
-            
-            // 只有当窗口可见时才启动定时检查，频率更低
-            checkInterval = setInterval(() => {
-                checkLoginStatus();
-            }, 30000); // 改为每30秒检查一次，只在窗口可见时
+        if (messages.length > 0) {
+            saveChatHistory(messages);
         }
-        
-        return () => {
-            if (checkInterval) {
-                clearInterval(checkInterval);
-            }
-        };
-    }, [visible]); // 只依赖visible，避免不必要的重新执行
+    }, [messages, userInfo]);
     
-    // 初始化欢迎消息
+    // 当用户信息变化时，加载对应的聊天记录
+    useEffect(() => {
+        if (userInfo && isLoggedIn) {
+            // 如果当前没有消息，尝试加载历史记录
+            if (messages.length === 0) {
+                const loaded = loadChatHistory();
+                if (!loaded) {
+                    // 如果没有历史记录，显示欢迎消息
+                    setMessages([{
+                        id: Date.now(),
+                        type: 'bot',
+                        content: `您好${userInfo?.name ? '，' + userInfo.name : ''}！我是您的AI旅游助手，有什么可以帮助您的吗？`,
+                        timestamp: new Date()
+                    }]);
+                }
+            }
+        }
+    }, [userInfo, isLoggedIn]);
+    
+    // 初始化欢迎消息和加载聊天记录
     useEffect(() => {
         if (visible && messages.length === 0) {
-            const welcomeMessage = isLoggedIn ? 
-                `您好${userInfo?.name ? '，' + userInfo.name : ''}！欢迎来到Happy Tassie Travel，我是您的AI客服助手。请问有什么可以帮助您的吗？` :
-                '您好！欢迎来到Happy Tassie Travel，我是您的AI客服助手。请问有什么可以帮助您的吗？';
-                
-            setMessages([{
-                id: Date.now(),
-                type: 'bot',
-                content: welcomeMessage,
-                timestamp: new Date()
-            }]);
+            // 先尝试加载聊天记录
+            const hasHistory = loadChatHistory();
+            
+            // 如果没有历史记录，显示欢迎消息
+            if (!hasHistory) {
+                const welcomeMessage = isLoggedIn ? 
+                    `您好${userInfo?.name ? '，' + userInfo.name : ''}！欢迎来到Happy Tassie Travel，我是您的AI客服助手。请问有什么可以帮助您的吗？` :
+                    '您好！欢迎来到Happy Tassie Travel，我是您的AI客服助手。请问有什么可以帮助您的吗？';
+                    
+                setMessages([{
+                    id: Date.now(),
+                    type: 'bot',
+                    content: welcomeMessage,
+                    timestamp: new Date()
+                }]);
+            }
         }
     }, [visible, isLoggedIn, userInfo]);
 
@@ -447,8 +505,8 @@ const ChatBot = ({ userType = 1, userId = null }) => {
     const sendAIMessage = async (content) => {
         // 检查是否为未登录用户发送旅游服务信息
         if (!isLoggedIn && isTravelServiceMessage(content)) {
-            // 显示登录提醒
-            const loginReminderMessage = generateLoginReminder();
+            // 显示登录提醒，标识为代理商登录
+            const loginReminderMessage = generateLoginReminder(true);
             setMessages(prev => [...prev, loginReminderMessage]);
             return;
         }
@@ -496,26 +554,67 @@ const ChatBot = ({ userType = 1, userId = null }) => {
                     redirectUrl: response.data.data.redirectUrl
                 };
                 
-                setMessages(prev => [...prev, botResponse]);
+                setMessages(prev => {
+                    const newMessages = [...prev, botResponse];
+                    // 自动保存聊天记录
+                    saveChatHistory(newMessages);
+                    return newMessages;
+                });
                 
                 // 如果是订单信息，显示跳转按钮并自动跳转
                 if (botResponse.messageType === 2 && botResponse.redirectUrl) {
                     const currentPath = window.location.pathname;
                     const isAlreadyOnBookingPage = currentPath === '/booking' || currentPath.includes('/booking');
                     
+                    // 检查用户类型，决定跳转到正确的页面
+                    const userType = localStorage.getItem('userType');
+                    const isAgent = userType === 'agent' || userType === 'agent_operator';
+                    
+                    let finalUrl = botResponse.redirectUrl;
+                    
+                    // 如果是中介用户且URL包含产品信息，转换为中介专用URL
+                    if (isAgent && finalUrl.includes('/booking') && (finalUrl.includes('productId=') || finalUrl.includes('tourId='))) {
+                        try {
+                            const url = new URL(finalUrl, window.location.origin);
+                            const params = url.searchParams;
+                            const productId = params.get('productId') || params.get('tourId');
+                            const tourType = params.get('tourType') || params.get('productType') || params.get('type');
+                            
+                            if (productId && tourType) {
+                                // 转换产品类型格式
+                                let pathType = 'day-tours';
+                                if (tourType === 'group_tour' || tourType === 'group' || tourType === '跟团游') {
+                                    pathType = 'group-tours';
+                                }
+                                
+                                // 构建中介专用URL
+                                finalUrl = `/agent-booking/${pathType}/${productId}?${params.toString()}`;
+                                console.log('🔄 中介用户，转换URL:', finalUrl);
+                            }
+                        } catch (e) {
+                            console.warn('URL转换失败，使用原始URL');
+                        }
+                    }
+                    
                     if (isAlreadyOnBookingPage) {
                         // 如果已经在订单页面，显示提示并强制刷新页面以应用新参数
                         message.success('订单信息解析完成！页面将更新以显示新的订单信息');
                         setTimeout(() => {
                             // 强制刷新页面到新的URL
-                            window.location.href = botResponse.redirectUrl;
+                            window.location.href = finalUrl;
                         }, 1500);
                     } else {
-                        // 如果不在订单页面，正常跳转
-                        message.success('订单信息解析完成！2秒后自动跳转到订单页面');
+                        // 如果不在订单页面，正常跳转，但保持聊天窗口状态
+                        message.success('订单信息解析完成！2秒后自动跳转到订单页面，聊天记录将保留');
                         setTimeout(() => {
-                            navigate(botResponse.redirectUrl);
-                            setVisible(false);
+                            if (finalUrl.startsWith('/agent-booking/')) {
+                                // 使用window.location.href确保URL正确解析
+                                window.location.href = finalUrl;
+                            } else {
+                                navigate(finalUrl);
+                            }
+                            // 不关闭聊天窗口，让用户可以继续查看聊天记录
+                            // setVisible(false);
                         }, 2000);
                     }
                 }
@@ -611,7 +710,12 @@ const ChatBot = ({ userType = 1, userId = null }) => {
             timestamp: new Date()
         };
         
-        setMessages(prev => [...prev, userMessage]);
+        setMessages(prev => {
+            const newMessages = [...prev, userMessage];
+            // 自动保存聊天记录
+            saveChatHistory(newMessages);
+            return newMessages;
+        });
         const messageContent = inputValue;
         setInputValue('');
         
@@ -652,9 +756,15 @@ const ChatBot = ({ userType = 1, userId = null }) => {
     };
 
     // 处理登录按钮点击
-    const handleLoginClick = () => {
+    const handleLoginClick = (message = null) => {
         setVisible(false); // 关闭聊天窗口
-        navigate('/login'); // 跳转到登录页面
+        
+        // 如果是代理商登录，跳转到代理商登录页面
+        if (message && message.isAgentLogin) {
+            navigate('/agent-login'); 
+        } else {
+            navigate('/login'); // 跳转到普通登录页面
+        }
     };
 
     // 转人工客服
@@ -666,7 +776,8 @@ const ChatBot = ({ userType = 1, userId = null }) => {
                 content: '转接人工客服需要先登录账户，请先登录后再试。',
                 timestamp: new Date(),
                 isLoginReminder: true,
-                showLoginButton: true
+                showLoginButton: true,
+                isAgentLogin: false // 转人工服务可以是普通用户
             };
             setMessages(prev => [...prev, loginReminderMessage]);
             return;
@@ -811,16 +922,43 @@ const ChatBot = ({ userType = 1, userId = null }) => {
         setShowRating(false);
         // 断开WebSocket连接
         websocketService.disconnect();
+        
+        // 清除localStorage中的所有聊天记录
+        try {
+            // 获取所有以 chatbot_messages_ 开头的键
+            const keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('chatbot_messages_')) {
+                    keysToRemove.push(key);
+                }
+            }
+            
+            // 删除所有聊天记录
+            keysToRemove.forEach(key => {
+                localStorage.removeItem(key);
+                console.log(`已清除聊天记录: ${key}`);
+            });
+            
+            console.log(`总共清除了 ${keysToRemove.length} 个聊天记录`);
+            
+        } catch (error) {
+            console.error('清除聊天记录失败:', error);
+        }
+        
         console.log('已清除聊天记录');
     };
     
-    // 检测用户切换
+    // 检测用户切换 - 修改为只在真正用户切换时清除记录
     const checkUserSwitch = () => {
         const currentUserId = userInfo?.agentId || userInfo?.operatorId || userInfo?.username || null;
         const currentIsLoggedIn = isLoggedIn;
         
-        // 检测用户ID变化
-        if (lastUserIdRef.current !== null && lastUserIdRef.current !== currentUserId) {
+        // 只有在检测到不同用户登录时才清除聊天记录
+        if (lastUserIdRef.current !== null && 
+            lastUserIdRef.current !== currentUserId && 
+            currentUserId !== null && 
+            lastUserIdRef.current !== 'guest') {
             console.log('检测到用户切换:', { 
                 from: lastUserIdRef.current, 
                 to: currentUserId 
@@ -828,12 +966,11 @@ const ChatBot = ({ userType = 1, userId = null }) => {
             clearChatHistory();
         }
         
-        // 检测登录状态变化（从登录到登出，或从登出到登录）
-        if (lastIsLoggedInRef.current !== null && lastIsLoggedInRef.current !== currentIsLoggedIn) {
-            console.log('检测到登录状态变化:', { 
-                from: lastIsLoggedInRef.current, 
-                to: currentIsLoggedIn 
-            });
+        // 只有在从登录状态变为登出状态时才清除记录，登录时不清除
+        if (lastIsLoggedInRef.current !== null && 
+            lastIsLoggedInRef.current === true && 
+            currentIsLoggedIn === false) {
+            console.log('检测到用户登出，清除聊天记录');
             clearChatHistory();
         }
         
@@ -842,21 +979,89 @@ const ChatBot = ({ userType = 1, userId = null }) => {
         lastIsLoggedInRef.current = currentIsLoggedIn;
     };
 
+    // 初始化时检查登录状态并加载聊天记录
+    useEffect(() => {
+        checkLoginStatus();
+        
+        // 监听localStorage变化（只能监听其他tab的变化）
+        const handleStorageChange = (e) => {
+            // 只在相关的key变化时才重新检查
+            if (e.key === 'token' || e.key === 'user' || e.key === 'username' || 
+                e.key === 'userType' || e.key === 'agentId' || e.key === 'operatorId') {
+                console.log('监听到登录相关localStorage变化:', e.key);
+                setTimeout(checkLoginStatus, 100); // 延迟确保数据已更新
+            }
+        };
+        
+        // 添加自定义事件监听，用于同tab内的登录状态变化通知
+        const handleLoginStateChange = () => {
+            console.log('监听到登录状态变化事件');
+            setTimeout(() => {
+                checkLoginStatus();
+            }, 100); // 延迟100ms确保localStorage已更新
+        };
+        
+        window.addEventListener('storage', handleStorageChange);
+        window.addEventListener('loginStateChanged', handleLoginStateChange);
+        window.addEventListener('logoutStateChanged', handleLoginStateChange);
+        
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('loginStateChanged', handleLoginStateChange);
+            window.removeEventListener('logoutStateChanged', handleLoginStateChange);
+        };
+    }, []);
+
     // 监听用户信息变化，检测用户切换
     useEffect(() => {
         checkUserSwitch();
     }, [userInfo, isLoggedIn]);
+    
+    // 当消息变化时滚动到底部
+    useEffect(() => {
+        if (messages.length > 0) {
+            forceScrollToBottom();
+        }
+    }, [messages]);
 
     // 清空聊天记录（公开方法）
     const clearMessages = () => {
-        setMessages([{
+        // 清空当前显示的消息
+        const welcomeMessage = {
             id: Date.now(),
             type: 'bot',
             content: isLoggedIn ? 
                 `您好${userInfo?.name ? '，' + userInfo.name : ''}！聊天记录已清空。有什么可以帮助您的吗？` :
                 '您好！聊天记录已清空。有什么可以帮助您的吗？',
             timestamp: new Date()
-        }]);
+        };
+        setMessages([welcomeMessage]);
+        
+        // 清除localStorage中的所有聊天记录
+        try {
+            // 获取所有以 chatbot_messages_ 开头的键
+            const keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('chatbot_messages_')) {
+                    keysToRemove.push(key);
+                }
+            }
+            
+            // 删除所有聊天记录
+            keysToRemove.forEach(key => {
+                localStorage.removeItem(key);
+                console.log(`已清除聊天记录: ${key}`);
+            });
+            
+            console.log(`总共清除了 ${keysToRemove.length} 个聊天记录`);
+            
+            // 保存新的欢迎消息
+            saveChatHistory([welcomeMessage]);
+            
+        } catch (error) {
+            console.error('清除聊天记录失败:', error);
+        }
     };
     
     // 格式化时间
@@ -1060,7 +1265,7 @@ const ChatBot = ({ userType = 1, userId = null }) => {
                                                         <Button 
                                                             type="primary" 
                                                             icon={<LoginOutlined />}
-                                                            onClick={handleLoginClick}
+                                                            onClick={() => handleLoginClick(message)}
                                                             className="chatbot-login-btn"
                                                             style={{ marginTop: 12 }}
                                                         >
@@ -1072,7 +1277,10 @@ const ChatBot = ({ userType = 1, userId = null }) => {
                                                             marginTop: 8,
                                                             textAlign: 'center'
                                                         }}>
-                                                            登录后可享受更完整的服务体验
+                                                            {message.isAgentLogin ? 
+                                                                '代理商登录后可处理订单信息' : 
+                                                                '登录后可享受更完整的服务体验'
+                                                            }
                                                         </div>
                                                     </div>
                                                 )}

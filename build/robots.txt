@@ -1,3 +1,27 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+Allow: /
+
+# 优先抓取重要页面
+Allow: /tours
+Allow: /destinations
+Allow: /about-us
+Allow: /contact-us
+Allow: /gallery
+Allow: /day-tours
+Allow: /group-tours
+
+# 不允许搜索引擎索引的页面
+Disallow: /admin
+Disallow: /agent-center
+Disallow: /profile
+Disallow: /orders
+Disallow: /booking
+Disallow: /checkout
+Disallow: /payment
+Disallow: /login
+Disallow: /register
+Disallow: /agent-login
+
+# 网站地图位置
+Sitemap: https://www.htas.com.au/sitemap.xml

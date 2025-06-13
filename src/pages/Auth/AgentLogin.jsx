@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser, clearError } from '../../store/slices/authSlice';
-import { Alert, Spinner, Button, Form } from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import './Auth.css';
+import Loginpic from '../../assets/login/Login.jpg';
+import LoginLogo from '../../assets/login/logo.png';
+import './AgentLogin.css';
 
 const AgentLogin = () => {
   const [formData, setFormData] = useState({
@@ -12,11 +13,12 @@ const AgentLogin = () => {
     password: '',
     userType: 'agent' // 固定为代理商类型
   });
+  const [loading, setLoading] = useState(false);
   
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
-  const { loading, error, isAuthenticated } = useSelector(state => state.auth);
+  const { error, isAuthenticated } = useSelector(state => state.auth);
   
   // 获取用户尝试访问的页面路径，如果没有则默认为立即预订页面
   const from = location.state?.from || '/booking-form';
@@ -52,12 +54,43 @@ const AgentLogin = () => {
     
     // 验证表单
     if (!formData.username.trim()) {
-      toast.error('请输入账号');
+      toast.error('请输入用户名');
       return;
     }
     
     if (!formData.password) {
       toast.error('请输入密码');
+      return;
+    }
+    
+    if (formData.password.length < 6) {
+      toast.error('密码必须至少6个字符');
+      return;
+    }
+    
+    setLoading(true);
+    
+    // 添加网络诊断
+    console.log('🔍 开始 Agent 登录调试...');
+    console.log('📝 登录数据:', {
+      username: formData.username,
+      userType: 'agent'
+    });
+    
+    // 测试网络连接
+    try {
+      console.log('🌐 测试网络连接和代理...');
+      const testResponse = await fetch('/api/health', { 
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      console.log('✅ 网络连接测试:', testResponse.status, testResponse.statusText);
+    } catch (networkError) {
+      console.error('❌ 网络连接测试失败:', networkError);
+      toast.error('网络连接失败，请检查网络设置');
+      setLoading(false);
       return;
     }
     
@@ -69,6 +102,7 @@ const AgentLogin = () => {
         userType: 'agent' // 始终使用agent类型登录接口
       };
       
+      console.log('🚀 发送登录请求...');
       // 分发登录action
       await dispatch(loginUser(loginData)).unwrap();
       
@@ -100,139 +134,94 @@ const AgentLogin = () => {
       } else {
         toast.error('登录失败，请检查您的输入或联系客服');
       }
+    } finally {
+      setLoading(false);
     }
   };
   
-  // 自动填充测试账号
-  const fillTestAccount = (type) => {
-    if (type === 'agent') {
-      setFormData({
-        username: 'agent1',
-        password: '123456',
-        userType: 'agent'
-      });
-    } else if (type === 'operator') {
-      setFormData({
-        username: 'operator1',
-        password: '123456',
-        userType: 'agent'  // 操作员使用agent登录接口
-      });
-    }
-  };
+  
   
   return (
-    <div className="auth-container agent-login-page">
-      <div className="auth-form-container">
-        <h2>代理商登录</h2>
-        
-        {error && (
-          <Alert variant="danger">
-            <strong>登录失败：</strong> {error}
-            {error.includes('密码错误') && (
-              <div className="mt-2 small">
-                <strong>提示：</strong> 如果您最近修改过密码，请使用新密码登录。如果您忘记了密码，请联系客服重置。
-              </div>
-            )}
-            {error.includes('账号或密码错误') && (
-              <div className="mt-2 small">
-                <strong>提示：</strong> 请检查您的输入是否正确。如果您忘记了密码，可以联系客服重置。
-              </div>
-            )}
-          </Alert>
-        )}
-        
-        {redirectMessage && (
-          <Alert variant="info">
-            {redirectMessage}
-          </Alert>
-        )}
-        
-        {/* 测试账号信息 */}
-        <div className="auth-message mb-3">
-          <div className="mb-2">
-            <strong>代理商主账号：</strong> agent1 / 123456
-            <Button 
-              variant="outline-success"
-              size="sm"
-              className="ms-2" 
-              onClick={() => fillTestAccount('agent')}
-            >
-              填充
-            </Button>
-          </div>
-          <div>
-            <strong>操作员账号：</strong> operator1 / 123456
-            <Button 
-              variant="outline-secondary"
-              size="sm"
-              className="ms-2" 
-              onClick={() => fillTestAccount('operator')}
-            >
-              填充
-            </Button>
-          </div>
-          <small className="text-muted mt-2 d-block">
-            代理商和操作员都通过此入口登录，系统会自动识别账号类型
-          </small>
+    <div className="agent-login">
+      <div className="agent-login-container">
+        <div className="agent-login-image">
+          <img src={Loginpic} alt="Login background" />
         </div>
-        
-        <Form onSubmit={handleSubmit} className="auth-form">
-          <Form.Group className="mb-3">
-            <Form.Label>账号</Form.Label>
-            <Form.Control
-              type="text"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              required
-              placeholder="输入代理商账号或操作员账号"
-              className="agent-input"
-            />
-          </Form.Group>
+        <div className="agent-login-form">
+          {loading && (
+            <div className="loading-spinner">
+              <div className="spinner"></div>
+            </div>
+          )}
+          <div className="title">
+            <img src={LoginLogo} alt="Logo" />
+          </div>
           
-          <Form.Group className="mb-3">
-            <Form.Label>密码</Form.Label>
-            <Form.Control
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              placeholder="输入密码"
-            />
-          </Form.Group>
+          {error && (
+            <div className="error-message">
+              <strong>登录失败：</strong> {error}
+              {error.includes('密码错误') && (
+                <div className="error-hint">
+                  <strong>提示：</strong> 如果您最近修改过密码，请使用新密码登录。如果您忘记了密码，请联系客服重置。
+                </div>
+              )}
+              {error.includes('账号或密码错误') && (
+                <div className="error-hint">
+                  <strong>提示：</strong> 请检查您的输入是否正确。如果您忘记了密码，可以联系客服重置。
+                </div>
+              )}
+            </div>
+          )}
           
-          <Button 
-            type="submit" 
-            variant="success" 
-            className="w-100" 
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <Spinner
-                  as="span"
-                  animation="border"
-                  size="sm"
-                  role="status"
-                  aria-hidden="true"
-                />{' '}
-                登录中...
-              </>
-            ) : '登录'}
-          </Button>
-        </Form>
-        
-        <div className="auth-links mt-3">
-          <p>
-            需要成为代理商？ <Link to="/contact-us" state={{ subject: '代理商合作申请' }}>联系我们</Link>
-          </p>
-          <p>
-            <Link to="/forgot-password">忘记密码？</Link>
-          </p>
-          <p>
-            普通用户？ <Link to="/login">点击这里登录</Link>
-          </p>
+          {redirectMessage && (
+            <div className="info-message">
+              {redirectMessage}
+            </div>
+          )}
+          
+          
+          
+          <form onSubmit={handleSubmit} className="login-form">
+            <div className="form-item">
+              <div className="input-container">
+                <span className="input-icon">👤</span>
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  required
+                  placeholder="用户名"
+                  className="form-input"
+                />
+              </div>
+            </div>
+            
+            <div className="form-item">
+              <div className="input-container">
+                <span className="input-icon">🔒</span>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  placeholder="密码"
+                  className="form-input"
+                />
+              </div>
+            </div>
+            
+            <button 
+              type="submit" 
+              className="login-form-button" 
+              disabled={loading}
+            >
+              {loading ? '登录中...' : '登录'}
+            </button>
+          </form>
+          
+          
         </div>
       </div>
     </div>

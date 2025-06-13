@@ -63,10 +63,10 @@ const OrderDetail = () => {
   const isFieldDisabled = (fieldName) => {
     if (!orderData) return true;
     
-    // 基本禁用条件：已支付或已取消
-    const basicDisabled = orderData.paymentStatus === 'paid' || orderData.status === 'cancelled';
+    // 基本禁用条件：已完成或已取消
+    const basicDisabled = orderData.status === 'completed' || orderData.status === 'cancelled';
     
-    // 价格敏感字段额外禁用
+    // 价格敏感字段额外禁用（无论支付状态）
     const priceSensitiveDisabled = isPriceSensitiveField(fieldName);
     
     return basicDisabled || priceSensitiveDisabled;
@@ -76,12 +76,11 @@ const OrderDetail = () => {
   const canEditOrder = () => {
     if (!orderData) return false;
     
-    // 订单状态为已完成、已取消、已支付的不允许修改
+    // 订单状态为已完成、已取消的不允许修改
+    // 移除已支付的限制，允许已支付订单修改
     const restrictedStatuses = ['completed', 'cancelled'];
-    const restrictedPaymentStatuses = ['paid'];
     
-    return !restrictedStatuses.includes(orderData.status) && 
-           !restrictedPaymentStatuses.includes(orderData.paymentStatus);
+    return !restrictedStatuses.includes(orderData.status);
   };
 
   // 渲染字段标签（包含禁用提示）
@@ -1291,8 +1290,7 @@ const OrderDetail = () => {
                     ) : (
                       <Alert variant="warning" className="py-2 px-3 mb-3 small">
                         <FaInfoCircle className="me-2" />
-                        {orderData.paymentStatus === 'paid' ? '已支付订单不可修改' : 
-                         orderData.status === 'completed' ? '已完成订单不可修改' :
+                        {orderData.status === 'completed' ? '已完成订单不可修改' :
                          orderData.status === 'cancelled' ? '已取消订单不可修改' : 
                          '订单当前状态不可修改'}
                       </Alert>
@@ -1333,26 +1331,7 @@ const OrderDetail = () => {
                     )}
                   </>
                 )}
-                
-                {/* 对于已支付但未完成的订单，仍显示修改按钮 */}
-                {orderData.paymentStatus === 'paid' && orderData.status !== 'completed' && orderData.status !== 'cancelled' && (
-                  <>
-                    {canEditOrder() ? (
-                      <Button 
-                        variant="warning" 
-                        className="w-100 mb-3"
-                        onClick={handleStartEdit}
-                      >
-                        <FaEdit className="me-2" /> 修改订单信息
-                      </Button>
-                    ) : (
-                      <Alert variant="info" className="py-2 px-3 mb-3 small">
-                        <FaInfoCircle className="me-2" />
-                        已支付订单如需修改请联系客服
-                      </Alert>
-                    )}
-                  </>
-                )}
+
                 
                 <Link to="/orders" className="d-block">
                   <Button variant="outline-secondary" className="w-100">
@@ -1435,15 +1414,18 @@ const OrderDetail = () => {
                 <hr />
                 <p className="mb-0 small">
                   <strong>如需修改以上信息，请联系客服：</strong><br />
-                  📞 客服热线：<strong>1800-123-456</strong><br />
-                  💬 在线客服：点击右下角聊天按钮<br />
+                  📞 客服热线：<strong>+61 3 1234 5678</strong><br />
+                  💬 微信客服：<strong>HappyTassie</strong><br />
                   📧 邮箱：<strong>support@happytassietravel.com</strong>
                 </p>
               </Alert>
               
               <Alert variant="info" className="mb-4">
                 <FaInfoCircle className="me-2" /> 
-                您可以修改下列非价格相关的订单信息。完成修改后，请点击"保存修改"按钮。
+                {orderData.paymentStatus === 'paid' ? 
+                  '已支付订单可以修改非价格相关的信息。完成修改后，请点击"保存修改"按钮。' :
+                  '您可以修改下列非价格相关的订单信息。完成修改后，请点击"保存修改"按钮。'
+                }
               </Alert>
               
               <Form>

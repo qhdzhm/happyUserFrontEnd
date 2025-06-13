@@ -20,10 +20,24 @@ function App() {
   const dispatch = useDispatch();
   const { loading, tokenValidated } = useSelector(state => state.auth);
   
-  // 当组件挂载时，验证token有效性
+  // 当组件挂载时，验证token有效性并初始化CSRF保护
   useEffect(() => {
-    console.log('应用启动，开始验证token有效性...');
     dispatch(validateToken());
+    
+    // 初始化CSRF保护和用户信息同步
+    const initCSRF = async () => {
+      try {
+        const { initializeCSRFProtection, syncUserInfoToLocalStorage } = require('./utils/auth');
+        await initializeCSRFProtection();
+        
+        // 同步用户信息到localStorage（用于ChatBot等组件）
+        syncUserInfoToLocalStorage();
+      } catch (error) {
+        // 静默处理CSRF初始化失败
+      }
+    };
+    
+    initCSRF();
   }, [dispatch]);
 
   /**
@@ -35,6 +49,10 @@ function App() {
 
     const checkSession = async () => {
       try {
+        // 检查认证模式
+        const { shouldUseCookieAuth, isAuthenticated } = require('./utils/auth');
+        const useCookieAuth = shouldUseCookieAuth();
+        
         // 从localStorage获取会话状态
         const sessionState = {
           token: localStorage.getItem(STORAGE_KEYS.TOKEN) || localStorage.getItem('token'),
@@ -45,14 +63,15 @@ function App() {
 
         console.log('检查本地存储的会话状态:', sessionState);
 
-        // 如果有token，更新Redux认证状态
-        if (sessionState.token) {
+        // 检查是否已认证
+        const authenticated = useCookieAuth ? isAuthenticated() : !!sessionState.token;
+        
+        if (authenticated) {
           // 根据用户类型和是否已经有折扣率决定是否需要获取折扣率
-          const isAuthenticated = !!sessionState.token;
           const isAgent = sessionState.userType === 'agent' || sessionState.userType === 'agent_operator';
           
           // 如果是代理商，则获取最新的折扣率
-          if (isAuthenticated && isAgent && sessionState.agentId) {
+          if (isAgent && sessionState.agentId) {
             console.log('检测到代理商登录，开始获取代理商折扣率...');
             try {
               // 调用后端API获取折扣率
@@ -62,6 +81,8 @@ function App() {
               console.error('获取代理商折扣率失败:', error);
             }
           }
+        } else {
+          console.log('未检测到有效认证状态');
         }
       } catch (error) {
         console.error('检查会话状态失败:', error);
@@ -85,19 +106,30 @@ function App() {
     // 监听storage事件，当其他页面/标签修改localStorage时触发
     const handleStorageChange = (e) => {
       if (e.key === 'token' || e.key === 'userType' || e.key === 'agentId') {
-        console.log('用户登录状态变化，清理价格缓存');
         clearPriceCache();
-        // 重新验证token
-        dispatch(validateToken());
+        
+        // 只有在token被设置（而不是被清除）时才重新验证
+        const newValue = e.newValue;
+        if (newValue && newValue !== '' && newValue !== 'null') {
+          dispatch(validateToken());
+        }
       }
     };
 
+    // 监听强制token验证事件
+    const handleForceTokenValidation = () => {
+      console.log('收到强制token验证事件，重新验证...');
+      dispatch(validateToken());
+    };
+
     window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('forceTokenValidation', handleForceTokenValidation);
     
     // 清理函数
     return () => {
       clearInterval(autoCleanInterval);
       window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('forceTokenValidation', handleForceTokenValidation);
     };
   }, [dispatch]);
   

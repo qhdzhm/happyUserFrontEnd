@@ -157,10 +157,10 @@ const EditBooking = () => {
 
   // 检查字段是否应该被禁用
   const isFieldDisabled = (fieldName) => {
-    // 基本禁用条件：已支付或已取消
-    const basicDisabled = orderData.paymentStatus === 'paid' || orderData.status === 'cancelled';
+    // 基本禁用条件：已完成或已取消
+    const basicDisabled = orderData.status === 'completed' || orderData.status === 'cancelled';
     
-    // 价格敏感字段额外禁用
+    // 价格敏感字段额外禁用（无论支付状态）
     const priceSensitiveDisabled = isPriceSensitiveField(fieldName);
     
     return basicDisabled || priceSensitiveDisabled;
@@ -198,8 +198,8 @@ const EditBooking = () => {
     if (!orderData) return;
     
     // 检查订单状态
-    if (orderData.paymentStatus === 'paid') {
-      toast.error('已支付的订单无法修改');
+    if (orderData.status === 'completed') {
+      toast.error('已完成的订单无法修改');
       return;
     }
     
@@ -339,8 +339,14 @@ const EditBooking = () => {
 
       {/* 订单状态检查 */}
       {orderData.paymentStatus === 'paid' && (
+        <Alert variant="info" className="mb-4">
+          此订单已支付，您可以修改非价格相关的信息。如需修改价格相关信息，请联系客服。
+        </Alert>
+      )}
+
+      {orderData.status === 'completed' && (
         <Alert variant="warning" className="mb-4">
-          此订单已支付，无法修改。如需变更，请联系客服。
+          此订单已完成，无法修改。如需变更，请联系客服。
         </Alert>
       )}
 
@@ -368,8 +374,8 @@ const EditBooking = () => {
           <hr />
           <p className="mb-0 small">
             <strong>如需修改以上信息，请联系客服：</strong><br />
-            📞 客服热线：<strong>1800-123-456</strong><br />
-            💬 在线客服：点击右下角聊天按钮<br />
+            📞 客服热线：<strong>+61 3 1234 5678</strong><br />
+            💬 微信客服：<strong>HappyTassie</strong><br />
             📧 邮箱：<strong>support@happytassietravel.com</strong>
           </p>
         </Alert>
@@ -690,7 +696,7 @@ const EditBooking = () => {
 
             {/* 操作按钮 */}
             <div className="d-grid gap-2">
-              {orderData.paymentStatus === 'unpaid' && orderData.status !== 'cancelled' && (
+              {orderData.status !== 'cancelled' && orderData.status !== 'completed' && (
                 <Button 
                   variant="primary" 
                   type="submit"

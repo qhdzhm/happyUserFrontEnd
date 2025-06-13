@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import LandingBanner from "../../components/Banner/LandingBanner";
 import { Container, Row, Col, Card, Button, Spinner } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
@@ -22,6 +23,7 @@ import themeNature from "../../assets/images/new/1.jpg";
 import themeBeach from "../../assets/images/new/2.jpg";
 import themeCulture from "../../assets/images/new/3.jpg";
 import themeFood from "../../assets/images/new/4.jpg";
+import logoImage from "../../assets/login/logo.png";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -617,19 +619,19 @@ const Home = () => {
       return categoryMap[category] || 'cultural';
     };
     
-    // 额外的标签，根据产品特点添加
-    const getExtraTags = (tour) => {
-      const tags = [];
-      
-      // 根据价格或其他属性添加额外标签
-      if (tour.price > 1000) {
-        tags.push('RELAX');
-      }
-      
-      return tags;
-    };
+    // 移除额外标签功能
+    // const getExtraTags = (tour) => {
+    //   const tags = [];
+    //   
+    //   // 根据价格或其他属性添加额外标签
+    //   if (tour.price > 1000) {
+    //     tags.push('RELAX');
+    //   }
+    //   
+    //   return tags;
+    // };
     
-    const extraTags = getExtraTags(tour);
+    // const extraTags = getExtraTags(tour);
     
     return (
       <Col xs={12} md={6} lg={4} key={tour.id || index} className="mb-4">
@@ -643,17 +645,12 @@ const Home = () => {
               <MdLocationOn /> {tour.location || tour.destination || "塔斯马尼亚"}
             </div>
             <div className="destination-divider"></div>
-            <div className="destination-tags">
+            {/* 移除标签显示部分 */}
+            {/* <div className="destination-tags">
               <span className="tag">
                 {tour.category ? tour.category.toUpperCase() : "CULTURAL"}
               </span>
-              {extraTags.map((tag, i) => (
-                <div key={i}>
-                  <span className="tag">{tag}</span>
-                  {tag === 'RELAX' && <span className="tag plus">+1</span>}
-                </div>
-              ))}
-            </div>
+            </div> */}
             <div className="destination-price">
               <div className="price-value">
                 ${tour.price || 1100}
@@ -687,16 +684,26 @@ const Home = () => {
   const GlobalLoader = () => (
     <div className="global-loader">
       <div className="loader-container">
-        <div className="loader-spinner"></div>
+        <div className="loader-logo-container">
+          <img 
+            src={logoImage} 
+            alt="Happy Tassie Travel" 
+            className="loader-logo"
+          />
+          <div className="loader-spinner-ring"></div>
+        </div>
         <h3 className="loader-title">Happy Tassie Travel</h3>
         <p className="loader-text">正在加载精彩内容...</p>
+        <div className="loader-progress">
+          <div className="loader-progress-bar"></div>
+        </div>
       </div>
     </div>
   );
 
-  // 如果还在初始化加载，显示全局加载器
+  // 如果还在初始化加载，使用Portal将加载器渲染到body
   if (initialLoading) {
-    return <GlobalLoader />;
+    return createPortal(<GlobalLoader />, document.body);
   }
 
   return (
@@ -737,33 +744,7 @@ const Home = () => {
       </div>
       
       <div className="home-content">
-        {/* 精彩一日游部分 */}
-        <section className="day-tours-section section-padding" ref={dayToursRef}>
-          <Container>
-            <Row>
-              <Col>
-                <div 
-                  className="section-header mb-4" 
-                  style={getSpecialAnimationStyle('dayTours', 0, 'slide-right')}
-                >
-                  <h2 className="section-title">塔斯马尼亚精彩一日游</h2>
-                  <div className="section-subtitle">探索塔斯马尼亚最受欢迎的一日游线路</div>
-                </div>
-              </Col>
-            </Row>
-            <Row>
-              {error.dayTours ? (
-                <Col><ErrorMessage message={error.dayTours} /></Col>
-              ) : loading.dayTours ? (
-                <Col><LoadingSpinner /></Col>
-              ) : dayTours.length === 0 ? (
-                <Col><div className="no-data-message">暂无一日游数据</div></Col>
-              ) : (
-                dayTours.map((tour, index) => renderDestinationCard(tour, index, 'day'))
-              )}
-            </Row>
-          </Container>
-        </section>
+        
 
         {/* 热门跟团游部分 */}
         <section className="group-tours-section section-padding bg-light" ref={groupToursRef}>
@@ -788,6 +769,33 @@ const Home = () => {
                 <Col><div className="no-data-message">暂无跟团游数据</div></Col>
               ) : (
                 groupTours.map((tour, index) => renderDestinationCard(tour, index, 'group'))
+              )}
+            </Row>
+          </Container>
+        </section>
+        {/* 精彩一日游部分 */}
+        <section className="day-tours-section section-padding" ref={dayToursRef}>
+          <Container>
+            <Row>
+              <Col>
+                <div 
+                  className="section-header mb-4" 
+                  style={getSpecialAnimationStyle('dayTours', 0, 'slide-right')}
+                >
+                  <h2 className="section-title">塔斯马尼亚精彩一日游</h2>
+                  <div className="section-subtitle">探索塔斯马尼亚最受欢迎的一日游线路</div>
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              {error.dayTours ? (
+                <Col><ErrorMessage message={error.dayTours} /></Col>
+              ) : loading.dayTours ? (
+                <Col><LoadingSpinner /></Col>
+              ) : dayTours.length === 0 ? (
+                <Col><div className="no-data-message">暂无一日游数据</div></Col>
+              ) : (
+                dayTours.map((tour, index) => renderDestinationCard(tour, index, 'day'))
               )}
             </Row>
           </Container>

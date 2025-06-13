@@ -35,8 +35,7 @@ import Orders from '../pages/User/Orders';
 import AgentCenter from '../pages/User/AgentCenter';
 import CreditTransactions from '../pages/User/CreditTransactions';
 
-// 测试页面
-import TestOperator from '../pages/TestOperator/TestOperator';
+
 
 // 受保护的路由组件
 import ProtectedRoute from '../components/Common/ProtectedRoute/ProtectedRoute';
@@ -201,12 +200,7 @@ const AppRoutes = () => {
           </ProtectedRoute>
         } />
         
-        {/* 测试页面 */}
-        <Route path="/test-operator" element={
-          <ProtectedRoute requiredRoles={['user', 'agent', 'operator', 'agent_operator']}>
-            <TestOperator />
-          </ProtectedRoute>
-        } />
+
         
         {/* 404页面路由 */}
         <Route path="*" element={<NotFound />} />

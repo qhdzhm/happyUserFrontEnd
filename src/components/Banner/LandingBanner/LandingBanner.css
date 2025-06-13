@@ -71,6 +71,16 @@ html, body {
   transition: background 400ms 100ms;
 }
 
+/* 可点击背景样式 */
+.clickable-background {
+  cursor: pointer;
+  transition: filter 0.3s ease;
+}
+
+.clickable-background:hover {
+  filter: brightness(1.05);
+}
+
 .background-container::after {
   background-color: rgba(0, 0, 0, 0.1);
   bottom: 0;
@@ -225,10 +235,24 @@ html, body {
   justify-content: flex-end;
   margin-right: 40px;
   padding: 1.5rem;
-  transition: box-shadow 200ms 15ms;
+  transition: box-shadow 200ms 15ms, transform 0.3s ease;
   white-space: normal;
   width: 230px;
   position: relative;
+}
+
+/* 可点击卡片样式 */
+.clickable-card {
+  cursor: pointer;
+}
+
+.clickable-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 20px 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.clickable-card:active {
+  transform: translateY(-2px);
 }
 
 .slider-card::before {

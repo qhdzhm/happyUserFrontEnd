@@ -106,8 +106,10 @@ table {
 	font-weight: 800 !important;
 }
 
-/* 添加现代旅行网站常用的样式 */
-.section-title {
+/* 添加现代旅行网站常用的样式 - 限制在特定页面 */
+.home-page .section-title,
+.about-page .section-title,
+.contact-page .section-title {
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 1.5rem;
@@ -115,7 +117,9 @@ table {
   color: var(--textClr);
 }
 
-.section-title:after {
+.home-page .section-title:after,
+.about-page .section-title:after,
+.contact-page .section-title:after {
   content: '';
   position: absolute;
   left: 0;
@@ -125,7 +129,9 @@ table {
   background-color: var(--primaryClr);
 }
 
-.section-title.text-center:after {
+.home-page .section-title.text-center:after,
+.about-page .section-title.text-center:after,
+.contact-page .section-title.text-center:after {
   left: 50%;
   transform: translateX(-50%);
 }

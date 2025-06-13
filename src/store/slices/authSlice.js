@@ -77,7 +77,11 @@ export const loginUser = createAsyncThunk(
       
       // 执行登录请求
       console.log(`发起登录请求: 用户类型=${isAgentLogin ? 'agent' : 'regular'}, 用户名=${credentials.username}`);
+      console.log(`登录请求路径: ${loginPath}`);
+      console.log(`登录请求数据:`, loginData);
+      
       const response = await login(loginData, loginPath);
+      console.log(`登录响应收到:`, response);
       
       // 检查是否获得有效响应
       if (!response || response.code !== 1) {
@@ -327,92 +331,195 @@ export const updateProfile = createAsyncThunk(
   }
 );
 
-// 退出登录
-export const logoutUser = createAction('auth/logout', () => {
-  // 清除localStorage中的所有认证信息
-  localStorage.removeItem(STORAGE_KEYS.TOKEN);
-  localStorage.removeItem(STORAGE_KEYS.USER);
-  localStorage.removeItem('user');
-  localStorage.removeItem('userType');
-  localStorage.removeItem('username');
-  localStorage.removeItem('token');
-  localStorage.removeItem('userToken');
-  localStorage.removeItem('authentication');
-  localStorage.removeItem('jwt');
-  localStorage.removeItem('agentId');
-  localStorage.removeItem('operatorId');
-  localStorage.removeItem('discountRate');
-  localStorage.removeItem('canSeeDiscount');
-  localStorage.removeItem('canSeeCredit');
-  
-  // 清除sessionStorage中可能存在的认证信息
-  sessionStorage.removeItem('authentication');
-  sessionStorage.removeItem('token');
-  sessionStorage.removeItem('userToken');
-  
-  // 为了确保完全退出，重置应用状态
-  return {
-    payload: null
-  };
-});
+// 登出用户 - 修改为async thunk确保正确清理cookie
+export const logoutUser = createAsyncThunk(
+  'auth/logoutUser',
+  async (_, { rejectWithValue }) => {
+    try {
+      console.log('开始执行登出流程...');
+      
+      // 调用API logout清理所有数据
+      const { logout: apiLogout } = require('../../utils/api');
+      await apiLogout();
+      
+      console.log('登出流程完成');
+      return true;
+    } catch (error) {
+      console.warn('API logout调用失败，但继续清理本地数据:', error);
+      
+      // 即使API调用失败，也执行基本的清理
+      const keysToRemove = [
+        'token', 'authentication', 'userToken', 'jwt',
+        'userType', 'username', 'user', 'userId',
+        'agentId', 'operatorId', 'discountRate',
+        'canSeeDiscount', 'canSeeCredit'
+      ];
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      
+      return true; // 即使失败也返回成功，确保状态被清理
+    }
+  }
+);
 
 // 异步action：验证token有效性
 export const validateToken = createAsyncThunk(
   'auth/validateToken',
   async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem(STORAGE_KEYS.TOKEN) || localStorage.getItem('token');
-      if (!token) {
-        return false;
-      }
+      // 导入认证工具函数
+      const { shouldUseCookieAuth, isAuthenticated, getUserInfoFromCookie, syncUserInfoToLocalStorage } = require('../../utils/auth');
+      
+      const useCookieAuth = shouldUseCookieAuth();
+      console.log('validateToken: Cookie认证模式:', useCookieAuth);
+      
+      if (useCookieAuth) {
+        // Cookie认证模式：检查是否有用户信息Cookie
+        const authenticated = isAuthenticated();
+        
+        if (authenticated) {
+          // 同步用户信息到localStorage
+          syncUserInfoToLocalStorage();
+          
+          // 从localStorage获取同步后的用户信息
+          const username = localStorage.getItem('username');
+          const userType = localStorage.getItem('userType');
+          const agentId = localStorage.getItem('agentId');
+          const operatorId = localStorage.getItem('operatorId');
+          const discountRate = localStorage.getItem('discountRate');
+          
+          const userData = {
+            isAuthenticated: true,
+            username: username,
+            userType: userType || 'regular',
+            role: userType || 'regular',
+            agentId: agentId ? parseInt(agentId, 10) : null,
+            operatorId: operatorId ? parseInt(operatorId, 10) : null,
+            discountRate: discountRate ? parseFloat(discountRate) : null
+          };
+          
+          console.log('validateToken (Cookie模式) 恢复的用户数据:', userData);
+          return userData;
+        } else {
+          console.log('validateToken (Cookie模式): 未检测到有效认证');
+          return false;
+        }
+      } else {
+        // localStorage Token模式
+        const token = localStorage.getItem(STORAGE_KEYS.TOKEN) || localStorage.getItem('token');
+        if (!token) {
+          console.log('validateToken (Token模式): 未找到token');
+          
+          // 检查是否有残留的用户信息，如果有就清理
+          const hasUserInfo = localStorage.getItem('username') || 
+                             localStorage.getItem('userType') || 
+                             localStorage.getItem('user') ||
+                             localStorage.getItem('agentId') ||
+                             localStorage.getItem('operatorId');
+                             
+          if (hasUserInfo) {
+            console.log('发现残留的用户信息，清理所有数据');
+            // 清除所有认证相关数据
+            const keysToRemove = [
+              'user', 'userType', 'username', 'agentId', 'operatorId', 
+              'discountRate', 'canSeeDiscount', 'canSeeCredit'
+            ];
+            keysToRemove.forEach(key => localStorage.removeItem(key));
+            
+            // 清除所有聊天记录
+            try {
+              const chatKeysToRemove = [];
+              for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('chatbot_messages_')) {
+                  chatKeysToRemove.push(key);
+                }
+              }
+              
+              chatKeysToRemove.forEach(key => {
+                localStorage.removeItem(key);
+                console.log(`已清除聊天记录: ${key}`);
+              });
+              
+              console.log(`无token时总共清除了 ${chatKeysToRemove.length} 个聊天记录`);
+            } catch (error) {
+              console.error('清除聊天记录失败:', error);
+            }
+          }
+          
+          return false;
+        }
 
-      const isValid = await verifyTokenValidity();
-      
-      if (!isValid) {
-        // 清除localStorage中的认证信息
-        localStorage.removeItem(STORAGE_KEYS.TOKEN);
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        localStorage.removeItem('userType');
-        localStorage.removeItem('username');
-        localStorage.removeItem('agentId');
-        localStorage.removeItem('operatorId');
-        localStorage.removeItem('discountRate');
-        localStorage.removeItem('canSeeDiscount');
-        localStorage.removeItem('canSeeCredit');
-        return false;
-      }
+        const { verifyTokenValidity } = require('../../utils/auth');
+        const isValid = await verifyTokenValidity();
+        
+        if (!isValid) {
+          console.log('validateToken (Token模式): token验证失败，清除认证信息');
+          // 清除localStorage中的认证信息
+          localStorage.removeItem(STORAGE_KEYS.TOKEN);
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          localStorage.removeItem('userType');
+          localStorage.removeItem('username');
+          localStorage.removeItem('agentId');
+          localStorage.removeItem('operatorId');
+          localStorage.removeItem('discountRate');
+          localStorage.removeItem('canSeeDiscount');
+          localStorage.removeItem('canSeeCredit');
+          
+          // 清除所有聊天记录
+          try {
+            const chatKeysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+              const key = localStorage.key(i);
+              if (key && key.startsWith('chatbot_messages_')) {
+                chatKeysToRemove.push(key);
+              }
+            }
+            
+            chatKeysToRemove.forEach(key => {
+              localStorage.removeItem(key);
+              console.log(`已清除聊天记录: ${key}`);
+            });
+            
+            console.log(`token验证失败时总共清除了 ${chatKeysToRemove.length} 个聊天记录`);
+          } catch (error) {
+            console.error('清除聊天记录失败:', error);
+          }
+          
+          return false;
+        }
 
-      // 如果token有效，从localStorage恢复用户信息
-      const username = localStorage.getItem('username');
-      const userType = localStorage.getItem('userType');
-      const agentId = localStorage.getItem('agentId');
-      const operatorId = localStorage.getItem('operatorId');
-      const discountRate = localStorage.getItem('discountRate');
-      
-      // 尝试从token中解析更多信息
-      let tokenData = {};
-      try {
-        const payload = token.split('.')[1];
-        tokenData = JSON.parse(atob(payload));
-        console.log('Token解析结果:', tokenData);
-      } catch (e) {
-        console.warn('Token解析失败，使用localStorage数据');
+        // 如果token有效，从localStorage恢复用户信息
+        const username = localStorage.getItem('username');
+        const userType = localStorage.getItem('userType');
+        const agentId = localStorage.getItem('agentId');
+        const operatorId = localStorage.getItem('operatorId');
+        const discountRate = localStorage.getItem('discountRate');
+        
+        // 尝试从token中解析更多信息
+        let tokenData = {};
+        try {
+          const payload = token.split('.')[1];
+          tokenData = JSON.parse(atob(payload));
+          console.log('Token解析结果:', tokenData);
+        } catch (e) {
+          console.warn('Token解析失败，使用localStorage数据');
+        }
+        
+        const userData = {
+          isAuthenticated: true,
+          token,
+          username: username || tokenData.username,
+          userType: userType || tokenData.userType || 'regular',
+          role: userType || tokenData.userType || 'regular',
+          agentId: agentId ? parseInt(agentId, 10) : (tokenData.agentId || null),
+          operatorId: operatorId ? parseInt(operatorId, 10) : (tokenData.operatorId || null),
+          discountRate: discountRate ? parseFloat(discountRate) : (tokenData.discountRate || null)
+        };
+        
+        console.log('validateToken (Token模式) 恢复的用户数据:', userData);
+        return userData;
       }
-      
-      const userData = {
-        isAuthenticated: true,
-        token,
-        username: username || tokenData.username,
-        userType: userType || tokenData.userType || 'regular',
-        role: userType || tokenData.userType || 'regular',
-        agentId: agentId ? parseInt(agentId, 10) : (tokenData.agentId || null),
-        operatorId: operatorId ? parseInt(operatorId, 10) : (tokenData.operatorId || null),
-        discountRate: discountRate ? parseFloat(discountRate) : (tokenData.discountRate || null)
-      };
-      
-      console.log('validateToken 恢复的用户数据:', userData);
-      return userData;
     } catch (error) {
       console.error('Token验证过程中出错:', error);
       return rejectWithValue('Token验证失败');
@@ -443,23 +550,36 @@ const authSlice = createSlice({
       state.error = null;
       state.tokenValidated = true;
     },
-    // 登出
+    // 登出（保持向后兼容，但建议使用logoutUser）
     logout: (state) => {
-      localStorage.removeItem(STORAGE_KEYS.TOKEN);
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      localStorage.removeItem('userType');
-      localStorage.removeItem('username');
-      localStorage.removeItem('agentId');
-      localStorage.removeItem('operatorId');
-      localStorage.removeItem('discountRate');
-      localStorage.removeItem('canSeeDiscount');
-      localStorage.removeItem('canSeeCredit');
+      // 建议：直接使用dispatch(logoutUser())而不是dispatch(logout())
+      console.warn('建议使用logoutUser() async thunk而不是logout() action');
+      
+      // 立即清理Redux状态
       state.user = null;
       state.userType = null;
       state.isAuthenticated = false;
       state.error = null;
       state.tokenValidated = true;
+      
+      // 异步调用完整的logout函数来清理所有数据
+      setTimeout(async () => {
+        try {
+          const { logout: apiLogout } = require('../../utils/api');
+          await apiLogout();
+          console.log('✓ 完整logout清理完成');
+        } catch (error) {
+          console.warn('API logout调用失败:', error);
+          // 即使API调用失败，也执行基本的清理
+          const keysToRemove = [
+            'token', 'authentication', 'userToken', 'jwt',
+            'userType', 'username', 'user', 'userId',
+            'agentId', 'operatorId', 'discountRate',
+            'canSeeDiscount', 'canSeeCredit'
+          ];
+          keysToRemove.forEach(key => localStorage.removeItem(key));
+        }
+      }, 0);
       
       // 触发登出状态变化事件，通知其他组件
       setTimeout(() => {
@@ -489,6 +609,14 @@ const authSlice = createSlice({
           state.userType = action.payload.userType; // 设置userType到顶级
           state.isAuthenticated = true;
           console.log('Token验证成功，用户信息已恢复:', action.payload);
+          
+          // 同步用户信息到localStorage（用于ChatBot等组件）
+          try {
+            const { syncUserInfoToLocalStorage } = require('../../utils/auth');
+            syncUserInfoToLocalStorage();
+          } catch (error) {
+            console.warn('同步用户信息失败:', error);
+          }
         } else {
           state.user = null;
           state.userType = null;
@@ -520,6 +648,14 @@ const authSlice = createSlice({
         localStorage.setItem('user', JSON.stringify(action.payload));
         if (action.payload.username) {
           localStorage.setItem('username', action.payload.username);
+        }
+        
+        // 同步用户信息到localStorage（用于ChatBot等组件）
+        try {
+          const { syncUserInfoToLocalStorage } = require('../../utils/auth');
+          syncUserInfoToLocalStorage();
+        } catch (error) {
+          console.warn('同步用户信息失败:', error);
         }
         
         // 保存用户类型
@@ -635,7 +771,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = action.payload;
         
-        // 将更新后的用户信息保存到localStorage
+        // 将用户信息保存到localStorage
         localStorage.setItem('user', JSON.stringify(action.payload));
         if (action.payload.username) {
           localStorage.setItem('username', action.payload.username);
@@ -644,6 +780,41 @@ const authSlice = createSlice({
       .addCase(updateProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      // 登出用户
+      .addCase(logoutUser.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.loading = false;
+        state.user = null;
+        state.userType = null;
+        state.isAuthenticated = false;
+        state.error = null;
+        state.tokenValidated = true;
+        
+        // 触发登出状态变化事件，通知其他组件
+        setTimeout(() => {
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('logoutStateChanged'));
+          }
+        }, 100);
+      })
+      .addCase(logoutUser.rejected, (state) => {
+        // 即使失败也清理状态
+        state.loading = false;
+        state.user = null;
+        state.userType = null;
+        state.isAuthenticated = false;
+        state.error = null;
+        state.tokenValidated = true;
+        
+        // 触发登出状态变化事件，通知其他组件
+        setTimeout(() => {
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('logoutStateChanged'));
+          }
+        }, 100);
       });
   }
 });

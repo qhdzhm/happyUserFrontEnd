@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>修复认证状态</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .info { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        button { padding: 10px 15px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-success { background: #28a745; color: white; }
+    </style>
+</head>
+<body>
+    <h1>修复认证状态</h1>
+    
+    <div id="current-status" class="info">
+        <h3>当前状态:</h3>
+        <div id="status-content"></div>
+    </div>
+    
+    <div class="info">
+        <h3>操作:</h3>
+        <button class="btn-primary" onclick="fixAuthState()">修复认证状态</button>
+        <button class="btn-danger" onclick="clearAllData()">清除所有数据</button>
+        <button class="btn-success" onclick="refreshStatus()">刷新状态</button>
+    </div>
+    
+    <div id="log" class="info">
+        <h3>操作日志:</h3>
+        <div id="log-content"></div>
+    </div>
+    
+    <script>
+        function log(message, type = 'info') {
+            const logContent = document.getElementById('log-content');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : 'info';
+            logContent.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+            logContent.scrollTop = logContent.scrollHeight;
+        }
+        
+        function getCookies() {
+            const cookies = {};
+            document.cookie.split(';').forEach(cookie => {
+                const [name, value] = cookie.trim().split('=');
+                if (name && value) {
+                    cookies[name] = decodeURIComponent(value);
+                }
+            });
+            return cookies;
+        }
+        
+        function refreshStatus() {
+            const statusDiv = document.getElementById('status-content');
+            const cookies = getCookies();
+            
+            // 检查localStorage
+            const localData = {
+                token: localStorage.getItem('token'),
+                user: localStorage.getItem('user'),
+                username: localStorage.getItem('username'),
+                userType: localStorage.getItem('userType'),
+                agentId: localStorage.getItem('agentId'),
+                userId: localStorage.getItem('userId'),
+                canSeeDiscount: localStorage.getItem('canSeeDiscount'),
+                canSeeCredit: localStorage.getItem('canSeeCredit')
+            };
+            
+            let statusHtml = '<h4>localStorage数据:</h4>';
+            Object.keys(localData).forEach(key => {
+                const value = localData[key];
+                statusHtml += `<p><strong>${key}:</strong> ${value || '(空)'}</p>`;
+            });
+            
+            statusHtml += '<h4>Cookie数据:</h4>';
+            if (Object.keys(cookies).length > 0) {
+                Object.keys(cookies).forEach(key => {
+                    statusHtml += `<p><strong>${key}:</strong> ${cookies[key]}</p>`;
+                });
+            } else {
+                statusHtml += '<p>没有Cookie数据</p>';
+            }
+            
+            // 分析问题
+            statusHtml += '<h4>问题分析:</h4>';
+            const issues = [];
+            
+            if (localData.userType === 'agent' && localData.userId) {
+                issues.push('Agent用户不应该有userId');
+            }
+            
+            if (localData.token && Object.keys(cookies).length > 0) {
+                issues.push('Cookie认证模式下不应该在localStorage存储token');
+            }
+            
+            if (localData.userType === 'agent' && localData.canSeeCredit === 'false') {
+                issues.push('Agent主账号应该能看信用额度');
+            }
+            
+            if (issues.length > 0) {
+                statusHtml += '<ul>';
+                issues.forEach(issue => {
+                    statusHtml += `<li style="color: red;">${issue}</li>`;
+                });
+                statusHtml += '</ul>';
+            } else {
+                statusHtml += '<p style="color: green;">没有发现问题</p>';
+            }
+            
+            statusDiv.innerHTML = statusHtml;
+        }
+        
+        function fixAuthState() {
+            log('开始修复认证状态...', 'info');
+            
+            const userType = localStorage.getItem('userType');
+            const cookies = getCookies();
+            
+            if (!userType) {
+                log('没有找到用户类型，无法修复', 'error');
+                return;
+            }
+            
+            // 修复Agent用户的问题
+            if (userType === 'agent' || userType === 'agent_operator') {
+                // 清除userId
+                if (localStorage.getItem('userId')) {
+                    localStorage.removeItem('userId');
+                    log('已清除不必要的userId', 'success');
+                }
+                
+                // 如果有Cookie，清除localStorage中的token
+                if (Object.keys(cookies).length > 0 && localStorage.getItem('token')) {
+                    localStorage.removeItem('token');
+                    log('Cookie认证模式下已清除localStorage中的token', 'success');
+                }
+                
+                // 设置正确的权限
+                if (userType === 'agent') {
+                    localStorage.setItem('canSeeDiscount', 'true');
+                    localStorage.setItem('canSeeCredit', 'true');
+                    log('已设置Agent主账号权限：可看折扣和信用额度', 'success');
+                } else if (userType === 'agent_operator') {
+                    localStorage.setItem('canSeeDiscount', 'false');
+                    localStorage.setItem('canSeeCredit', 'false');
+                    log('已设置Agent操作员权限：不可看折扣和信用额度', 'success');
+                }
+            } else if (userType === 'regular') {
+                // 普通用户权限
+                localStorage.setItem('canSeeDiscount', 'true');
+                localStorage.setItem('canSeeCredit', 'false');
+                log('已设置普通用户权限：可看折扣，不可看信用额度', 'success');
+            }
+            
+            // 强制触发Redux状态更新
+            try {
+                // 触发自定义事件通知应用重新验证token
+                window.dispatchEvent(new CustomEvent('forceTokenValidation'));
+                log('已触发强制token验证事件', 'success');
+            } catch (e) {
+                log('触发token验证事件失败: ' + e.message, 'error');
+            }
+            
+            log('认证状态修复完成', 'success');
+            refreshStatus();
+            
+            // 触发页面刷新事件
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('loginStateChanged'));
+                log('已触发登录状态变化事件', 'info');
+                
+                // 延迟刷新页面以确保状态同步
+                setTimeout(() => {
+                    log('3秒后将刷新页面以确保状态同步...', 'info');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 3000);
+                }, 1000);
+            }
+        }
+        
+        function clearAllData() {
+            if (confirm('确定要清除所有认证数据吗？这将导致退出登录。')) {
+                localStorage.clear();
+                log('已清除所有localStorage数据', 'success');
+                refreshStatus();
+            }
+        }
+        
+        // 页面加载时刷新状态
+        refreshStatus();
+        
+        // 每10秒自动刷新
+        setInterval(refreshStatus, 10000);
+    </script>
+</body>
+</html> 

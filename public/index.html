@@ -1,34 +1,218 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
+    <meta name="theme-color" content="#ff6b35" />
+    
+    <!-- SEO基础元信息 -->
+    <meta name="description" content="HTAS - 塔斯马尼亚专业华人旅游服务商。提供塔州一日游、多日跟团游、自由行定制、酒店预订等全方位旅游服务。布鲁尼岛、摇篮山、酒杯湾、塔斯曼半岛等热门景点，专业中文导游服务！" />
+    <meta name="keywords" content="HTAS,塔斯马尼亚旅游,Tasmania旅游,塔州华人旅游,塔斯马尼亚一日游,塔州跟团游,布鲁尼岛,摇篮山,酒杯湾,塔斯曼半岛,霍巴特旅游,塔州自由行,澳洲旅游,中文导游,塔斯马尼亚旅行社" />
+    <meta name="author" content="HTAS Tasmania Travel Services" />
+    <meta name="robots" content="index, follow" />
+    <meta name="geo.region" content="AU-TAS" />
+    <meta name="geo.placename" content="Tasmania, Australia" />
+    <meta name="geo.position" content="-42.8821;147.3272" />
+    <meta name="ICBM" content="-42.8821, 147.3272" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.htas.com.au/" />
+    <meta property="og:title" content="HTAS - 塔斯马尼亚专业华人旅游服务" />
+    <meta property="og:description" content="塔斯马尼亚专业华人旅游服务商，提供一日游、跟团游、自由行定制等全方位旅游服务。布鲁尼岛、摇篮山、酒杯湾等热门景点，专业中文导游！" />
+    <meta property="og:image" content="https://www.htas.com.au/logo512.png" />
+    <meta property="og:site_name" content="HTAS Tasmania Travel" />
+    <meta property="og:locale" content="zh_CN" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://www.htas.com.au/" />
+    <meta property="twitter:title" content="HTAS - 塔斯马尼亚专业华人旅游服务" />
+    <meta property="twitter:description" content="塔斯马尼亚专业华人旅游服务商，提供一日游、跟团游、自由行定制等全方位旅游服务。布鲁尼岛、摇篮山、酒杯湾等热门景点，专业中文导游！" />
+    <meta property="twitter:image" content="https://www.htas.com.au/logo512.png" />
+    
+    <!-- 移动端优化 -->
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="HTAS Tasmania" />
+    
+    <!-- 地理和本地SEO -->
+    <meta name="format-detection" content="telephone=yes" />
+    <meta name="DC.title" content="HTAS - 塔斯马尼亚专业华人旅游服务" />
+    <meta name="DC.subject" content="塔斯马尼亚旅游,Tasmania Travel,华人旅游服务" />
+    <meta name="DC.description" content="HTAS提供塔斯马尼亚全方位华人旅游服务" />
+    
+    <!-- 搜索引擎验证（需要去各平台获取验证码） -->
+    <!-- <meta name="google-site-verification" content="您的Google验证码" /> -->
+    <!-- <meta name="baidu-site-verification" content="您的百度验证码" /> -->
+    <!-- <meta name="msvalidate.01" content="您的Bing验证码" /> -->
+    
+    <!-- 结构化数据 - 旅游公司 -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TravelAgency",
+      "name": "HTAS Tasmania Travel Services",
+      "alternateName": ["HTAS", "塔斯马尼亚华人旅游"],
+      "url": "https://www.htas.com.au",
+      "logo": "https://www.htas.com.au/logo512.png",
+      "description": "塔斯马尼亚专业华人旅游服务商，提供一日游、跟团游、自由行定制等全方位旅游服务",
+      "telephone": "0404-XXX-XXX",
+      "email": "info@htas.com.au",
+      "address": {
+        "@type": "PostalAddress",
+        "addressRegion": "Tasmania",
+        "addressCountry": "Australia",
+        "addressLocality": "Hobart"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": -42.8821,
+        "longitude": 147.3272
+      },
+      "areaServed": [
+        {
+          "@type": "State",
+          "name": "Tasmania"
+        }
+      ],
+      "serviceType": [
+        "一日游服务",
+        "跟团游服务", 
+        "自由行定制",
+        "酒店预订",
+        "接送服务"
+      ],
+      "knowsAbout": [
+        "布鲁尼岛",
+        "摇篮山",
+        "酒杯湾",
+        "塔斯曼半岛",
+        "霍巴特",
+        "朗塞斯顿"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "category": "旅游服务",
+        "availability": "https://schema.org/InStock"
+      },
+      "potentialAction": {
+        "@type": "ReserveAction",
+        "target": "https://www.htas.com.au/booking-form"
+      }
+    }
+    </script>
+    
+    <!-- 本地商家结构化数据 -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "HTAS Tasmania Travel Services",
+      "image": "https://www.htas.com.au/logo512.png",
+      "@id": "https://www.htas.com.au",
+      "url": "https://www.htas.com.au",
+      "telephone": "0404-XXX-XXX",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Tasmania",
+        "addressLocality": "Hobart",
+        "addressRegion": "TAS",
+        "postalCode": "7000",
+        "addressCountry": "AU"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": -42.8821,
+        "longitude": 147.3272
+      },
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "Monday",
+          "Tuesday", 
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday"
+        ],
+        "opens": "08:00",
+        "closes": "18:00"
+      },
+      "sameAs": [
+        "https://www.facebook.com/htas.com.au",
+        "https://www.instagram.com/htas_tasmania"
+      ]
+    }
+    </script>
+    
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
-
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>React App</title>
+    <link rel="canonical" href="https://www.htas.com.au/" />
+    
+    <title>HTAS - 塔斯马尼亚专业华人旅游服务 | 一日游跟团游自由行首选</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
+    <!-- 百度SEO优化 -->
+    <meta name="keywords" content="塔斯马尼亚旅游,HTAS,中文导游,澳洲旅游,摇篮山,酒杯湾,布鲁尼岛,一日游,跟团游" />
+    <meta name="author" content="HTAS塔斯马尼亚华人旅游" />
+    
+    <!-- 百度站长验证 -->
+    <meta name="baidu-site-verification" content="codeva-YOUR_VERIFICATION_CODE" />
+    <meta name="baidu_union_verify" content="YOUR_BAIDU_UNION_CODE" />
+    
+    <!-- 移动适配 -->
+    <meta name="mobile-agent" content="format=html5; url=https://m.htas.com.au/" />
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- 预连接优化 -->
+    <link rel="preconnect" href="https://hm.baidu.com">
+    <link rel="preconnect" href="https://zz.bdstatic.com">
+    <link rel="dns-prefetch" href="//www.google-analytics.com">
+    
+    <!-- 百度统计 -->
+    <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?YOUR_BAIDU_ANALYTICS_ID";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>
+    
+    <!-- 百度推送 -->
+    <script>
+      (function(){
+          var bp = document.createElement('script');
+          var curProtocol = window.location.protocol.split(':')[0];
+          if (curProtocol === 'https') {
+              bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+          }
+          else {
+              bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+          }
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(bp, s);
+      })();
+    </script>
+    
+    <!-- Open Graph for Baidu -->
+    <meta property="og:title" content="HTAS塔斯马尼亚华人旅游 - 专业中文导游服务" />
+    <meta property="og:description" content="专业提供塔斯马尼亚旅游服务，中文导游带您游览摇篮山、酒杯湾、布鲁尼岛等景点。一日游、跟团游多种选择。" />
+    <meta property="og:image" content="%PUBLIC_URL%/logo512.png" />
+    <meta property="og:url" content="https://www.htas.com.au" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="HTAS塔斯马尼亚华人旅游" />
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>
+      <strong>抱歉，需要启用JavaScript才能正常使用HTAS旅游网站。</strong>
+      <p>请在浏览器中启用JavaScript以获得最佳体验。</p>
+    </noscript>
     <div id="root"></div>
     <!--
       This HTML file is a template.
@@ -40,5 +224,22 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    
+    <!-- 百度商桥客服 -->
+    <script>
+      window._bd_share_config = {
+        "common": {
+          "bdSnsKey": {},
+          "bdText": "",
+          "bdMini": "2",
+          "bdMiniList": false,
+          "bdPic": "",
+          "bdStyle": "0",
+          "bdSize": "32"
+        },
+        "share": {}
+      };
+      with(document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion=' + ~(-new Date() / 36e5)];
+    </script>
   </body>
 </html>

@@ -128,19 +128,29 @@ const AgentBooking = () => {
     aiCustomerPhone3
   });
   
-  // 酒店星级标准化函数
+  // 酒店星级标准化函数 - 修复：保持4.5星不被降级
   const normalizeHotelLevel = (levelStr) => {
     if (!levelStr) return '4星';
     
-    // 提取数字部分
+    // 提取数字部分，支持小数
     const numMatch = levelStr.match(/(\d+(?:\.\d+)?)/);
     if (numMatch) {
       const num = parseFloat(numMatch[1]);
-      // 3.5星 → 3星, 4.5星 → 4星
-      const roundedNum = Math.floor(num);
-      const result = `${roundedNum}星`;
-      console.log(`🏨 酒店星级标准化: "${levelStr}" → "${result}"`);
-      return result;
+      
+      // 支持的星级：3星、4星、4.5星（3.5星算3星）
+      if (num >= 4.5) {
+        const result = '4.5星';  // 4.5星及以上都是4.5星
+        console.log(`🏨 酒店星级标准化: "${levelStr}" → "${result}"`);
+        return result;
+      } else if (num >= 4) {
+        const result = '4星';  // 4-4.4星都是4星
+        console.log(`🏨 酒店星级标准化: "${levelStr}" → "${result}"`);
+        return result;
+      } else {
+        const result = '3星';  // 3.5星及以下都算3星
+        console.log(`🏨 酒店星级标准化: "${levelStr}" → "${result}" (包括3.5星)`);
+        return result;
+      }
     }
     
     console.log(`🏨 酒店星级无法解析，使用默认: "${levelStr}" → "4星"`);
@@ -296,61 +306,115 @@ const AgentBooking = () => {
     });
   }
   
-  // 使用AI参数优先
+  // 使用AI参数优先，支持多种参数名格式
   const initialAdults = (isAIProcessed && aiGroupSize) ? 
-    parseInt(aiGroupSize) : (parseInt(searchParams.get('adults')) || 2);
-  const initialChildren = parseInt(searchParams.get('children')) || 0;
+    parseInt(aiGroupSize) : (
+      parseInt(searchParams.get('adultCount')) || 
+      parseInt(searchParams.get('adults')) || 2
+    );
+  const initialChildren = parseInt(searchParams.get('childCount')) || 
+    parseInt(searchParams.get('children')) || 0;
   const tourName = searchParams.get('tourName');
   const tourType = searchParams.get('tourType');
   
 
 
-  // 表单数据 - 整合AI参数
+  // 从URL参数获取更多初始值
+  const urlHotelLevel = searchParams.get('hotelLevel');
+  const urlRoomCount = parseInt(searchParams.get('roomCount')) || Math.ceil(initialAdults / 2);
+  const urlDate = searchParams.get('date');
+  const urlArrivalDate = searchParams.get('arrivalDate');
+  const urlDepartureDate = searchParams.get('departureDate');
+  const urlChildrenAges = searchParams.get('childrenAges');
+  
+  // 处理日期参数 - 支持多种格式
+  const getInitialStartDate = () => {
+    if (isAIProcessed && aiStartDate) return parseDateFromAI(aiStartDate);
+    if (urlArrivalDate) return parseDateFromParam(urlArrivalDate);
+    if (urlDate) return parseDateFromParam(urlDate);
+    return initialStartDate;
+  };
+  
+  const getInitialEndDate = () => {
+    if (isAIProcessed && aiEndDate) return parseDateFromAI(aiEndDate);
+    if (urlDepartureDate) return parseDateFromParam(urlDepartureDate);
+    return initialEndDate;
+  };
+  
+  const finalStartDate = getInitialStartDate();
+  const finalEndDate = getInitialEndDate();
+  
+  console.log('🔗 URL参数解析:', {
+    adultCount: initialAdults,
+    childCount: initialChildren,
+    roomCount: urlRoomCount,
+    hotelLevel: urlHotelLevel,
+    startDate: finalStartDate?.toISOString?.()?.split('T')[0],
+    endDate: finalEndDate?.toISOString?.()?.split('T')[0],
+    原始URL参数: Object.fromEntries(searchParams.entries())
+  });
+
+  // 表单数据 - 整合AI参数和URL参数
   const [formData, setFormData] = useState({
     adult_count: initialAdults,
     child_count: initialChildren,
-    tour_start_date: initialStartDate,
-    tour_end_date: initialEndDate,
-    hotel_level: (isAIProcessed && aiHotelLevel) ? normalizeHotelLevel(aiHotelLevel) : '4星',
-    hotel_room_count: Math.ceil(initialAdults / 2),
-    roomTypes: Array(Math.ceil(initialAdults / 2)).fill(
+    tour_start_date: finalStartDate,
+    tour_end_date: finalEndDate,
+    hotel_level: (isAIProcessed && aiHotelLevel) ? 
+      normalizeHotelLevel(aiHotelLevel) : 
+      (urlHotelLevel ? normalizeHotelLevel(urlHotelLevel) : '4星'),
+    hotel_room_count: urlRoomCount,
+    roomTypes: Array(urlRoomCount).fill(
       (isAIProcessed && aiRoomType) ? normalizeRoomType(aiRoomType) : '双人间'
     ),
     // AI参数优先设置
     pickup_location: (isAIProcessed && aiDeparture) ? decodeURIComponent(aiDeparture) : '',
     dropoff_location: (isAIProcessed && aiDeparture) ? decodeURIComponent(aiDeparture) : '',
     // 接送日期
-    pickup_date: initialStartDate,
-    dropoff_date: initialEndDate,
+    pickup_date: finalStartDate,
+    dropoff_date: finalEndDate,
     // AI航班信息
     arrival_flight: (isAIProcessed && aiArrivalFlight && aiArrivalFlight !== '待定') ? aiArrivalFlight : '',
     departure_flight: (isAIProcessed && aiDepartureFlight && aiDepartureFlight !== '待定') ? aiDepartureFlight : '',
     arrival_departure_time: null,
-    arrival_landing_time: (isAIProcessed && aiArrivalTime) ? parseTimeToDate(aiArrivalTime, initialStartDate) : null,
+    arrival_landing_time: (isAIProcessed && aiArrivalTime) ? parseTimeToDate(aiArrivalTime, finalStartDate) : null,
     departure_departure_time: null,
     departure_landing_time: null,
     // 酒店入住退房日期
-    hotel_checkin_date: initialStartDate,
-    hotel_checkout_date: initialEndDate,
+    hotel_checkin_date: finalStartDate,
+    hotel_checkout_date: finalEndDate,
     // AI特殊要求
     special_requests: (isAIProcessed && aiSpecialRequests) ? decodeURIComponent(aiSpecialRequests) : '',
     passengers: [],
     total_price: '0.00'
   });
 
-  // 初始化乘客信息 - 整合AI客户信息
+  // 初始化乘客信息 - 整合AI客户信息和URL参数
   useEffect(() => {
     const totalPassengers = formData.adult_count + formData.child_count;
     const passengers = [];
     
+    // 解析URL传递的儿童年龄
+    const childrenAgesFromUrl = urlChildrenAges ? 
+      urlChildrenAges.split(',').map(age => age.trim()).filter(age => age) : [];
+    
+    console.log('👶 儿童年龄参数:', {
+      urlChildrenAges,
+      解析后: childrenAgesFromUrl,
+      儿童数量: formData.child_count
+    });
+    
     for (let i = 0; i < totalPassengers; i++) {
+      const isChild = i >= formData.adult_count;
+      const childIndex = i - formData.adult_count;
+      
       const passenger = {
         full_name: '',
         phone: i === 0 ? (user?.phone || '') : '',
         wechat_id: i === 0 ? (user?.wechat_id || '') : '',
         passport_number: '',
-        is_child: i >= formData.adult_count,
-        child_age: i >= formData.adult_count ? '' : null,
+        is_child: isChild,
+        child_age: isChild ? (childrenAgesFromUrl[childIndex] || '') : null,
         is_primary: i === 0
       };
       
@@ -379,7 +443,7 @@ const AgentBooking = () => {
     }
     
     setFormData(prev => ({ ...prev, passengers }));
-  }, [formData.adult_count, formData.child_count, user, isAIProcessed, aiCustomerName1, aiCustomerName2, aiCustomerName3]);
+  }, [formData.adult_count, formData.child_count, user, isAIProcessed, aiCustomerName1, aiCustomerName2, aiCustomerName3, urlChildrenAges]);
 
   // 获取旅游产品数据
   useEffect(() => {
@@ -395,20 +459,36 @@ const AgentBooking = () => {
     return formData.roomTypes?.join(',') || '';
   }, [formData.roomTypes]);
 
-  // 计算价格 - 使用稳定化的依赖项避免无限循环
+  // 计算价格 - 修复：不需要日期就可以计算价格
   useEffect(() => {
-    if (tourData && formData.tour_start_date) {
+    if (tourData && formData.adult_count > 0) {
+      console.log('🔄 价格计算触发条件满足，开始计算价格:', {
+        tourData: !!tourData,
+        adultCount: formData.adult_count,
+        childCount: formData.child_count,
+        hotelLevel: formData.hotel_level,
+        roomCount: formData.hotel_room_count,
+        childrenAges: childrenAgesString,
+        roomTypes: roomTypesString,
+        startDate: formData.tour_start_date || '未选择'
+      });
       calculatePrice();
+    } else {
+      console.log('⏸️ 价格计算条件不满足:', {
+        tourData: !!tourData,
+        adultCount: formData.adult_count,
+        adultCountValid: formData.adult_count > 0
+      });
     }
   }, [
     tourData, 
     formData.adult_count, 
     formData.child_count, 
-    formData.tour_start_date, 
     formData.hotel_level, 
     formData.hotel_room_count,
     childrenAgesString,
     roomTypesString
+    // 注意：移除了 formData.tour_start_date 依赖，因为后端价格计算不需要日期
   ]);
 
   // 自动同步接送日期和酒店入住日期 - 如果用户没有手动设置
@@ -452,11 +532,23 @@ const AgentBooking = () => {
 
   // 监听URL参数变化，检测新的AI订单信息
   useEffect(() => {
-    // 检查是否有新的AI参数且处理时间戳
+        // 检查是否有新的AI参数且处理时间戳
     const aiProcessedTime = searchParams.get('aiProcessedTime');
     const lastProcessedTime = sessionStorage.getItem('lastAIProcessedTime');
     
-    if (isAIProcessed && aiProcessedTime && aiProcessedTime !== lastProcessedTime) {
+    // 修复：严格限制只在agent-booking页面显示AI弹窗，禁止在其他所有页面显示
+    const currentPath = window.location.pathname;
+    const isAgentBookingPage = currentPath.startsWith('/agent-booking/') && 
+                              (currentPath.includes('/group-tours/') || currentPath.includes('/day-tours/'));
+    
+    // 额外检查：确保不是其他booking页面
+    const isOtherBookingPage = currentPath.includes('/booking') && !currentPath.includes('/agent-booking/');
+    const shouldShowAIDialog = isAgentBookingPage && !isOtherBookingPage;
+    
+    // 修复：更简单的方法 - 检查是否有showAIDialog参数，这个参数只在首次从AI聊天跳转时存在
+    const showAIDialog = searchParams.get('showAIDialog') === 'true';
+    
+    if (isAIProcessed && shouldShowAIDialog && showAIDialog && aiProcessedTime && aiProcessedTime !== lastProcessedTime) {
       console.log('🆕 检测到新的AI订单信息，时间戳:', aiProcessedTime);
       
       // 询问用户是否要更新表单
@@ -549,6 +641,11 @@ const AgentBooking = () => {
         // 记录处理时间戳，避免重复询问
         sessionStorage.setItem('lastAIProcessedTime', aiProcessedTime);
       }
+      
+      // 修复：处理完弹窗后，立即从URL中移除showAIDialog参数，防止刷新页面时重复显示
+      const currentUrl = new URL(window.location.href);
+      currentUrl.searchParams.delete('showAIDialog');
+      window.history.replaceState({}, '', currentUrl.toString());
     }
   }, [searchParams, isAIProcessed]); // 监听searchParams变化
 
@@ -636,13 +733,14 @@ const AgentBooking = () => {
   };
 
   const calculatePrice = async () => {
-    // 验证必要参数
-    if (!id || !type || !formData.tour_start_date || !formData.adult_count) {
+    // 验证必要参数 - 修复：不需要日期就可以计算价格
+    if (!id || !type || !formData.adult_count || formData.adult_count < 1) {
       console.log('价格计算参数不足，跳过计算:', {
         id: !!id,
         type: !!type,
-        startDate: !!formData.tour_start_date,
-        adultCount: !!formData.adult_count
+        adultCount: formData.adult_count,
+        adultCountValid: formData.adult_count >= 1,
+        startDate: formData.tour_start_date || '未选择（不影响价格计算）'
       });
       return;
     }
@@ -685,25 +783,41 @@ const AgentBooking = () => {
         formData.roomTypes?.[0] || '双人间' // roomType
       );
       
-      // 处理后端响应格式：{code: 0/1, msg: string, data: object}
-      if (response.code === 0 || (response.data && response.data.totalPrice)) {
+      // 修复：处理完整的响应对象结构 {code: 1, data: {...}}
+      console.log('💰 收到价格计算响应:', response);
+      
+      if (response && response.code === 1 && response.data) {
+        const priceData = response.data;
         console.log('💰 价格计算成功:', {
-          totalPrice: response.data.totalPrice,
-          discountedPrice: response.data.discountedPrice,
-          originalPrice: response.data.originalPrice,
-          nonAgentPrice: response.data.nonAgentPrice,
-          完整响应: response.data
+          totalPrice: priceData.totalPrice,
+          discountedPrice: priceData.discountedPrice,
+          originalPrice: priceData.originalPrice,
+          nonAgentPrice: priceData.nonAgentPrice,
+          完整数据: priceData
         });
-        setTotalPrice(response.data.totalPrice);
-        console.log('💰 价格状态已更新:', response.data.totalPrice);
+        setTotalPrice(priceData.totalPrice);
+        console.log('💰 价格状态已更新:', priceData.totalPrice);
+      } else if (response && (response.totalPrice !== undefined && response.totalPrice !== null)) {
+        // 备用处理：如果响应直接包含价格数据（兼容旧格式）
+        console.log('💰 价格计算成功（直接格式）:', {
+          totalPrice: response.totalPrice,
+          完整响应: response
+        });
+        setTotalPrice(response.totalPrice);
+        console.log('💰 价格状态已更新:', response.totalPrice);
       } else {
         console.error('💰 价格计算失败 - 响应错误:', response);
         console.error('💰 响应结构分析:', {
-          hasCode: 'code' in response,
-          codeValue: response.code,
-          hasData: 'data' in response,
-          dataStructure: response.data ? Object.keys(response.data) : null
+          hasResponse: !!response,
+          hasCode: response && 'code' in response,
+          codeValue: response?.code,
+          hasData: response && 'data' in response,
+          hasTotalPrice: response && 'totalPrice' in response,
+          totalPriceValue: response?.totalPrice,
+          dataStructure: response ? Object.keys(response) : null
         });
+        // 设置价格为0，避免一直显示"正在计算价格..."
+        setTotalPrice(0);
       }
     } catch (error) {
       console.error('💰 价格计算异常:', error);
@@ -753,6 +867,25 @@ const AgentBooking = () => {
       
       return updated;
     });
+    
+    // 检查是否是影响价格的字段，如果是则触发价格重新计算
+    const priceAffectingFields = [
+      'adult_count', 
+      'child_count', 
+      'tour_start_date', 
+      'hotel_level', 
+      'hotel_room_count'
+    ];
+    
+    if (priceAffectingFields.includes(field)) {
+      console.log('💰 影响价格的字段变化，准备重新计算价格:', { field, value });
+      // 使用setTimeout确保状态更新后再计算价格
+      setTimeout(() => {
+        if (tourData && (field === 'adult_count' ? value > 0 : formData.adult_count > 0)) {
+          calculatePrice();
+        }
+      }, 100);
+    }
   };
   
   // 处理房型变化
@@ -765,12 +898,30 @@ const AgentBooking = () => {
     if (validationErrors.roomTypes) {
       setValidationErrors(prev => ({ ...prev, roomTypes: null }));
     }
+    
+    // 房型变化后重新计算价格
+    console.log('🛏️ 房型变化，准备重新计算价格:', { index, roomType, newRoomTypes });
+    setTimeout(() => {
+      if (tourData && formData.adult_count > 0) {
+        calculatePrice();
+      }
+    }, 100);
   };
 
   const handlePassengerChange = (index, field, value) => {
     const newPassengers = [...formData.passengers];
     newPassengers[index] = { ...newPassengers[index], [field]: value };
     setFormData(prev => ({ ...prev, passengers: newPassengers }));
+    
+    // 如果是儿童年龄变化，触发价格重新计算
+    if (field === 'child_age') {
+      console.log('👶 儿童年龄变化，准备重新计算价格:', { index, value });
+      setTimeout(() => {
+        if (tourData && formData.adult_count > 0) {
+          calculatePrice();
+        }
+      }, 100);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -1102,7 +1253,7 @@ const AgentBooking = () => {
                       <FaDollarSign className="me-2" />
                       代理商价格
                     </h6>
-                    {totalPrice > 0 ? (
+                    {totalPrice !== null && totalPrice !== undefined ? (
                       <>
                         <div className="price-amount">
                           <span className="currency">$</span>

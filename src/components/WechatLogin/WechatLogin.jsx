@@ -175,29 +175,7 @@ const WechatLogin = ({ onLoginSuccess }) => {
     }
   }, []);
 
-  // 开发环境模拟微信登录
-  const useMockWechatLogin = async () => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const response = await fetch('/api/user/wechat/mock-scan');
-      const data = await response.json();
-      
-      if (data.code === 1) {
-        console.log('获取到模拟授权码:', data.data.code);
-        // 直接使用模拟的授权码登录
-        await handleLoginSuccess(data.data.code);
-      } else {
-        setError('模拟微信登录失败：' + data.msg);
-      }
-    } catch (error) {
-      console.error('模拟微信登录失败:', error);
-      setError('模拟微信登录失败：' + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  
 
   return (
     <>
@@ -209,17 +187,6 @@ const WechatLogin = ({ onLoginSuccess }) => {
         <i className="fab fa-weixin"></i> 微信登录
       </Button>
       
-      {/* 开发环境测试按钮 */}
-      {process.env.NODE_ENV === 'development' && (
-        <Button 
-          variant="info" 
-          className="mt-2 w-100" 
-          onClick={useMockWechatLogin}
-          disabled={loading}
-        >
-          🧪 测试微信登录
-        </Button>
-      )}
       
       <Modal show={showModal} onHide={handleCloseModal} centered>
         <Modal.Header closeButton>

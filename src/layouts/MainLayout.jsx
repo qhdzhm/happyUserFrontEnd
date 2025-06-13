@@ -14,6 +14,12 @@ const MainLayout = ({ children }) => {
   const userRole = user?.role || localStorage.getItem('userType');
   const isAgent = userRole === 'agent';
   
+  // 定义不需要显示Header和Footer的页面路径
+  const authRoutes = ['/login', '/agent-login', '/register', '/wx-callback'];
+  const isAuthPage = authRoutes.includes(location.pathname);
+  
+
+  
   useEffect(() => {
     // 检查当前路径是否为首页
     const isHome = location.pathname === '/';
@@ -33,6 +39,13 @@ const MainLayout = ({ children }) => {
       document.documentElement.classList.remove('fullscreen-scroll-active');
     };
   }, [location]);
+
+  // 如果是认证页面，只渲染children，不显示Header和Footer
+  if (isAuthPage) {
+    return <>{children}</>;
+  }
+
+
 
   return (
     <div className="layout-container">

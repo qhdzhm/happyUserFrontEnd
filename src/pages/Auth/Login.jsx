@@ -122,14 +122,7 @@ const Login = () => {
     }
   };
   
-  // 自动填充测试账号
-  const fillTestAccount = () => {
-    setFormData({
-      username: 'user1',
-      password: '123456',
-      userType: 'regular'
-    });
-  };
+  
   
   // 处理登录成功后的回调
   const handleLoginSuccess = () => {
@@ -178,19 +171,7 @@ const Login = () => {
           </Alert>
         )}
         
-        {/* 测试账号信息 */}
-        <div className="auth-message mb-3">
-          <strong>测试账号：</strong> user1<br />
-          <strong>测试密码：</strong> 123456
-          <Button 
-            variant="outline-primary"
-            size="sm"
-            className="ms-2 mt-2" 
-            onClick={fillTestAccount}
-          >
-            自动填充
-          </Button>
-        </div>
+        
         
         <Form onSubmit={handleSubmit} className="auth-form">
           <Form.Group className="mb-3">
@@ -248,12 +229,6 @@ const Login = () => {
         <div className="auth-links mt-3">
           <p>
             还没有账号？ <Link to="/register" state={location.state}>立即注册</Link>
-          </p>
-          <p>
-            代理商登录？ <Link to="/agent-login">点击这里</Link>
-          </p>
-          <p>
-            <Link to="/forgot-password">忘记密码？</Link>
           </p>
         </div>
       </div>

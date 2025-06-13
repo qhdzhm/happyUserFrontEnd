@@ -312,7 +312,7 @@
   background: transparent;
 }
 
-.section-title {
+.tour-details-page .section-title {
   font-size: 1.5rem;
   font-weight: 600;
   color: #333;
@@ -631,7 +631,7 @@
     padding: 20px;
   }
   
-  .section-title {
+  .tour-details-page .section-title {
     font-size: 1.3rem;
   }
   
@@ -1835,7 +1835,7 @@ body {
   margin-bottom: 30px;
 }
 
-.gallery-header .section-title {
+.tour-details-page .gallery-header .section-title {
   font-size: 30px;
   font-weight: 700;
   color: #333;
@@ -1844,7 +1844,7 @@ body {
   display: inline-block;
 }
 
-.gallery-header .section-title::after {
+.tour-details-page .gallery-header .section-title::after {
   content: '';
   position: absolute;
   bottom: -10px;
@@ -1864,7 +1864,7 @@ body {
 }
 
 @media (max-width: 768px) {
-  .gallery-header .section-title {
+  .tour-details-page .gallery-header .section-title {
     font-size: 24px;
   }
   

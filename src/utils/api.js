@@ -101,12 +101,128 @@ export const clearPriceCache = () => {
 };
 
 // ==================== 用户认证相关 API ====================
+
+// 刷新访问Token
+export const refreshToken = async () => {
+  try {
+    console.log('发起Token刷新请求...');
+    
+    // 使用POST方法刷新token，refresh token通过HttpOnly Cookie自动发送
+    const response = await request.post('/auth/refresh', {}, {
+      // 确保发送cookies
+      withCredentials: true,
+      // 不在请求拦截器中添加Authorization头，避免循环
+      skipAuth: true
+    });
+    
+    console.log('Token刷新响应:', response);
+    
+    if (response && response.code === 1 && response.data) {
+      const { accessToken, expiresIn } = response.data;
+      
+      if (accessToken) {
+        // 检查是否使用Cookie认证
+        const { shouldUseCookieAuth } = require('./auth');
+        const useCookieAuth = shouldUseCookieAuth();
+        
+        if (!useCookieAuth) {
+          // 更新localStorage中的token
+          localStorage.setItem('token', accessToken);
+          localStorage.setItem(STORAGE_KEYS.TOKEN, accessToken);
+          console.log('Token刷新成功，已更新localStorage');
+        } else {
+          console.log('Token刷新成功，使用Cookie认证模式');
+        }
+        
+        // 返回新的token信息
+        return {
+          success: true,
+          accessToken,
+          expiresIn
+        };
+      }
+    }
+    
+    console.error('Token刷新失败：无效响应', response);
+    return { success: false, error: 'Invalid refresh response' };
+    
+  } catch (error) {
+    console.error('Token刷新请求失败:', error);
+    
+    // 如果是401错误，说明refresh token也过期了
+    if (error.response?.status === 401) {
+      return { success: false, error: 'Refresh token expired', needLogin: true };
+    }
+    
+    return { success: false, error: error.message || 'Refresh failed' };
+  }
+};
+
+// 检查Token是否即将过期
+export const isTokenExpiringSoon = (token, thresholdMinutes = 5) => {
+  if (!token) return true;
+  
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const currentTime = Math.floor(Date.now() / 1000);
+    const expirationTime = payload.exp;
+    const thresholdTime = thresholdMinutes * 60; // 转换为秒
+    
+    // 如果token在阈值时间内过期，返回true
+    return (expirationTime - currentTime) <= thresholdTime;
+  } catch (e) {
+    console.error('解析token失败:', e);
+    return true;
+  }
+};
+
+// 主动刷新Token（用于用户操作前的预检查）
+export const ensureValidToken = async () => {
+  try {
+    const { shouldUseCookieAuth, getToken } = require('./auth');
+    const useCookieAuth = shouldUseCookieAuth();
+    
+    if (useCookieAuth) {
+      // Cookie认证模式下，由后端自动处理token刷新
+      return { success: true, message: 'Cookie auth mode' };
+    }
+    
+    const currentToken = getToken();
+    if (!currentToken) {
+      return { success: false, error: 'No token found', needLogin: true };
+    }
+    
+    // 检查token是否即将过期
+    if (isTokenExpiringSoon(currentToken)) {
+      console.log('Token即将过期，主动刷新...');
+      const refreshResult = await refreshToken();
+      
+      if (refreshResult.success) {
+        console.log('Token主动刷新成功');
+        return { success: true, refreshed: true };
+      } else {
+        console.error('Token主动刷新失败:', refreshResult.error);
+        return refreshResult;
+      }
+    }
+    
+    return { success: true, message: 'Token still valid' };
+  } catch (error) {
+    console.error('Token验证失败:', error);
+    return { success: false, error: error.message };
+  }
+};
+
 export const login = async (credentials, loginPath = '/user/login') => {
   try {
     // 确定正确的API路径
-    const apiPath = loginPath.includes('agent') ? 
-      '/api/agent/login' : // 代理商登录使用固定的API路径
-      '/api/user/login';   // 普通用户登录使用固定的API路径
+    let apiPath;
+    if (loginPath.includes('agent')) {
+      // 代理商登录：先尝试主账号登录，失败后尝试操作员登录
+      apiPath = '/agent/login'; // 使用支持主账号和操作员的统一端点
+    } else {
+      apiPath = '/user/login'; // 普通用户登录使用固定的API路径
+    }
     
     // 判断是否为代理商登录，预先设置用户类型
     const isAgentLogin = apiPath.includes('agent');
@@ -116,9 +232,12 @@ export const login = async (credentials, loginPath = '/user/login') => {
     }
     
     console.log(`发起登录请求: URL=${apiPath}, 用户名=${credentials.username}, 用户类型=${isAgentLogin ? 'agent' : 'regular'}`);
+    console.log(`完整请求数据:`, credentials);
     
     // 使用POST方法，参数放在请求体中
+    console.log(`🔥 即将发送 POST 请求到: ${apiPath}`);
     const response = await request.post(apiPath, credentials);
+    console.log(`🎯 POST 请求完成，响应:`, response);
     
     // 响应详情记录
     if (response) {
@@ -163,75 +282,85 @@ export const login = async (credentials, loginPath = '/user/login') => {
       };
     }
     
-    // 如果登录成功，保存token和用户信息
+    // 如果登录成功，处理认证信息
     if (response && response.code === 1 && response.data) {
-      if (response.data.token) {
-        const token = response.data.token;
-        // 确保两个位置都存储token
-        localStorage.setItem('token', token);
-        localStorage.setItem(STORAGE_KEYS.TOKEN, token);
-        console.log(`登录成功: Token已保存 ${token.substring(0, 15)}...`);
-      } else {
-        console.warn('警告: 登录响应中没有找到token!');
-      }
+      console.log('登录成功，处理用户信息');
       
-      // 保存用户类型
+      // 获取用户数据
+      const userData = response.data;
       const userType = isAgentLogin ? 'agent' : 'regular';
-      localStorage.setItem('userType', userType);
-      console.log(`用户类型已保存: ${userType}`);
       
-      // 保存用户名
-      if (response.data.username) {
-        localStorage.setItem('username', response.data.username);
-      } else if (credentials.username) {
-        localStorage.setItem('username', credentials.username);
+      // 调试：输出用户数据结构
+      console.log('用户数据结构:', {
+        id: userData.id,
+        username: userData.username,
+        userType: userData.userType,
+        token: userData.token ? '存在' : '不存在',
+        canSeeDiscount: userData.canSeeDiscount,
+        canSeeCredit: userData.canSeeCredit,
+        discountRate: userData.discountRate,
+        agentId: userData.agentId
+      });
+      
+      // 无论是否使用Cookie，都设置基本信息到localStorage
+      localStorage.setItem('userType', userData.userType || userType);
+      localStorage.setItem('username', userData.username || credentials.username);
+      
+      // 设置用户ID（添加安全检查）
+      if (userData.id !== undefined && userData.id !== null) {
+        localStorage.setItem('userId', userData.id.toString());
       }
       
-      // 如果有折扣率，也保存
-      if (response.data.discountRate !== undefined) {
-        localStorage.setItem('discountRate', response.data.discountRate.toString());
-        console.log(`折扣率已保存: ${response.data.discountRate}`);
+      // 如果响应中包含token，保存到localStorage（兼容旧版本）
+      if (userData.token) {
+        localStorage.setItem('token', userData.token);
+        localStorage.setItem(STORAGE_KEYS.TOKEN, userData.token);
+        console.log('保存token到localStorage');
       }
       
-      // 如果是代理商登录，处理代理商ID
+      // 代理商相关信息
       if (isAgentLogin) {
-        let agentId = null;
-        
-        // 从响应中获取代理商ID
-        if (response.data.id) {
-          agentId = response.data.id;
-        } else if (response.data.agentId) {
-          agentId = response.data.agentId;
-        }
-        
-        // 如果响应中没有ID，尝试从token解析
-        if (!agentId && response.data.token) {
-          try {
-            const parts = response.data.token.split('.');
-            if (parts.length === 3) {
-              const payload = JSON.parse(atob(parts[1]));
-              if (payload.agentId) {
-                agentId = parseInt(payload.agentId);
-              } else if (payload.id) {
-                agentId = parseInt(payload.id);
-              }
-            }
-          } catch (e) {
-            console.warn('解析token获取agentId失败:', e);
-          }
-        }
-        
-        // 保存代理商ID
-        if (agentId) {
+        let agentId = userData.id || userData.agentId;
+        if (agentId !== undefined && agentId !== null) {
           localStorage.setItem('agentId', agentId.toString());
-          console.log(`代理商ID已保存: ${agentId}`);
-        } else {
-          console.warn('警告: 无法从响应中获取代理商ID');
+        }
+        
+        // 设置折扣率
+        if (userData.discountRate !== undefined && userData.discountRate !== null) {
+          localStorage.setItem('discountRate', userData.discountRate.toString());
+          console.log(`折扣率已保存: ${userData.discountRate}`);
         }
       }
       
-      // 清除价格缓存，确保使用最新折扣
-      document.dispatchEvent(new CustomEvent('priceCacheCleared'));
+      // 保存权限信息（添加null检查）
+      if (userData.canSeeDiscount !== undefined && userData.canSeeDiscount !== null) {
+        localStorage.setItem('canSeeDiscount', userData.canSeeDiscount.toString());
+      }
+      if (userData.canSeeCredit !== undefined && userData.canSeeCredit !== null) {
+        localStorage.setItem('canSeeCredit', userData.canSeeCredit.toString());
+      }
+      
+      // 保存完整用户信息对象（添加安全检查）
+      const userInfo = {
+        id: userData.id || null,
+        username: userData.username || credentials.username || null,
+        userType: userData.userType || userType,
+        agentId: userData.agentId || null,
+        discountRate: userData.discountRate || null,
+        canSeeDiscount: userData.canSeeDiscount || null,
+        canSeeCredit: userData.canSeeCredit || null,
+        isAuthenticated: true
+      };
+      
+      try {
+        localStorage.setItem('user', JSON.stringify(userInfo));
+        console.log('用户信息已保存到localStorage');
+      } catch (error) {
+        console.error('保存用户信息到localStorage失败:', error);
+      }
+      
+      // 清除价格缓存
+      clearPriceCache();
     }
     
     return response;
@@ -274,41 +403,109 @@ export const register = (userData) => {
   return request.post('/auth/register', userData);
 };
 
-export const logout = () => {
-  // 记录退出前状态
-  console.log('退出登录前状态检查:', {
-    token: localStorage.getItem('token') ? '存在' : '不存在',
-    storageToken: localStorage.getItem(STORAGE_KEYS.TOKEN) ? '存在' : '不存在',
-    userType: localStorage.getItem('userType'),
-    username: localStorage.getItem('username'),
-    agentId: localStorage.getItem('agentId'),
-    discountRate: localStorage.getItem('discountRate')
-  });
+export const logout = async () => {
+  // 开始退出登录流程
 
+  try {
+    // 调用后端logout接口清除HttpOnly Cookies
+    await request.post('/auth/logout', {}, {
+      withCredentials: true,
+      skipAuth: true
+    });
+  } catch (error) {
+    console.warn('后端logout请求失败:', error.message);
+    // 即使后端logout失败，也要继续清除本地数据
+  }
+  
+  // 清除CSRF Token
+  try {
+    const { clearCSRFToken } = require('./auth');
+    clearCSRFToken();
+  } catch (error) {
+    // 静默处理错误
+  }
+  
+  // 停止TokenManager的定时检查，防止自动刷新token
+  try {
+    const { destroyTokenManager } = require('./tokenManager');
+    destroyTokenManager();
+  } catch (error) {
+    // 静默处理错误
+  }
+  
   // 清除所有登录相关的本地存储数据
-  localStorage.removeItem('token');
-  localStorage.removeItem(STORAGE_KEYS.TOKEN);
-  localStorage.removeItem('userType');
-  localStorage.removeItem('username');
-  localStorage.removeItem('user');
-  localStorage.removeItem('userId');
-  localStorage.removeItem('agentId');
-  localStorage.removeItem('discountRate');
+  const keysToRemove = [
+    'token', 'authentication', 'userToken', 'jwt',
+    'agent_token', 'user_token', 'token_meta',
+    STORAGE_KEYS.TOKEN, STORAGE_KEYS.USER,
+    'userType', 'username', 'user', 'userId',
+    'agentId', 'operatorId', 'discountRate',
+    'canSeeDiscount', 'canSeeCredit',
+    'userProfile', 'loginTime', 'last_activity',
+    'csrf_token'
+  ];
+  
+  keysToRemove.forEach(key => {
+    localStorage.removeItem(key);
+    sessionStorage.removeItem(key);
+  });
+  
+  // 清除所有聊天记录
+  try {
+    // 获取所有以 chatbot_messages_ 开头的键
+    const chatKeysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('chatbot_messages_')) {
+        chatKeysToRemove.push(key);
+      }
+    }
+    
+    // 删除所有聊天记录
+    chatKeysToRemove.forEach(key => {
+      localStorage.removeItem(key);
+      console.log(`已清除聊天记录: ${key}`);
+    });
+    
+    console.log(`logout时总共清除了 ${chatKeysToRemove.length} 个聊天记录`);
+    
+  } catch (error) {
+    console.error('清除聊天记录失败:', error);
+  }
   
   // 清空价格缓存
   clearPriceCache();
   
-  // 验证清理是否成功
-  console.log('退出登录后状态检查:', {
-    token: localStorage.getItem('token') ? '存在' : '不存在',
-    storageToken: localStorage.getItem(STORAGE_KEYS.TOKEN) ? '存在' : '不存在',
-    userType: localStorage.getItem('userType'),
-    username: localStorage.getItem('username'),
-    agentId: localStorage.getItem('agentId'),
-    discountRate: localStorage.getItem('discountRate')
-  });
+  // 尝试清除所有可能的cookie（虽然HttpOnly Cookie无法直接清除，但尝试清除其他cookie）
+  try {
+    // 清除可能的非HttpOnly认证相关cookie
+    const cookiesToClear = [
+      'userInfo', 'authToken', 'auth_token', 'token', 
+      'refreshToken', 'refresh_token', 'session_token',
+      'jwt_token', 'access_token', 'authentication'
+    ];
+    
+    cookiesToClear.forEach(cookieName => {
+      // 多种方式尝试清除cookie，确保在不同路径和域名下都能清除
+      const variations = [
+        `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`,
+        `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`,
+        `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${window.location.hostname};`,
+        `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax;`,
+        `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict;`
+      ];
+      
+      variations.forEach(cookieString => {
+        document.cookie = cookieString;
+      });
+    });
+    
+    // Cookie清理完成
+  } catch (error) {
+    console.warn('前端Cookie清理失败:', error.message);
+  }
   
-  console.log('用户已退出登录，所有本地存储数据已清除');
+  // 用户已退出登录
 };
 
 export const getUserProfile = async () => {
@@ -322,7 +519,29 @@ export const getUserProfile = async () => {
     // 成功获取后保存到localStorage
     if (response && response.data) {
       const userData = response.data;
-      localStorage.setItem('user', JSON.stringify(userData));
+      
+      // 检查是否使用Cookie认证
+      const { shouldUseCookieAuth } = require('./auth');
+      const useCookieAuth = shouldUseCookieAuth();
+      
+      if (!useCookieAuth) {
+        // 只有在非Cookie认证模式下才保存完整用户信息到localStorage
+        localStorage.setItem('user', JSON.stringify(userData));
+      } else {
+        // Cookie认证模式下，只保存非敏感的基本信息
+        const safeUserInfo = {
+          id: userData.id,
+          username: userData.username,
+          name: userData.name,
+          userType: userData.userType,
+          role: userData.role,
+          isAuthenticated: true
+          // 不包含token、discountRate等敏感信息
+        };
+        localStorage.setItem('user', JSON.stringify(safeUserInfo));
+
+      }
+      
       if (userData.username) {
         localStorage.setItem('username', userData.username);
       }

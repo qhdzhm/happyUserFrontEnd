@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './User.css';
 import { STORAGE_KEYS } from '../../utils/constants';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchUserProfile, updateProfile, logout } from '../../store/slices/authSlice';
+import { fetchUserProfile, updateProfile, logoutUser } from '../../store/slices/authSlice';
 import { Container, Row, Col, Card, Button, Form, Alert, Spinner, Nav, Tab, Badge, InputGroup, FormControl, Dropdown, ProgressBar } from 'react-bootstrap';
 import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaBuilding, FaMoneyBillWave, FaClipboardList, 
          FaTags, FaInfoCircle, FaDownload, FaFilter, FaSearch, FaCalendarAlt, FaLock, FaShare, FaCopy, FaGift } from 'react-icons/fa';
@@ -300,20 +300,26 @@ const UserProfile = () => {
   };
   
   const handleLogout = () => {
-    // 先清除认证信息
-    dispatch(logout());
+    // 保存用户类型信息，因为logout会清空localStorage
+    const userType = user?.userType || user?.role || localStorage.getItem('userType') || 'regular';
+    const isAgentUser = userType === 'agent' || userType === 'agent_operator';
     
-    // 清除redux存储的用户状态
-    dispatch({ type: 'auth/logout' });
-    
+    // 先清除认证信息  
+    dispatch(logoutUser()).then(() => {
     // 显示退出成功消息
     toast.success('您已成功退出登录');
     
-    // 延迟一点重定向到首页，确保清除操作完成
+      // 延迟一点重定向到对应的登录页面，确保清除操作完成
     setTimeout(() => {
-      // 使用replace而不是href，避免回退到登录状态
+        if (isAgentUser) {
+          // 中介用户跳转到代理商登录页面
+          window.location.replace('/agent-login');
+        } else {
+          // 普通用户跳转到首页
       window.location.replace('/');
+        }
     }, 300);
+    });
   };
   
   // 渲染用户信息卡片

@@ -27,7 +27,11 @@ const AgentCenter = () => {
     status: 1
   });
   
-  const [isOperator, setIsOperator] = useState(false);
+  // 初始化操作员状态 - 基于localStorage的备用判断
+  const [isOperator, setIsOperator] = useState(() => {
+    const userType = localStorage.getItem('userType');
+    return userType === 'agent_operator' || userType === 'operator';
+  });
   const [creditInfo, setCreditInfo] = useState({
     totalCredit: 0,
     availableCredit: 0,
@@ -60,21 +64,62 @@ const AgentCenter = () => {
         setIsLoading(true);
         setError(null);
         
-        // Get the token from localStorage
-        const token = localStorage.getItem('token');
+        // 详细的调试信息
+        console.log('=== 代理商中心认证调试信息 ===');
+        console.log('localStorage token:', localStorage.getItem('token'));
+        console.log('localStorage userType:', localStorage.getItem('userType'));
+        console.log('初始isOperator状态:', isOperator);
+        console.log('localStorage username:', localStorage.getItem('username'));
+        console.log('localStorage agentId:', localStorage.getItem('agentId'));
+        console.log('localStorage operatorId:', localStorage.getItem('operatorId'));
+        console.log('Redux user:', user);
+        console.log('Redux user完整结构:', JSON.stringify(user, null, 2));
+        console.log('Redux userType:', userType);
         
-        if (!token) {
-          setError('未登录或会话已过期，请重新登录');
-          setIsLoading(false);
-          return;
+        // 检查Cookie认证
+        const { shouldUseCookieAuth, isAuthenticated, getUserInfoFromCookie, getToken } = require('../../utils/auth');
+        const useCookieAuth = shouldUseCookieAuth();
+        console.log('使用Cookie认证:', useCookieAuth);
+        console.log('认证状态:', isAuthenticated());
+        
+        // 构建请求头
+        const headers = {};
+        
+        if (useCookieAuth) {
+          // Cookie认证模式：不发送Authorization header，依赖浏览器自动发送cookies
+          console.log('Cookie认证模式：依赖浏览器cookies，不发送Authorization header');
+          
+          // 添加CSRF token（如果有）
+          const { getCSRFToken } = require('../../utils/auth');
+          const csrfToken = getCSRFToken();
+          if (csrfToken) {
+            headers['X-CSRF-Token'] = csrfToken;
+            headers['X-Requested-With'] = 'XMLHttpRequest';
+          }
+        } else {
+          // 传统认证模式：从Redux或localStorage获取token
+          const token = localStorage.getItem('token');
+          const authToken = user?.token || token;
+          console.log('传统认证模式，token:', authToken ? authToken.substring(0, 20) + '...' : 'null');
+          
+          if (!authToken) {
+            setError('未登录或会话已过期，请重新登录');
+            setIsLoading(false);
+            return;
+          }
+          
+          headers['Authorization'] = `Bearer ${authToken}`;
         }
+        
+        console.log('发送请求到 /api/agent/profile，headers:', headers);
         
         // Fetch profile data
         const response = await axios.get('/api/agent/profile', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+          headers,
+          withCredentials: true // 确保包含cookies
         });
+        
+        console.log('API响应:', response.data);
         
         if (response.data.code === 1) {
           const profileData = response.data.data;
@@ -117,23 +162,42 @@ const AgentCenter = () => {
             });
           }
           
-          // 只有代理商才获取信用额度信息
-          if (!isOperatorUser) {
-            try {
-              const creditResponse = await getAgentCredit();
-              if (creditResponse && creditResponse.code === 1) {
-                setCreditInfo(creditResponse.data);
-              }
-            } catch (creditErr) {
-              console.error('获取信用额度信息失败:', creditErr);
+          // 代理商和操作员都需要获取信用额度信息（操作员看主号的额度）
+          try {
+            const creditResponse = await getAgentCredit();
+            if (creditResponse && creditResponse.code === 1) {
+              setCreditInfo(creditResponse.data);
+              console.log('获取信用额度信息成功:', creditResponse.data);
             }
+          } catch (creditErr) {
+            console.error('获取信用额度信息失败:', creditErr);
+          }
+          
+          // 只有代理商才获取统计数据
+          if (!isOperatorUser) {
             
             // 获取统计数据
             try {
-              const statsResponse = await axios.get('/api/agent/statistics', {
-                headers: {
-                  'Authorization': `Bearer ${token}`
+              const statsHeaders = {};
+              if (!useCookieAuth) {
+                const token = localStorage.getItem('token');
+                const authToken = user?.token || token;
+                if (authToken) {
+                  statsHeaders['Authorization'] = `Bearer ${authToken}`;
                 }
+              } else {
+                // Cookie认证模式：添加CSRF token
+                const { getCSRFToken } = require('../../utils/auth');
+                const csrfToken = getCSRFToken();
+                if (csrfToken) {
+                  statsHeaders['X-CSRF-Token'] = csrfToken;
+                  statsHeaders['X-Requested-With'] = 'XMLHttpRequest';
+                }
+              }
+              
+              const statsResponse = await axios.get('/api/agent/statistics', {
+                headers: statsHeaders,
+                withCredentials: true
               });
               
               if (statsResponse.data.code === 1) {
@@ -144,11 +208,107 @@ const AgentCenter = () => {
             }
           }
         } else {
-          setError(response.data.msg || '获取个人信息失败');
+          console.error('API返回错误:', response.data);
+          
+          // API调用失败时，使用localStorage中的信息作为备用
+          const userType = localStorage.getItem('userType');
+          const username = localStorage.getItem('username');
+          const agentId = localStorage.getItem('agentId');
+          
+          console.log('API调用失败，使用localStorage备用信息:', { userType, username, agentId });
+          
+          if (userType === 'agent_operator' || userType === 'operator') {
+            setIsOperator(true);
+            setProfileInfo({
+              id: agentId || '',
+              username: username || '',
+              name: username || '',
+              phone: '',
+              email: '',
+              agentId: agentId || '',
+              agentName: '未知代理商',
+              status: 1,
+              companyName: '',
+              contactPerson: '',
+              discountRate: 0
+            });
+          } else {
+            setIsOperator(false);
+            setProfileInfo({
+              id: agentId || '',
+              username: username || '',
+              companyName: '',
+              contactPerson: '',
+              phone: '',
+              email: '',
+              discountRate: 0,
+              status: 1,
+              name: '',
+              agentId: '',
+              agentName: ''
+            });
+          }
+          
+          setError(response.data.msg || response.data.message || '获取个人信息失败');
         }
       } catch (err) {
         console.error('Error fetching profile info:', err);
-        setError('获取个人信息时出错: ' + (err.response?.data?.msg || err.message));
+        console.error('错误详情:', {
+          status: err.response?.status,
+          statusText: err.response?.statusText,
+          data: err.response?.data,
+          message: err.message
+        });
+        
+        // 网络错误时，也使用localStorage中的信息作为备用
+        const userType = localStorage.getItem('userType');
+        const username = localStorage.getItem('username');
+        const agentId = localStorage.getItem('agentId');
+        
+        console.log('网络错误，使用localStorage备用信息:', { userType, username, agentId });
+        
+        if (userType === 'agent_operator' || userType === 'operator') {
+          setIsOperator(true);
+          setProfileInfo({
+            id: agentId || '',
+            username: username || '',
+            name: username || '',
+            phone: '',
+            email: '',
+            agentId: agentId || '',
+            agentName: '未知代理商',
+            status: 1,
+            companyName: '',
+            contactPerson: '',
+            discountRate: 0
+          });
+        } else if (userType === 'agent') {
+          setIsOperator(false);
+          setProfileInfo({
+            id: agentId || '',
+            username: username || '',
+            companyName: '',
+            contactPerson: '',
+            phone: '',
+            email: '',
+            discountRate: 0,
+            status: 1,
+            name: '',
+            agentId: '',
+            agentName: ''
+          });
+        }
+        
+        // 根据错误类型提供更具体的错误信息
+        if (err.response?.status === 401) {
+          setError('认证失败，请重新登录');
+        } else if (err.response?.status === 403) {
+          setError('权限不足，请确认您是代理商用户');
+        } else if (err.response?.status === 404) {
+          setError('API端点不存在，请联系技术支持');
+        } else {
+          setError('获取个人信息时出错: ' + (err.response?.data?.msg || err.response?.data?.message || err.message));
+        }
       } finally {
         setIsLoading(false);
       }
@@ -173,14 +333,9 @@ const AgentCenter = () => {
     try {
       setIsLoading(true);
       
-      // Get the token from localStorage
-      const token = localStorage.getItem('token');
-      
-      if (!token) {
-        setError('未登录或会话已过期，请重新登录');
-        setIsLoading(false);
-        return;
-      }
+      // 检查认证状态
+      const { shouldUseCookieAuth, isAuthenticated, getCSRFToken } = require('../../utils/auth');
+      const useCookieAuth = shouldUseCookieAuth();
       
       // 准备更新数据
       const updateData = {};
@@ -200,22 +355,45 @@ const AgentCenter = () => {
       
       console.log('提交更新的个人信息:', updateData);
       
+      // 构建请求头
+      const headers = {};
+      
+      if (useCookieAuth) {
+        // Cookie认证模式：添加CSRF token
+        const csrfToken = getCSRFToken();
+        if (csrfToken) {
+          headers['X-CSRF-Token'] = csrfToken;
+          headers['X-Requested-With'] = 'XMLHttpRequest';
+        }
+      } else {
+        // 传统认证模式：添加Authorization header
+        const token = localStorage.getItem('token');
+        const authToken = user?.token || token;
+        
+        if (!authToken) {
+          setError('未登录或会话已过期，请重新登录');
+          setIsLoading(false);
+          return;
+        }
+        
+        headers['Authorization'] = `Bearer ${authToken}`;
+      }
+      
       // Submit updated profile data
       const response = await axios.put('/api/agent/profile', updateData, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        headers,
+        withCredentials: true
       });
       
       if (response.data.code === 1) {
         toast.success('个人信息更新成功');
         setIsEditing(false);
       } else {
-        setError(response.data.msg || '更新个人信息失败');
+        setError(response.data.msg || response.data.message || '更新个人信息失败');
       }
     } catch (err) {
       console.error('Error updating profile info:', err);
-      setError('更新个人信息时出错: ' + (err.response?.data?.msg || err.message));
+      setError('更新个人信息时出错: ' + (err.response?.data?.msg || err.response?.data?.message || err.message));
     } finally {
       setIsLoading(false);
     }
@@ -599,9 +777,28 @@ const AgentCenter = () => {
                 </small>
                 
                 <div className="mt-3">
-                  <p className="mb-1">总额度: <strong>${creditInfo.totalCredit || 11000}</strong></p>
-                  <p className="mb-1">已用额度: <strong>${creditInfo.usedCredit || 0}</strong></p>
-                  <p className="mb-0">可用额度: <strong>${creditInfo.availableCredit || creditInfo.totalCredit || 11000}</strong></p>
+                  <p className="mb-1">总额度: <strong>${creditInfo.totalCredit !== null ? creditInfo.totalCredit : '***'}</strong></p>
+                  <p className="mb-1">已用额度: <strong>${creditInfo.usedCredit !== null ? creditInfo.usedCredit : '***'}</strong></p>
+                  <p className="mb-1">可用额度: <strong>${creditInfo.availableCredit !== null ? creditInfo.availableCredit : '***'}</strong></p>
+                  <div className="mb-2">
+                    <div className="d-flex justify-content-between align-items-center mb-1">
+                      <small className="text-muted">额度使用率</small>
+                      <small className="text-muted">{(creditInfo.usagePercentage || 0).toFixed(1)}%</small>
+                    </div>
+                    <div className="progress" style={{ height: '8px' }}>
+                      <div 
+                        className={`progress-bar ${
+                          (creditInfo.usagePercentage || 0) > 80 ? 'bg-danger' : 
+                          (creditInfo.usagePercentage || 0) > 60 ? 'bg-warning' : 'bg-success'
+                        }`}
+                        role="progressbar" 
+                        style={{ width: `${Math.min(creditInfo.usagePercentage || 0, 100)}%` }}
+                        aria-valuenow={creditInfo.usagePercentage || 0}
+                        aria-valuemin="0" 
+                        aria-valuemax="100"
+                      ></div>
+                    </div>
+                  </div>
                 </div>
                 
                 <Link to="/credit-transactions" className="btn btn-outline-primary btn-sm mt-3">
@@ -649,12 +846,52 @@ const AgentCenter = () => {
                   <ListGroup.Item>✓ 创建订单</ListGroup.Item>
                   <ListGroup.Item>✓ 查看订单状态</ListGroup.Item>
                   <ListGroup.Item>✓ 修改个人信息</ListGroup.Item>
-                  <ListGroup.Item className="text-muted">✗ 查看代理商信息</ListGroup.Item>
-                  <ListGroup.Item className="text-muted">✗ 查看信用额度</ListGroup.Item>
+                  <ListGroup.Item>✓ 查看主号额度使用率</ListGroup.Item>
+                  <ListGroup.Item className="text-muted">✗ 查看代理商详细信息</ListGroup.Item>
+                  <ListGroup.Item className="text-muted">✗ 查看具体额度金额</ListGroup.Item>
                 </ListGroup>
                 <small className="text-muted">
                   操作员享受代理商折扣，但无法查看敏感信息。
                 </small>
+              </Card.Body>
+            </Card>
+            
+            <Card className="shadow-sm mt-3">
+              <Card.Header className="bg-warning text-dark">
+                <h5 className="mb-0">主号额度状态</h5>
+              </Card.Header>
+              <Card.Body>
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                  <span>额度使用率</span>
+                  <Badge bg={
+                    (creditInfo.usagePercentage || 0) > 80 ? 'danger' : 
+                    (creditInfo.usagePercentage || 0) > 60 ? 'warning' : 'success'
+                  }>
+                    {(creditInfo.usagePercentage || 0).toFixed(1)}%
+                  </Badge>
+                </div>
+                <div className="progress" style={{ height: '10px' }}>
+                  <div 
+                    className={`progress-bar ${
+                      (creditInfo.usagePercentage || 0) > 80 ? 'bg-danger' : 
+                      (creditInfo.usagePercentage || 0) > 60 ? 'bg-warning' : 'bg-success'
+                    }`}
+                    role="progressbar" 
+                    style={{ width: `${Math.min(creditInfo.usagePercentage || 0, 100)}%` }}
+                    aria-valuenow={creditInfo.usagePercentage || 0}
+                    aria-valuemin="0" 
+                    aria-valuemax="100"
+                  ></div>
+                </div>
+                <small className="text-muted mt-2 d-block">
+                  {(creditInfo.usagePercentage || 0) > 80 ? 
+                    '⚠️ 主号额度使用率较高，请注意控制消费' : 
+                    (creditInfo.usagePercentage || 0) > 60 ? 
+                    '⚠️ 主号额度使用率中等，建议关注使用情况' : 
+                    '✅ 主号额度使用率正常'
+                  }
+                </small>
+
               </Card.Body>
             </Card>
           </Col>

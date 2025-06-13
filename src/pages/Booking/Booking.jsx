@@ -1012,13 +1012,29 @@ const Booking = () => {
         firstRoomType // roomType - 传递房间类型
       );
       
+      console.log('API响应检查:', {
+        response: !!response,
+        code: response?.code,
+        hasData: !!response?.data,
+        dataKeys: response?.data ? Object.keys(response.data) : null
+      });
+      
       if (response && response.code === 1 && response.data) {
+        console.log('✅ 进入价格处理逻辑');
         const priceData = response.data;
         
         // 使用辅助函数获取酒店晚数
         const hotelNights = getHotelNights();
         
         console.log('服务器返回的价格数据:', priceData);
+        console.log('价格数据详细检查:', {
+          totalPrice: priceData.totalPrice,
+          totalPriceType: typeof priceData.totalPrice,
+          nonAgentPrice: priceData.nonAgentPrice,
+          nonAgentPriceType: typeof priceData.nonAgentPrice,
+          originalPrice: priceData.originalPrice,
+          discountedPrice: priceData.discountedPrice
+        });
         
         // 记录收到的房间数并确保与表单一致
         if (priceData.roomCount && priceData.roomCount !== numericRoomCount) {
@@ -1058,11 +1074,19 @@ const Booking = () => {
           needsSingleRoomSupplement: priceData.needsSingleRoomSupplement || false
         };
         
-        // 只有当价格确实发生变化时才更新状态
+        // 更新价格状态 - 修复条件判断
         const currentTotalPrice = parseFloat(formData.total_price || '0');
-        const newTotalPrice = priceData.totalPrice || 0;
+        const newTotalPrice = priceData.totalPrice || priceData.nonAgentPrice || priceData.originalPrice || 0;
         
-        if (Math.abs(currentTotalPrice - newTotalPrice) > 0.01) {
+        console.log('价格更新检查:', {
+          currentTotalPrice,
+          newTotalPrice,
+          priceDifference: Math.abs(currentTotalPrice - newTotalPrice),
+          shouldUpdate: Math.abs(currentTotalPrice - newTotalPrice) > 0.01 || currentTotalPrice === 0
+        });
+        
+        // 如果价格发生变化或者当前价格为0，则更新状态
+        if (Math.abs(currentTotalPrice - newTotalPrice) > 0.01 || currentTotalPrice === 0) {
           // 一次性批量更新状态，减少重渲染次数
           setPriceDetails(newPriceDetails);
         
@@ -1070,14 +1094,14 @@ const Booking = () => {
         let displayPrice;
         if (isOperator()) {
           // 代理商操作员显示原价（隐藏具体折扣价格，但仍享受折扣）
-          displayPrice = priceData.nonAgentPrice || priceData.totalPrice;
+          displayPrice = priceData.nonAgentPrice || priceData.totalPrice || priceData.originalPrice;
         } else if (isAgent && agentId) {
           // 代理商主账号显示折扣后价格
-          displayPrice = priceData.totalPrice;
+          displayPrice = priceData.totalPrice || priceData.originalPrice;
         } else {
           // 普通用户显示原价，不享受代理商折扣
-          displayPrice = priceData.nonAgentPrice || priceData.totalPrice;
-          console.log('⚠️ 普通用户却获得了代理商折扣数据！强制显示原价:', displayPrice);
+          displayPrice = priceData.nonAgentPrice || priceData.totalPrice || priceData.originalPrice;
+          console.log('普通用户价格显示:', displayPrice);
         }
         
         console.log('💰 价格显示逻辑:', {
@@ -1089,20 +1113,36 @@ const Booking = () => {
           displayPrice: displayPrice,
           discountRate: priceData.discountRate
         });
-        setFormData(prev => ({
-          ...prev,
-          total_price: displayPrice ? displayPrice.toFixed(2) : '0.00'
-        }));
+          setFormData(prev => ({
+            ...prev,
+            total_price: displayPrice && displayPrice > 0 ? displayPrice.toFixed(2) : '0.00'
+          }));
+        } else {
+          console.log('价格未发生变化，跳过状态更新');
         }
         
         console.log(`成人: ${numericAdultCount}人，儿童: ${numericChildCount}人，房间: ${numericRoomCount}间，房型: ${firstRoomType || '未指定'}，酒店差价计算: ${priceData.hotelPriceDifference || 0}/晚 × ${hotelNights}晚 × ${numericRoomCount}间 = ${(priceData.hotelPriceDifference || 0) * hotelNights * numericRoomCount}`);
         
         setIsPriceLoading(false);
-        return priceData.totalPrice ? priceData.totalPrice.toFixed(2) : '0.00';
+        
+        // 修复价格返回逻辑 - 确保有有效价格返回
+        const finalPrice = priceData.totalPrice || priceData.nonAgentPrice || priceData.originalPrice || 0;
+        console.log('最终返回价格:', finalPrice, '来源:', {
+          totalPrice: priceData.totalPrice,
+          nonAgentPrice: priceData.nonAgentPrice,
+          originalPrice: priceData.originalPrice
+        });
+        console.log('✅ 价格处理完成，准备返回');
+        return finalPrice > 0 ? finalPrice.toFixed(2) : '0.00';
       }
       
       // 返回默认值
-      console.warn('API没有返回有效的价格数据');
+      console.warn('❌ API没有返回有效的价格数据，响应详情:', {
+        response: response,
+        hasResponse: !!response,
+        code: response?.code,
+        hasData: !!response?.data
+      });
       setIsPriceLoading(false);
       return '0.00';
     } catch (error) {

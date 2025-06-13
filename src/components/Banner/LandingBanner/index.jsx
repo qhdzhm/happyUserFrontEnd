@@ -27,9 +27,9 @@ const LandingBanner = ({ dayTours = [], groupTours = [], loading = false }) => {
 
     const slides = [];
     
-    // 合并一日游和跟团游数据，最多取6个
-    const allTours = [...dayTours, ...groupTours].slice(0, 6);
-    console.log('LandingBanner - 合并后的tours数据:', allTours.length, '个产品');
+    // 优先显示团队游产品，然后是一日游，最多取6个
+    const allTours = [...groupTours, ...dayTours].slice(0, 6);
+    console.log('LandingBanner - 合并后的tours数据:', allTours.length, '个产品（优先团队游）');
     
     allTours.forEach((tour, index) => {
       // 获取产品图片 - 优先使用bannerimg/bannerImage，然后是coverImage
@@ -51,7 +51,7 @@ const LandingBanner = ({ dayTours = [], groupTours = [], loading = false }) => {
         subtitle: tour.destination || tour.location || tour.region || tour.category || '精彩旅程',
         // 保存原始tour数据用于跳转
         tourData: tour,
-        tourType: index < dayTours.length ? 'day' : 'group' // 判断是一日游还是跟团游
+        tourType: index < groupTours.length ? 'group' : 'day' // 判断是团队游还是一日游（优先团队游）
       });
     });
 
@@ -119,6 +119,47 @@ const LandingBanner = ({ dayTours = [], groupTours = [], loading = false }) => {
     }
   };
 
+  // 处理主背景图片点击
+  const handleBackgroundClick = (e) => {
+    // 只有点击背景本身时才触发，避免点击内容区域时触发
+    if (e.target === e.currentTarget) {
+      console.log('背景点击，当前产品:', dynamicBannerData[currentCardIndex]?.title);
+      handleViewDetails(); // 复用查看详情的逻辑
+    }
+  };
+
+  // 处理卡片点击
+  const handleCardClick = (e, cardIndex) => {
+    e.stopPropagation(); // 阻止事件冒泡，避免触发背景点击
+    
+    // 由于使用了slice(1)，所以cardIndex对应的是slice后的索引
+    // 需要+1才能对应到原始数组中的正确位置
+    const originalIndex = cardIndex + 1;
+    const targetSlide = dynamicBannerData[originalIndex];
+    
+    console.log('卡片点击调试:', {
+      cardIndex,
+      originalIndex,
+      targetSlide: targetSlide?.title,
+      tourId: targetSlide?.tourData?.id,
+      tourType: targetSlide?.tourType
+    });
+    
+    if (targetSlide && targetSlide.tourData) {
+      const tourId = targetSlide.tourData.id;
+      const tourType = targetSlide.tourType;
+      
+      if (tourType === 'day') {
+        navigate(`/day-tours/${tourId}`);
+      } else {
+        navigate(`/group-tours/${tourId}`);
+      }
+    } else {
+      // 如果是默认数据，跳转到所有旅游页面
+      navigate('/tours');
+    }
+  };
+
   useEffect(() => {
     let timeout = null;
     clearTimeout(timeout);
@@ -149,17 +190,19 @@ const LandingBanner = ({ dayTours = [], groupTours = [], loading = false }) => {
 
       {/* 主背景容器 */}
       <div 
-        className="background-container"
+        className="background-container clickable-background"
         style={{
           backgroundImage: `url(${dynamicBannerData[currentCardIndex].image})`
         }}
+        onClick={handleBackgroundClick}
+        title={`查看 ${dynamicBannerData[currentCardIndex].title} 详情`}
       >
         {/* 内容主体 */}
         <main className="main-container">
           <div className="content-wrapper">
             
             {/* Hero区域 - 左侧40% */}
-            <div className="hero-section">
+            <div className="hero-section" onClick={(e) => e.stopPropagation()}>
               <div className="hero-content">
                 <h2 className="hero-title">{dynamicBannerData[currentCardIndex].title}</h2>
                 <div className="hero-wrapper">
@@ -181,7 +224,7 @@ const LandingBanner = ({ dayTours = [], groupTours = [], loading = false }) => {
             </div>
 
             {/* 卡片滑动器区域 - 右侧60% */}
-            <div className="card-slider-container">
+            <div className="card-slider-container" onClick={(e) => e.stopPropagation()}>
               <div className="card-slider">
                 <div 
                   className="card-slider-wrapper"
@@ -190,10 +233,12 @@ const LandingBanner = ({ dayTours = [], groupTours = [], loading = false }) => {
                   {dynamicBannerData.slice(1).map((data, i) => (
                     <div
                       key={data.id}
-                      className={`slider-card ${i + 1 === currentCardIndex ? 'active' : ''}`}
+                      className={`slider-card clickable-card ${i + 1 === currentCardIndex ? 'active' : ''}`}
                       style={{
                         backgroundImage: `url(${data.background})`
                       }}
+                      onClick={(e) => handleCardClick(e, i)}
+                      title={`查看 ${data.title} 详情`}
                     >
                       <h4 className="card-title">{data.title}</h4>
                       <h5 className="card-subtitle">{data.subtitle}</h5>

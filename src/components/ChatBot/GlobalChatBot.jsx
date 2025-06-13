@@ -48,7 +48,7 @@ const GlobalChatBot = () => {
                     const agentToken = localStorage.getItem('agent-token');
                     const userTypeFromStorage = localStorage.getItem('userType');
                     
-                    console.log('聊天机器人用户信息:', { user, userId, agentToken, userTypeFromStorage });
+                
                     
                     let computedUserType = 1; // 默认普通用户
                     
@@ -65,7 +65,7 @@ const GlobalChatBot = () => {
                                user?.type === 'agent_operator') {
                         // 操作员
                         computedUserType = 2;
-                        console.log('判断为操作员');
+                
                     } else if (agentToken) {
                         // 有代理商token但不能确定具体角色，默认为操作员
                         computedUserType = 2;

@@ -608,7 +608,7 @@ const Orders = () => {
                   <FaEye className="me-1" /> 查看
                 </Button>
                 
-                {order.paymentStatus === 'unpaid' && order.status !== 'cancelled' && (
+                {order.status !== 'cancelled' && order.status !== 'completed' && (
                   <Button 
                     variant="outline-warning" 
                     size="sm"
@@ -629,7 +629,7 @@ const Orders = () => {
                   {order.paymentStatus === 'paid' && !isOperator() ? '下载发票' : '下载确认单'}
                 </Button>
                 
-                {order.paymentStatus === 'unpaid' && order.status !== 'cancelled' && (
+                {order.paymentStatus === 'unpaid' && order.status !== 'cancelled' && order.status !== 'completed' && (
                   <Button 
                     variant="outline-danger" 
                     size="sm"

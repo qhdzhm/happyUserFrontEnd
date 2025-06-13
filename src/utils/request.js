@@ -1,6 +1,9 @@
 import axios from 'axios';
 import { getCache, setCache, removeCache } from './cache';
 import { STORAGE_KEYS, PUBLIC_APIS } from './constants';
+
+// 导入UI slice actions
+import { setLoading } from '../store/slices/uiSlice';
 // import { getToken } from './auth'; // 暂时注释掉未使用的导入
 
 // 处理中的请求缓存，防止重复请求
@@ -67,9 +70,6 @@ instance.request = function(config) {
     throw error;
   }
 };
-
-// 修改 require 语句，重新引入 showNotification
-const { setLoading, showNotification } = require('../store/slices/uiSlice');
 
 // 错误处理器函数 - 全局通用函数，处理任何可能的toUpperCase错误
 const safeMethod = (config) => {
@@ -258,36 +258,39 @@ instance.interceptors.request.use(
     // 如果请求配置显式标记为公共API，或者URL在公共API列表中，视为公共API
     const shouldTreatAsPublic = isExplicitPublic || isPublicApi || requireNoAuth;
     
-    // 添加请求记录到状态管理
-    config._requestStartTime = Date.now();
+    // 确保所有请求都能发送Cookie
+    config.withCredentials = true;
     
-    // 检查是否已经手动设置了某种认证头
-    const hasAuthHeader = config.headers && (
-      config.headers.authorization || 
-      config.headers.Authorization || 
-      config.headers.authentication || 
-      config.headers.Authentication || 
-      config.headers.token
-    );
+    // 检查是否已有认证头部
+    const hasAuthHeader = config.headers.Authorization || config.headers.token || 
+        config.headers.authentication || config.headers.Authentication;
     
-    // 如果已经手动设置了认证头，优先使用已设置的头部
     if (hasAuthHeader) {
       console.log(`请求已包含认证头部，优先使用: ${config.url}`);
     }
-    // 否则根据API类型添加token
-    else if (token) {
-      // 设置官方配置的token字段名
+    // 如果有token且不是公共API，添加认证头部
+    else if (token && !shouldTreatAsPublic) {
       config.headers.authentication = token;
-      
-      // 为了兼容性，也添加其他可能的token字段
       config.headers.Authorization = `Bearer ${token}`;
       config.headers.token = token;
       config.headers.Authentication = token;
       
       console.log(`请求: ${config.url}, 添加认证头部: authentication=${token.substring(0, 10)}...`);
-    } else if (!shouldTreatAsPublic) {
-      console.warn(`警告: 需要认证的API请求 ${config.url} 没有可用的token!`);
     }
+    else if (!token && !shouldTreatAsPublic) {
+      // 对于非公共API，如果没有token，记录警告但不阻止请求
+      console.warn(`警告: 需要认证的API请求 ${config.url} 没有可用的token`);
+    }
+    
+    // 记录认证模式
+    if (token) {
+      console.log('使用token认证模式');
+    } else {
+      console.log('可能使用Cookie认证模式或公共API');
+    }
+    
+    // 添加请求记录到状态管理
+    config._requestStartTime = Date.now();
     
     // 调试日志
     console.log(`请求: ${config.url}, 用户类型: ${userType}, 是否代理商API: ${isAgentAPI}, 头部: ${JSON.stringify(Object.keys(config.headers))}`);
@@ -296,14 +299,33 @@ instance.interceptors.request.use(
     config.headers['X-Requested-With'] = 'XMLHttpRequest';
     config.headers['Accept'] = 'application/json';
     
+    // 添加CSRF Token（如果可用且不是skipAuth请求）
+    if (!config.skipAuth) {
+      try {
+        // 动态导入auth模块避免循环依赖
+        const { getCSRFToken } = require('./auth');
+        const csrfToken = getCSRFToken();
+        if (csrfToken) {
+          config.headers['X-CSRF-Token'] = csrfToken;
+        }
+      } catch (error) {
+        // 静默处理CSRF Token获取失败
+      }
+    }
+    
     // 🔧 最后一道防线：确保method在最后是正确的
     if (!config.method || typeof config.method !== 'string' || config.method === '') {
       config.method = 'GET';
       console.warn(`🚨 最后修复: 强制设置HTTP方法为GET: ${config.url}`);
     }
     
-    // 🔧 确保method是大写的，这很重要
-    config.method = config.method.toUpperCase();
+    // 🔧 确保method是大写的，这很重要 - 添加额外的安全检查
+    if (config.method && typeof config.method === 'string') {
+      config.method = config.method.toUpperCase();
+    } else {
+      config.method = 'GET';
+      console.warn(`🚨 紧急修复: method不是字符串，强制设置为GET: ${config.url}, method类型: ${typeof config.method}, 值: ${config.method}`);
+    }
     
     return config;
   },
@@ -314,11 +336,8 @@ instance.interceptors.request.use(
     // 隐藏加载状态
     store.dispatch(setLoading(false));
     
-    // 显示错误通知
-    store.dispatch(showNotification({
-      type: 'danger',
-      message: '请求发送失败，请检查您的网络连接'
-    }));
+    // 错误通知由具体业务组件处理
+    console.error('请求发送失败，请检查您的网络连接');
     
     return Promise.reject(error);
   }
@@ -354,7 +373,7 @@ instance.interceptors.response.use(
       return response;
     }
   },
-  error => {
+  async error => {
     // 动态导入 store 以避免循环依赖
     const store = require('../store').default;
     
@@ -366,18 +385,67 @@ instance.interceptors.response.use(
     
     // 处理认证错误
     if (status === 401 || status === 403) {
-        // 派发退出action
-        store.dispatch({ type: 'auth/logout' });
-        
-        // 立即重定向到登录页面，不显示任何提示
-        const currentPath = window.location.pathname;
-        if (currentPath !== '/login' && currentPath !== '/register') {
-          // 立即跳转，无延迟
-          window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
-        }
+      // 检查是否使用Cookie认证
+      const { shouldUseCookieAuth } = require('./auth');
+      const useCookieAuth = shouldUseCookieAuth();
       
-        // 直接返回reject，不显示错误通知
-        return Promise.reject(error);
+      console.log(`收到${status}错误，Cookie认证模式: ${useCookieAuth}, URL: ${error.config?.url}`);
+      
+      // 尝试自动刷新token（仅对401错误且不是refresh接口本身，且不是Cookie认证模式）
+      if (status === 401 && !useCookieAuth && !error.config.url.includes('/auth/refresh') && !error.config._tokenRefreshAttempted) {
+        try {
+          // 标记已尝试刷新，避免无限循环
+          error.config._tokenRefreshAttempted = true;
+          
+          console.log('尝试自动刷新token...');
+          // 尝试刷新token
+          const { ensureValidToken } = require('./api');
+          const refreshResult = await ensureValidToken();
+          
+          if (refreshResult.success) {
+            console.log('Token刷新成功，重试原请求');
+            // 刷新成功，重试原请求
+            return instance.request(error.config);
+          } else {
+            console.warn('Token刷新失败:', refreshResult.error);
+          }
+        } catch (refreshError) {
+          console.warn('自动token刷新失败:', refreshError.message);
+        }
+      }
+      
+      // Cookie认证模式下，401可能是正常的权限检查，不应该立即登出
+      if (useCookieAuth) {
+        console.log('Cookie认证模式下收到401错误，可能是权限问题，不执行自动登出');
+        // 只有在特定的认证相关API失败时才考虑登出
+        const isAuthAPI = error.config?.url?.includes('/auth/') || 
+                          error.config?.url?.includes('/user/profile') ||
+                          error.config?.url?.includes('/user/info');
+        
+        if (!isAuthAPI) {
+          // 非认证API的401错误，直接返回错误，不登出
+          return Promise.reject(error);
+        }
+      }
+      
+      // 刷新失败或其他情况，执行登出
+      console.log('执行自动登出...');
+      store.dispatch({ type: 'auth/logout' });
+      
+      // 检查用户类型，重定向到对应的登录页面
+      const currentPath = window.location.pathname;
+      if (currentPath !== '/login' && currentPath !== '/register' && currentPath !== '/agent-login') {
+        const userType = localStorage.getItem('userType');
+        const isAgentUser = userType === 'agent' || userType === 'agent_operator';
+        
+        if (isAgentUser) {
+          window.location.href = `/agent-login?redirect=${encodeURIComponent(currentPath)}`;
+        } else {
+        window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+        }
+      }
+    
+      return Promise.reject(error);
     }
     
     // 如果有请求元数据，处理请求拒绝
@@ -394,12 +462,10 @@ instance.interceptors.response.use(
     
     // 优雅的错误处理 - 根据错误类型返回用户友好的消息
     let userFriendlyMessage = '操作失败，请稍后再试';
-    let showNotification = true;
     
     // 处理超时错误
     if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
       userFriendlyMessage = '请求超时，正在为您重试...';
-      showNotification = false; // 不显示通知，因为会自动重试
       
       // 自动重试一次
       if (!error.config._retry) {
@@ -413,17 +479,13 @@ instance.interceptors.response.use(
               console.log('✅ 重试成功');
             })
             .catch(retryError => {
-              // 重试也失败了，显示友好提示
-              store.dispatch(showNotification({
-                type: 'warning',
-                message: '网络不稳定，请检查网络连接后重试'
-              }));
+              // 重试也失败了，记录错误
+              console.error('网络不稳定，请检查网络连接后重试');
             });
         }, 1000);
       } else {
         // 已经重试过了，显示最终错误
         userFriendlyMessage = '网络不稳定，请检查网络连接后重试';
-        showNotification = true;
       }
     }
     // 处理网络连接错误
@@ -446,14 +508,8 @@ instance.interceptors.response.use(
       }
     }
     
-    // 只在需要时显示错误通知
-    if (showNotification) {
-      const notificationType = status >= 500 ? 'warning' : 'danger';
-      store.dispatch(showNotification({
-        type: notificationType,
-        message: userFriendlyMessage
-      }));
-    }
+    // 错误通知已在其他地方处理，这里不再重复显示
+    // 避免重复的错误提示，让具体的业务组件处理错误显示
     
     // 返回包装后的错误对象，包含用户友好的消息
     const friendlyError = {
@@ -766,15 +822,42 @@ export const request = {
     
     const { requireAuth = false, headers = {} } = options;
     
+    console.log(`📤 POST 请求开始:`);
+    console.log(`   URL: ${url}`);
+    console.log(`   Data:`, data);
+    console.log(`   Options:`, options);
+    console.log(`   Headers:`, headers);
+    
     // 明确使用POST方法，避免undefined错误
     try {
-      return instance.request({
+      const requestConfig = {
         url,
         method: 'POST', // 明确指定方法为字符串
         data,
         requireAuth,
         headers
-      });
+      };
+      
+      console.log(`📋 Axios 请求配置:`, requestConfig);
+      
+      const requestPromise = instance.request(requestConfig);
+      
+      requestPromise
+        .then(response => {
+          console.log(`✅ POST 请求成功:`, response);
+        })
+        .catch(error => {
+          console.error(`❌ POST 请求失败:`, error);
+          console.error(`❌ 错误详情:`, {
+            message: error.message,
+            status: error.response?.status,
+            statusText: error.response?.statusText,
+            data: error.response?.data,
+            config: error.config
+          });
+        });
+      
+      return requestPromise;
     } catch (err) {
       console.error('执行POST请求错误:', err);
       return Promise.reject({

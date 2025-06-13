@@ -3,11 +3,14 @@ import { Container, Row, Col, Tab, Nav, Accordion, Button, Badge, Card, Form, Sp
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import ImageGallery from 'react-image-gallery';
+import { Helmet } from 'react-helmet-async';
 import { FaMapMarkerAlt, FaCalendarAlt, FaUsers, FaLanguage, FaCheck, FaTimes, FaStar, FaStarHalfAlt, FaRegStar, FaPhoneAlt, FaClock, FaInfoCircle, FaQuestionCircle, FaLightbulb, FaUtensils, FaBed, FaHiking, FaChevronDown, FaChevronUp, FaQuoteLeft, FaQuoteRight, FaHotel, FaChild, FaTicketAlt, FaPercent, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { getTourById, getGroupTourById, getDayTourById, getAgentDiscountRate, calculateTourDiscount } from '../../utils/api';
 import { addToCart } from '../../store/slices/bookingSlice';
 import { formatDate, calculateDiscountPrice } from '../../utils/helpers';
 import PriceDisplay from '../../components/PriceDisplay';
+import CustomerReviews from '../../components/CustomerReviews/CustomerReviews';
+import BaiduSEO from '../../components/BaiduSEO/BaiduSEO';
 import './tourDetails.css';
 import 'react-image-gallery/styles/css/image-gallery.css';
 import DatePicker from 'react-datepicker';
@@ -188,6 +191,74 @@ const TourDetails = () => {
   const isAgent = userType === 'agent' || localStorage.getItem('userType') === 'agent';
   const agentId = user?.agentId || localStorage.getItem('agentId');
   const discountRate = user?.discountRate || localStorage.getItem('discountRate');
+
+  // 生成结构化数据
+  const generateStructuredData = () => {
+    if (!tourData) return {};
+
+    const basePrice = tourData.price || tourData.adultPrice || 0;
+    const finalPrice = discountedPrice || basePrice;
+
+    return {
+      "@context": "https://schema.org/",
+      "@type": "TouristTrip",
+      "name": tourData.title || tourData.name,
+      "description": tourData.description || tourData.intro || tourData.des,
+      "image": images.length > 0 ? images.map(img => img.original) : [tourData.coverImage],
+      "url": `https://www.htas.com.au/tours/${id}?type=${type}`,
+      "provider": {
+        "@type": "TravelAgency",
+        "name": "HTAS - 塔斯马尼亚华人旅游",
+        "url": "https://www.htas.com.au",
+        "telephone": "+61-3-6234-5678",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Hobart",
+          "addressRegion": "Tasmania",
+          "addressCountry": "AU"
+        }
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": finalPrice,
+        "priceCurrency": "AUD",
+        "availability": "https://schema.org/InStock",
+        "validFrom": new Date().toISOString(),
+        "priceValidUntil": new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString()
+      },
+      "aggregateRating": tourData.averageRating ? {
+        "@type": "AggregateRating",
+        "ratingValue": tourData.averageRating,
+        "reviewCount": tourData.reviewCount || reviews.length,
+        "bestRating": "5",
+        "worstRating": "1"
+      } : undefined,
+      "duration": tourType === 'day' ? "P1D" : `P${tourData.duration || 1}D`,
+      "touristType": ["Family", "Individual", "Group"],
+      "includesAttraction": highlights.map(highlight => ({
+        "@type": "TouristAttraction",
+        "name": highlight
+      }))
+    };
+  };
+
+  // 生成FAQ结构化数据
+  const generateFAQStructuredData = () => {
+    if (!faqs || faqs.length === 0) return {};
+
+    return {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": faqs.map(faq => ({
+        "@type": "Question",
+        "name": faq.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.answer
+        }
+      }))
+    };
+  };
 
   // 获取今天的日期作为最小日期
   const today = new Date().toISOString().split('T')[0];
@@ -621,8 +692,15 @@ const TourDetails = () => {
               (startDate ? startDate.toISOString().split('T')[0] : null)
     });
     
+    // 根据用户类型决定跳转到哪个页面
+    const bookingPath = isAgent ? 
+      `/agent-booking/${type === 'group' ? 'group-tours' : 'day-tours'}/${id}?${params.toString()}` :
+      `/booking?${params.toString()}`;
+    
+    console.log('跳转路径:', bookingPath, '用户类型:', { isAgent, userType });
+    
     // 导航到预订页面，通过state传递更多详细数据
-    navigate(`/booking?${params.toString()}`, {
+    navigate(bookingPath, {
       state: {
         tourId: id,
         tourType: type,
@@ -780,6 +858,108 @@ const TourDetails = () => {
 
     return (
       <div className="tour-details-page">
+        {/* Google SEO优化的动态meta标签 */}
+        <Helmet>
+          <title>{`${tourData?.title || tourData?.name || '产品详情'} - HTAS 塔斯马尼亚华人旅游`}</title>
+          <meta name="description" content={`${tourData?.description || tourData?.intro || '探索塔斯马尼亚的绝美风光'} - HTAS提供专业中文导游服务，让您深度体验塔州之美。在线预订，优质服务保障。`} />
+          
+          {/* Keywords */}
+          <meta name="keywords" content={`塔斯马尼亚旅游,${tourData?.title || tourData?.name},HTAS,塔州一日游,中文导游,${highlights.slice(0, 3).join(',')}`} />
+          
+          {/* Open Graph */}
+          <meta property="og:title" content={`${tourData?.title || tourData?.name} - HTAS塔斯马尼亚华人旅游`} />
+          <meta property="og:description" content={tourData?.description || tourData?.intro || '探索塔斯马尼亚的绝美风光'} />
+          <meta property="og:image" content={images.length > 0 ? images[0].original : tourData?.coverImage} />
+          <meta property="og:url" content={`https://www.htas.com.au/tours/${id}?type=${type}`} />
+          <meta property="og:type" content="product" />
+          <meta property="og:site_name" content="HTAS - 塔斯马尼亚华人旅游" />
+          
+          {/* Twitter Card */}
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={`${tourData?.title || tourData?.name} - HTAS`} />
+          <meta name="twitter:description" content={tourData?.description || tourData?.intro || '探索塔斯马尼亚的绝美风光'} />
+          <meta name="twitter:image" content={images.length > 0 ? images[0].original : tourData?.coverImage} />
+          
+          {/* 产品结构化数据 */}
+          <script type="application/ld+json">
+            {JSON.stringify(generateStructuredData())}
+          </script>
+          
+          {/* FAQ结构化数据 */}
+          {faqs && faqs.length > 0 && (
+            <script type="application/ld+json">
+              {JSON.stringify(generateFAQStructuredData())}
+            </script>
+          )}
+          
+          {/* 面包屑导航结构化数据 */}
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "首页",
+                  "item": "https://www.htas.com.au"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "旅游产品",
+                  "item": "https://www.htas.com.au/tours"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 3,
+                  "name": tourData?.title || tourData?.name,
+                  "item": `https://www.htas.com.au/tours/${id}?type=${type}`
+                }
+              ]
+            })}
+          </script>
+          
+          {/* 本地商家信息 */}
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "LocalBusiness",
+              "@id": "https://www.htas.com.au/#organization",
+              "name": "HTAS - 塔斯马尼亚华人旅游",
+              "image": "https://www.htas.com.au/logo.png",
+              "description": "专业的塔斯马尼亚中文旅游服务，提供一日游、跟团游等多种旅游产品",
+              "url": "https://www.htas.com.au",
+              "telephone": "+61-3-6234-5678",
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "",
+                "addressLocality": "Hobart",
+                "addressRegion": "Tasmania",
+                "postalCode": "7000",
+                "addressCountry": "AU"
+              },
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": -42.8821,
+                "longitude": 147.3272
+              },
+              "areaServed": {
+                "@type": "State",
+                "name": "Tasmania"
+              },
+              "serviceType": "Travel Agency"
+            })}
+          </script>
+        </Helmet>
+
+        {/* 百度SEO优化 */}
+        <BaiduSEO 
+          tourData={tourData}
+          tourType={tourType}
+          pageType="product"
+        />
+
         {/* 面包屑导航 */}
         <Container>
           <div className="breadcrumbs mb-3">
@@ -907,6 +1087,9 @@ const TourDetails = () => {
                     </Nav.Item>
                     <Nav.Item>
                       <Nav.Link eventKey="faq" onClick={() => setActiveTab('faq')}>常见问题</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                      <Nav.Link eventKey="reviews" onClick={() => setActiveTab('reviews')}>客户评价</Nav.Link>
                     </Nav.Item>
                   </Nav>
 
@@ -1149,6 +1332,16 @@ const TourDetails = () => {
                       ) : (
                         <Alert variant="info">暂无常见问题信息，请联系客服了解详情。</Alert>
                       )}
+                    </Tab.Pane>
+
+                    <Tab.Pane eventKey="reviews">
+                      <h3 className="section-title">客户评价</h3>
+                      <CustomerReviews 
+                        tourId={id}
+                        tourType={tourType}
+                        reviews={reviews}
+                        loading={loading}
+                      />
                     </Tab.Pane>
                   </Tab.Content>
                 </div>

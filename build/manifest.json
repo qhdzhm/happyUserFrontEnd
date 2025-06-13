@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "HTAS",
+  "name": "HTAS - 塔斯马尼亚专业华人旅游服务",
+  "description": "塔斯马尼亚专业华人旅游服务商，提供一日游、跟团游、自由行定制、酒店预订等全方位旅游服务",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +21,10 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#ff6b35",
+  "background_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "zh-CN",
+  "categories": ["travel", "tourism", "lifestyle", "business"]
 }

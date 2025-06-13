@@ -1,0 +1,192 @@
+/* TokenStatus组件样式 */
+
+.token-status-simple {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.token-status-card {
+  max-width: 400px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.token-status-card .card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  font-weight: 600;
+}
+
+.token-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-row .label {
+  font-weight: 500;
+  color: #6c757d;
+  min-width: 80px;
+}
+
+.info-row .value {
+  font-weight: 600;
+  color: #495057;
+}
+
+.token-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* 旋转动画 */
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 576px) {
+  .token-status-card {
+    max-width: 100%;
+  }
+  
+  .info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .info-row .label {
+    min-width: auto;
+  }
+  
+  .token-actions {
+    flex-direction: column;
+  }
+  
+  .token-actions .btn {
+    width: 100%;
+  }
+}
+
+/* 状态颜色 */
+.text-success {
+  color: #28a745 !important;
+}
+
+.text-warning {
+  color: #ffc107 !important;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}
+
+.text-info {
+  color: #17a2b8 !important;
+}
+
+/* Badge样式增强 */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* 按钮样式增强 */
+.btn-sm {
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+}
+
+/* 警告框样式 */
+.alert {
+  border-radius: 0.375rem;
+  border: 1px solid transparent;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+  color: #721c24;
+}
+
+/* 卡片样式增强 */
+.card {
+  border-radius: 0.5rem;
+  border: 1px solid #dee2e6;
+}
+
+.card-header {
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.card-body {
+  padding: 1rem;
+}
+
+/* 悬停效果 */
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+/* 禁用状态 */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 加载状态指示器 */
+.loading-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6c757d;
+  font-size: 0.875rem;
+}
+
+/* 成功状态指示器 */
+.success-indicator {
+  color: #28a745;
+  font-weight: 500;
+}
+
+/* 错误状态指示器 */
+.error-indicator {
+  color: #dc3545;
+  font-weight: 500;
+} 
+ 
+ 
+ 
+ 

@@ -4,7 +4,7 @@ import { Link, useParams, useLocation, useNavigate } from 'react-router-dom';
 import { FaCheckCircle, FaDownload, FaCalendarAlt, FaMapMarkerAlt, 
          FaUsers, FaHotel, FaClipboard, FaPhoneAlt, FaWeixin, 
          FaStar, FaBed, FaInfoCircle, FaChevronRight, FaTimes,
-         FaUtensils, FaRoute, FaCalendarDay, FaExclamationTriangle } from 'react-icons/fa';
+         FaUtensils, FaRoute, FaCalendarDay, FaExclamationTriangle, FaEnvelope } from 'react-icons/fa';
 import { BsGeoAlt, BsClock } from 'react-icons/bs';
 import './OrderSuccess.css';
 import { toast } from 'react-hot-toast';
@@ -24,7 +24,6 @@ const OrderSuccess = () => {
   
   // 取消订单相关状态
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
-  const [cancelLoading, setCancelLoading] = useState(false);
   
   // 新增行程信息状态
   const [itineraryData, setItineraryData] = useState(null);
@@ -34,30 +33,30 @@ const OrderSuccess = () => {
   // 添加推荐旅游产品数据
   const [recommendedTours, setRecommendedTours] = useState([
     {
-      id: 1,
+      id: 4,
       title: "塔斯马尼亚东部精华3日游",
       location: "霍巴特出发",
       duration: "3天2晚",
       description: "探索塔斯马尼亚东海岸的自然美景和历史文化",
-      imageUrl: "https://via.placeholder.com/300x200?text=East+Tasmania",
+      imageUrl: "/images/east-tasmania-3days.jpg",
       price: 599
     },
     {
-      id: 2,
+      id: 5,
       title: "摇篮山一日游",
       location: "朗塞斯顿出发",
       duration: "全天",
       description: "探索世界文化遗产摇篮山-圣克莱尔湖国家公园",
-      imageUrl: "https://via.placeholder.com/300x200?text=Cradle+Mountain",
+      imageUrl: "/images/cradle-mountain-day.jpg",
       price: 199
     },
     {
-      id: 3,
+      id: 6,
       title: "布鲁尼岛美食之旅",
       location: "霍巴特出发",
       duration: "全天",
       description: "品尝布鲁尼岛上的新鲜海鲜和当地特色美食",
-      imageUrl: "https://via.placeholder.com/300x200?text=Bruny+Island",
+      imageUrl: "/images/bruny-island-food.jpg",
       price: 249
     }
   ]);
@@ -96,6 +95,7 @@ const OrderSuccess = () => {
       // 处理订单数据
       const processedData = {
         id: orderNumber, // 订单号
+        orderNumber: orderNumber, // 明确的订单号字段
         bookingId: orderIdValue, // 订单ID，用于API调用
         status: 'confirmed',
         paymentStatus: 'unpaid',
@@ -181,6 +181,7 @@ const OrderSuccess = () => {
         // 处理从API获取的订单数据
         const processedData = {
           id: apiOrderData.order_number || apiOrderData.orderNumber || id,
+          orderNumber: apiOrderData.order_number || apiOrderData.orderNumber || id, // 明确的订单号字段
           bookingId: apiOrderData.id || id,
           status: apiOrderData.status || 'confirmed',
           paymentStatus: apiOrderData.payment_status || apiOrderData.paymentStatus || 'unpaid',
@@ -324,7 +325,8 @@ const OrderSuccess = () => {
   const copyOrderNumber = () => {
     if (!orderData) return;
     
-    navigator.clipboard.writeText(orderData.id)
+    const orderNumberToCopy = orderData.orderNumber || orderData.id;
+    navigator.clipboard.writeText(orderNumberToCopy)
       .then(() => toast.success('订单号已复制到剪贴板'))
       .catch(err => {
         console.error('复制失败: ', err);
@@ -476,48 +478,7 @@ const OrderSuccess = () => {
     }
   };
   
-  // 处理取消订单
-  const handleCancelOrder = async () => {
-    if (cancelLoading) return;
-    
-    setCancelLoading(true);
-    
-    try {
-      // 使用订单ID而不是订单号
-      const orderIdToCancel = orderData.bookingId || 
-                           receivedBookingData?.bookingId || 
-                           receivedBookingData?.booking_id;
-      
-      if (!orderIdToCancel) {
-        toast.error('找不到订单ID，无法取消订单');
-        setCancelLoading(false);
-        setShowCancelConfirm(false);
-        return;
-      }
-      
-      console.log(`尝试取消订单，ID: ${orderIdToCancel}`);
-      const response = await cancelOrder(orderIdToCancel);
-      
-      if (response && response.code === 1) {
-        toast.success('订单取消成功');
-        // 更新订单状态
-        setOrderData({
-          ...orderData,
-          status: 'cancelled',
-          paymentStatus: 'cancelled'
-        });
-        // 隐藏确认框
-        setShowCancelConfirm(false);
-      } else {
-        toast.error(response?.msg || '取消订单失败');
-      }
-    } catch (err) {
-      console.error('取消订单错误:', err);
-      toast.error(err.message || '取消订单出错，请稍后重试');
-    } finally {
-      setCancelLoading(false);
-    }
-  };
+  // 不再需要处理取消订单功能，用户需要联系客服取消
   
   // 如果订单数据尚未加载，显示加载中
   if (!orderData) {
@@ -544,7 +505,7 @@ const OrderSuccess = () => {
         <p className="lead text-muted mb-0">感谢您的预订，您的订单已确认</p>
         <div className="order-number mt-3 d-flex align-items-center justify-content-center">
           <span className="text-muted me-2">订单号:</span>
-          <strong className="me-2">{orderData.id}</strong>
+          <strong className="me-2">{orderData.orderNumber || orderData.id || '未知'}</strong>
           <Button 
             variant="link" 
             className="copy-btn p-0" 
@@ -772,43 +733,7 @@ const OrderSuccess = () => {
                   </div>
                 </Alert>
               </div>
-              
-              <div className="price-details">
-                <h4 className="h6 mb-3">费用明细</h4>
-                <ListGroup variant="flush" className="price-list">
-                  <ListGroup.Item className="d-flex justify-content-between px-0">
-                    <div>
-                      {orderData.tour.adults > 0 && (
-                        <div>成人 x {orderData.tour.adults}</div>
-                      )}
-                      {orderData.tour.children > 0 && (
-                        <div>儿童 x {orderData.tour.children}</div>
-                      )}
-                    </div>
-                    <div className="text-end">
-                      {!isOperator() ? (
-                        <div>${Number(orderData.payment.price).toFixed(2)}</div>
-                      ) : (
-                        <div className="text-muted">价格已隐藏</div>
-                      )}
-                    </div>
-                  </ListGroup.Item>
-                  <ListGroup.Item className="d-flex justify-content-between fw-bold px-0 border-top mt-2 pt-2">
-                    <span>订单总额</span>
-                    {!isOperator() ? (
-                      <span className="text-primary">${Number(orderData.payment.price).toFixed(2)}</span>
-                    ) : (
-                      <span className="text-muted">价格已隐藏</span>
-                    )}
-                  </ListGroup.Item>
-                </ListGroup>
-              </div>
             </Card.Body>
-            <Card.Footer className="bg-white border-top text-center">
-              <Button variant="primary" size="lg" className="pay-button" onClick={() => navigate('/payment/' + (orderData.bookingId || orderData.id || orderData.orderNumber))}>
-                立即支付
-              </Button>
-            </Card.Footer>
           </Card>
           
           {/* 联系人信息 */}
@@ -878,7 +803,49 @@ const OrderSuccess = () => {
               <h2 className="h5 mb-0">订单操作</h2>
             </Card.Header>
             <Card.Body>
+              {/* 价格信息 */}
+              <div className="price-details mb-4">
+                <h4 className="h6 mb-3">费用明细</h4>
+                <ListGroup variant="flush" className="price-list">
+                  <ListGroup.Item className="d-flex justify-content-between px-0">
+                    <div>
+                      {orderData.tour.adults > 0 && (
+                        <div>成人 x {orderData.tour.adults}</div>
+                      )}
+                      {orderData.tour.children > 0 && (
+                        <div>儿童 x {orderData.tour.children}</div>
+                      )}
+                    </div>
+                    <div className="text-end">
+                      {!isOperator() ? (
+                        <div>${Number(orderData.payment.price).toFixed(2)}</div>
+                      ) : (
+                        <div className="text-muted">价格已隐藏</div>
+                      )}
+                    </div>
+                  </ListGroup.Item>
+                  <ListGroup.Item className="d-flex justify-content-between fw-bold px-0 border-top mt-2 pt-2">
+                    <span>订单总额</span>
+                    {!isOperator() ? (
+                      <span className="text-primary">${Number(orderData.payment.price).toFixed(2)}</span>
+                    ) : (
+                      <span className="text-muted">价格已隐藏</span>
+                    )}
+                  </ListGroup.Item>
+                </ListGroup>
+              </div>
+              
               <div className="action-buttons">
+                {/* 立即支付按钮 */}
+                <Button 
+                  variant="primary" 
+                  size="lg" 
+                  className="w-100 mb-3 pay-button" 
+                  onClick={() => navigate('/payment/' + (orderData.bookingId || orderData.id || orderData.orderNumber))}
+                >
+                  立即支付
+                </Button>
+                
                 <Button 
                   variant="outline-primary" 
                   className="w-100 mb-3"
@@ -898,7 +865,7 @@ const OrderSuccess = () => {
                     className="w-100 mb-3"
                     onClick={() => setShowCancelConfirm(true)}
                   >
-                    <FaTimes className="me-2" /> 取消订单
+                    <FaTimes className="me-2" /> 申请取消订单
                   </Button>
                 )}
                 <Button variant="outline-secondary" className="w-100" onClick={handleBackToDetail}>
@@ -921,7 +888,7 @@ const OrderSuccess = () => {
                   </div>
                   <div className="service-info">
                     <div className="service-title fw-medium">客服电话</div>
-                    <div className="service-value">+61 3 1234 5678</div>
+                    <div className="service-value">0449944988</div>
                   </div>
                 </div>
                 <div className="service-item mb-3 d-flex align-items-center">
@@ -931,6 +898,15 @@ const OrderSuccess = () => {
                   <div className="service-info">
                     <div className="service-title fw-medium">微信客服</div>
                     <div className="service-value">HappyTassie</div>
+                  </div>
+                </div>
+                <div className="service-item mb-3 d-flex align-items-center">
+                  <div className="service-icon me-3">
+                    <FaInfoCircle className="text-info" size={18} />
+                  </div>
+                  <div className="service-info">
+                    <div className="service-title fw-medium">客服邮箱</div>
+                    <div className="service-value">Tom.Zhang@htas.com.au</div>
                   </div>
                 </div>
                 <div className="service-item d-flex align-items-center">
@@ -991,35 +967,76 @@ const OrderSuccess = () => {
         </section>
       )}
       
-      {/* 取消订单确认对话框 */}
-      <Modal show={showCancelConfirm} onHide={() => setShowCancelConfirm(false)}>
+      {/* 取消订单联系客服对话框 */}
+      <Modal show={showCancelConfirm} onHide={() => setShowCancelConfirm(false)} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>取消订单确认</Modal.Title>
+          <Modal.Title>申请取消订单</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>您确定要取消此订单吗？此操作不可撤销。</p>
-          <div className="text-muted small mb-0">
-            <p className="mb-1">请注意以下退款规则：</p>
-            <ul className="mb-0 ps-3">
-              <li>出行前7天以上取消，全额退款</li>
-              <li>出行前3-7天取消，退还50%费用</li>
-              <li>出行前3天内取消，不予退款</li>
-            </ul>
+          <div className="text-center mb-4">
+            <FaInfoCircle className="text-info mb-2" size={48} />
+            <h5>需要取消订单？</h5>
+            <p className="text-muted">请联系我们的客服团队，我们将为您处理订单取消事宜。</p>
+          </div>
+          
+          <div className="contact-info">
+            <h6 className="mb-3 text-center">联系客服：</h6>
+            <Row>
+              <Col md={4} className="mb-3">
+                <div className="text-center">
+                  <div className="mb-2">
+                    <FaWeixin className="text-success" size={24} />
+                  </div>
+                  <h6 className="mb-2">微信客服</h6>
+                  <div className="qr-code-placeholder mb-2" style={{
+                    width: '80px',
+                    height: '80px',
+                    backgroundColor: '#f8f9fa',
+                    border: '1px dashed #dee2e6',
+                    margin: '0 auto',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '10px',
+                    color: '#6c757d'
+                  }}>
+                    微信二维码
+                    <br />
+                    (占位图)
+                  </div>
+                  <small className="text-muted">扫码添加客服微信</small>
+                </div>
+              </Col>
+              <Col md={4} className="mb-3">
+                <div className="text-center">
+                  <div className="mb-2">
+                    <FaEnvelope className="text-primary" size={24} />
+                  </div>
+                  <h6 className="mb-2">客服邮箱</h6>
+                  <p className="mb-2">Tom.Zhang@htas.com.au</p>
+                  <small className="text-muted">我们会尽快回复您的邮件</small>
+                </div>
+              </Col>
+              <Col md={4} className="mb-3">
+                <div className="text-center">
+                  <div className="mb-2">
+                    <FaPhoneAlt className="text-primary" size={24} />
+                  </div>
+                  <h6 className="mb-2">客服电话</h6>
+                  <p className="mb-2">0449944988</p>
+                  <small className="text-muted">服务时间：周一至周日 9:00-18:00</small>
+                </div>
+              </Col>
+            </Row>
           </div>
         </Modal.Body>
         <Modal.Footer>
           <Button 
             variant="secondary" 
             onClick={() => setShowCancelConfirm(false)}
+            className="w-100"
           >
-            返回
-          </Button>
-          <Button 
-            variant="danger" 
-            onClick={handleCancelOrder}
-            disabled={cancelLoading}
-          >
-            {cancelLoading ? '处理中...' : '确认取消订单'}
+            我知道了
           </Button>
         </Modal.Footer>
       </Modal>

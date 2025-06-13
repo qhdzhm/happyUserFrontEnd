@@ -129,7 +129,7 @@ const Payment = () => {
               const creditResponse = await getAgentCredit(agentId);
               
               if (creditResponse && creditResponse.code === 1) {
-                setAgentCredit(creditResponse.data.availableCredit);
+                setAgentCredit(creditResponse.data);
                 
                 // 如果有交易历史记录，也一并设置（只有代理商主账号能看到）
                 if (creditResponse.data.recentTransactions && canSeeCreditInfo) {
@@ -277,7 +277,12 @@ const Payment = () => {
     // 🔒 安全改进：前端不再进行金额检查，由后端验证
     // 前端仍显示信用额度不足的提示，但最终验证在后端
     const orderTotal = orderData.totalPrice || orderData.total || 0;
-    if (paymentMethod === 'agent_credit' && orderTotal > agentCredit) {
+    // 修复：使用正确的availableCredit进行检查
+    const currentAvailableCredit = typeof agentCredit === 'object' && agentCredit !== null 
+      ? (agentCredit.availableCredit !== undefined ? agentCredit.availableCredit : 0)
+      : (typeof agentCredit === 'number' ? agentCredit : 0);
+      
+    if (paymentMethod === 'agent_credit' && orderTotal > currentAvailableCredit) {
       if (isOperator()) {
         toast.error('代理商信用额度不足，请联系您的中介管理人员申请增加额度');
       } else {
@@ -333,7 +338,24 @@ const Payment = () => {
         
         // 如果使用信用额度，更新本地显示的额度
         if (paymentMethod === 'agent_credit') {
-          setAgentCredit(prev => prev - orderTotal);
+          // 修复：正确更新agentCredit对象
+          setAgentCredit(prev => {
+            if (typeof prev === 'object' && prev !== null) {
+              return {
+                ...prev,
+                availableCredit: (prev.availableCredit || 0) - orderTotal,
+                usedCredit: (prev.usedCredit || 0) + orderTotal
+              };
+            } else {
+              // 如果prev是数字，转换为对象格式
+              return {
+                availableCredit: (prev || 0) - orderTotal,
+                usedCredit: orderTotal,
+                totalCredit: prev || 0,
+                usagePercentage: 0
+              };
+            }
+          });
           
           // 如果API返回了新的交易记录，更新交易历史
           if (response.data && response.data.transaction) {
@@ -452,8 +474,20 @@ const Payment = () => {
   // 计算订单总价
   const orderTotal = orderData.totalPrice || orderData.total || 0;
   
-  // 判断信用额度是否足够
-  const isCreditSufficient = agentCredit >= orderTotal;
+  // 判断信用额度是否足够 - 修复：正确处理agentCredit对象
+  const availableCredit = typeof agentCredit === 'object' && agentCredit !== null 
+    ? (agentCredit.availableCredit !== undefined ? agentCredit.availableCredit : 0)
+    : (typeof agentCredit === 'number' ? agentCredit : 0);
+  const isCreditSufficient = availableCredit >= orderTotal;
+  
+  console.log('Payment页面额度计算:', {
+    agentCredit,
+    agentCreditType: typeof agentCredit,
+    availableCredit,
+    orderTotal,
+    isCreditSufficient,
+    usagePercentage: agentCredit?.usagePercentage
+  });
 
   return (
     <div className="payment-page py-5">
@@ -490,7 +524,7 @@ const Payment = () => {
                         {!isOperator() && (
                           <>
                             <p className="mb-1">支付金额: ${formatPrice(orderData.totalPrice || orderData.total || 0)}</p>
-                            <p className="mb-0">剩余信用额度: ${formatPrice(agentCredit)}</p>
+                            <p className="mb-0">剩余信用额度: ${formatPrice(availableCredit)}</p>
                           </>
                         )}
                       </Col>
@@ -538,17 +572,40 @@ const Payment = () => {
                           <div className="d-flex justify-content-between mb-3">
                             <div>
                               <div className="text-muted small">
-                                {isOperator() ? '可使用代理商信用额度' : '可用信用额度'}
+                                {isOperator() ? '代理商信用额度使用情况' : '可用信用额度'}
                               </div>
                               <div className="fs-4 fw-bold text-primary">
                                 {creditLoading ? (
                                   <Spinner animation="border" size="sm" />
                                 ) : isOperator() ? (
-                                  '可用于支付'
+                                  `已用 ${(agentCredit?.usagePercentage || 0).toFixed(1)}%`
                                 ) : (
-                                  `$${formatPrice(agentCredit)}`
+                                  `$${formatPrice(availableCredit)}`
                                 )}
                               </div>
+                              {isOperator() && agentCredit && (
+                                <div className="mt-2">
+                                  <div className="progress" style={{ height: '6px' }}>
+                                    <div 
+                                      className={`progress-bar ${
+                                        (agentCredit.usagePercentage || 0) > 80 ? 'bg-danger' : 
+                                        (agentCredit.usagePercentage || 0) > 60 ? 'bg-warning' : 'bg-success'
+                                      }`}
+                                      role="progressbar" 
+                                      style={{ width: `${Math.min(agentCredit.usagePercentage || 0, 100)}%` }}
+                                      aria-valuenow={agentCredit.usagePercentage || 0}
+                                      aria-valuemin="0" 
+                                      aria-valuemax="100"
+                                    ></div>
+                                  </div>
+                                  <div className="d-flex justify-content-between mt-1">
+                                    <small className="text-muted">可用于支付</small>
+                                    <small className="text-muted">
+                                      {isCreditSufficient ? '✓ 额度充足' : '✗ 额度不足'}
+                                    </small>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                             {canSeeCreditInfo && (
                               <div className="d-flex align-items-center">
@@ -640,7 +697,7 @@ const Payment = () => {
                                     '使用代理商信用额度'
                                   ) : (
                                     <>
-                                      可用额度: ${formatPrice(agentCredit)}
+                                      可用额度: ${formatPrice(availableCredit)}
                                       {!isCreditSufficient && ' (额度不足)'}
                                     </>
                                   )}

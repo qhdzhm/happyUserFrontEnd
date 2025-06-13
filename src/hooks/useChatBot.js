@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import { request } from '../utils/request';
 
 /**
  * 聊天机器人自定义Hook
@@ -50,7 +50,7 @@ export const useChatBot = ({ userType = 1, userId = null, sessionId = null }) =>
         setError(null);
 
         try {
-            const response = await axios.post('/api/chatbot/message', {
+            const response = await request.post('/chatbot/message', {
                 sessionId: sessionIdRef.current,
                 message: messageContent,
                 userType,
@@ -114,7 +114,7 @@ export const useChatBot = ({ userType = 1, userId = null, sessionId = null }) =>
     // 获取聊天历史
     const getChatHistory = async () => {
         try {
-            const response = await axios.get(`/api/chatbot/session/${sessionIdRef.current}/history`);
+            const response = await request.get(`/chatbot/session/${sessionIdRef.current}/history`);
             if (response.data.code === 1) {
                 const history = response.data.data.map(msg => ({
                     id: msg.id,
@@ -134,7 +134,7 @@ export const useChatBot = ({ userType = 1, userId = null, sessionId = null }) =>
     // 连接状态检查
     const checkConnection = async () => {
         try {
-            const response = await axios.get('/api/chatbot/health');
+            const response = await request.get('/chatbot/health');
             setConnected(response.data.code === 1);
         } catch (error) {
             setConnected(false);

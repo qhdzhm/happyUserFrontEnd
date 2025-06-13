@@ -1,5 +1,4 @@
 import request from '../utils/request';
-import axios from 'axios';
 import { addAuthHeaders } from '../utils/auth';
 
 /**
@@ -15,7 +14,7 @@ export const createBooking = (data) => {
   // 添加认证头部
   const headers = addAuthHeaders();
   
-  return request.post('/api/bookings', data, { headers });
+  return request.post('/bookings', data, { headers });
 };
 
 /**
@@ -57,14 +56,14 @@ export const createTourBooking = (data) => {
   
   // 打印请求信息，用于调试
   console.log('创建旅游订单请求:', {
-    url: '/api/user/bookings/tour/create',
+    url: '/user/bookings/tour/create',
     headers: Object.keys(headers),
     authentication: headers.authentication ? `${headers.authentication.substring(0, 10)}...` : 'none',
     data: { ...data, passengers: data.passengers?.length || 0 }
   });
   
   // 调用新的API接口
-  return request.post('/api/user/bookings/tour/create', data, { headers });
+  return request.post('/user/bookings/tour/create', data, { headers });
 };
 
 /**
@@ -129,18 +128,61 @@ export const calculateTourPrice = async (tourId, tourType, adultCount, childCoun
     // 添加认证头部
     const headers = addAuthHeaders();
     
-    // 构建URL
-    const url = `/api/user/bookings/tour/calculate-price`;
+    // 构建URL - 注意：后端接口路径是 /user/bookings/tour/calculate-price
+    const url = `/user/bookings/tour/calculate-price`;
     const fullUrl = `${url}?${params.toString()}`;
     console.log('请求URL:', fullUrl);
     
-    // 使用POST方法而不是GET，但参数仍然放在URL中而不是请求体
-    const response = await axios.post(url, null, { 
-      params: Object.fromEntries(params),
-      headers 
+    // 构建请求体数据，确保数值类型正确
+    const requestData = {
+      tourId: numericTourId,
+      tourType: tourType,
+      adultCount: numericAdultCount,
+      childCount: numericChildCount,
+      hotelLevel: hotelLevel,
+      roomCount: numericRoomCount
+    };
+    
+    // 添加可选参数
+    if (roomType) {
+      requestData.roomType = roomType;
+    }
+    
+    if (childrenAges && childrenAges.length > 0) {
+      requestData.childrenAges = childrenAges.join(',');
+    }
+    
+    if (numericAgentId) {
+      requestData.agentId = numericAgentId;
+    }
+    
+    // 添加用户ID（如果有的话）
+    if (!numericUserId && localUserId) {
+      requestData.userId = parseInt(localUserId, 10);
+    } else if (numericUserId) {
+      requestData.userId = numericUserId;
+    }
+    
+    console.log('请求体数据:', requestData);
+    
+    // 构建表单数据（application/x-www-form-urlencoded）
+    const formData = new URLSearchParams();
+    Object.entries(requestData).forEach(([key, value]) => {
+      if (value !== null && value !== undefined) {
+        formData.append(key, value.toString());
+      }
     });
     
-    return response.data;
+    // 使用POST方法，发送表单数据
+    const response = await request.post(url, formData, { 
+      headers: {
+        ...headers,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    });
+    
+    // 响应拦截器已经处理了response.data，直接返回response
+    return response;
   } catch (error) {
     console.error('计算旅游价格时出错:', error);
     throw error;
@@ -160,11 +202,11 @@ export const getHotelPrices = () => {
     console.log('构建请求头:', Object.keys(headers));
     
     // 记录请求信息
-    console.log('即将发送请求到: /api/user/bookings/hotel-prices');
+    console.log('即将发送请求到: /user/bookings/hotel-prices');
     
     // 使用缓存，缓存时间为1小时
     // 避免链式调用可能导致的toUpperCase错误
-    const result = request.get('/api/user/bookings/hotel-prices', { 
+    const result = request.get('/user/bookings/hotel-prices', { 
       params: {},  // 确保params是一个空对象而非null
       useCache: true, 
       cacheTime: 60 * 60 * 1000,
@@ -207,7 +249,7 @@ export const getBookingById = (id) => {
   const headers = addAuthHeaders();
   
   // 使用缓存，缓存时间为5分钟
-  return request.get(`/api/bookings/${id}`, {}, { 
+  return request.get(`/bookings/${id}`, {}, { 
     useCache: true, 
     cacheTime: 5 * 60 * 1000,
     headers
@@ -224,9 +266,9 @@ export const cancelBooking = (id) => {
   const headers = addAuthHeaders();
   
   // 取消预订后清除缓存
-  const response = request.put(`/api/bookings/${id}/cancel`, {}, { headers });
-  request.clearCache(`/api/bookings/${id}`);
-  request.clearCache('/api/users/orders');
+  const response = request.put(`/bookings/${id}/cancel`, {}, { headers });
+  request.clearCache(`/bookings/${id}`);
+  request.clearCache('/users/orders');
   return response;
 };
 
@@ -241,9 +283,9 @@ export const payBooking = (id, paymentData) => {
   const headers = addAuthHeaders();
   
   // 支付预订后清除缓存
-  const response = request.post(`/api/bookings/${id}/pay`, paymentData, { headers });
-  request.clearCache(`/api/bookings/${id}`);
-  request.clearCache('/api/users/orders');
+  const response = request.post(`/bookings/${id}/pay`, paymentData, { headers });
+  request.clearCache(`/bookings/${id}`);
+  request.clearCache('/users/orders');
   return response;
 };
 
@@ -258,7 +300,7 @@ export const getAvailableDates = (tourId, params = {}) => {
   const headers = addAuthHeaders();
   
   // 使用缓存，缓存时间为30分钟
-  return request.get(`/api/tours/${tourId}/available-dates`, params, { 
+  return request.get(`/tours/${tourId}/available-dates`, params, { 
     useCache: true, 
     cacheTime: 30 * 60 * 1000,
     headers
@@ -276,7 +318,7 @@ export const checkDateAvailability = (tourId, params) => {
   const headers = addAuthHeaders();
   
   // 不使用缓存，确保获取最新数据
-  return request.get(`/api/tours/${tourId}/check-availability`, params, { headers });
+  return request.get(`/tours/${tourId}/check-availability`, params, { headers });
 };
 
 /**
@@ -290,7 +332,7 @@ export const calculatePrice = (tourId, params) => {
   const headers = addAuthHeaders();
   
   // 不使用缓存，确保获取最新数据
-  return request.get(`/api/tours/${tourId}/calculate-price`, params, { headers });
+  return request.get(`/tours/${tourId}/calculate-price`, params, { headers });
 };
 
 /**
@@ -317,7 +359,7 @@ export const getOrderList = (params = {}) => {
   const pageSize = Math.max(1, parseInt(params.pageSize || 10, 10));
   
   // 构建URL查询参数
-  const url = `/api/orders/list?page=${page}&pageSize=${pageSize}`;
+  const url = `/orders/list?page=${page}&pageSize=${pageSize}`;
   
   // 添加其他非空参数
   const otherParams = Object.entries(params).filter(([key, value]) => {
@@ -377,11 +419,11 @@ export const cancelOrder = async (orderId) => {
     
     // 发送取消订单请求
     console.log(`发送取消订单请求: ${orderId}`);
-    const response = await request.post(`/api/user/orders/${orderId}/cancel`, {}, { headers });
+    const response = await request.post(`/user/orders/${orderId}/cancel`, {}, { headers });
     
     // 清除缓存，确保数据一致性
-    request.clearCache(`/api/user/orders/${orderId}`);
-    request.clearCache('/api/orders/list');
+    request.clearCache(`/user/orders/${orderId}`);
+    request.clearCache('/orders/list');
     
     return response;
   } catch (error) {
@@ -411,7 +453,7 @@ export const getOrderDetail = async (orderId) => {
       if (isOrderNumber) {
         console.log('尝试使用订单号获取订单详情');
         try {
-          const response = await request.get(`/api/user/order-numbers/${orderId}`, {}, {
+          const response = await request.get(`/user/order-numbers/${orderId}`, {}, {
             headers
           });
           return response;
@@ -421,7 +463,7 @@ export const getOrderDetail = async (orderId) => {
       }
       
       // 尝试订单API路径
-      const response = await request.get(`/api/orders/${orderId}`, {}, {
+      const response = await request.get(`/orders/${orderId}`, {}, {
         headers
       });
       return response;
@@ -429,7 +471,7 @@ export const getOrderDetail = async (orderId) => {
       console.warn('第一个API路径失败，尝试最后备用路径...', error);
       
       // 直接尝试bookings路径，跳过/api/user/orders/${orderId}路径
-      const response = await request.get(`/api/user/bookings/${orderId}`, {}, {
+      const response = await request.get(`/user/bookings/${orderId}`, {}, {
         headers
       });
       return response;

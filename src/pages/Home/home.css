@@ -367,13 +367,16 @@
 
 .call_us {
   background: url("../../assets/images/slider/1.jpg") no-repeat;
+  background-color: #2c3e50; /* 备用背景色，防止图片加载失败时显示白色 */
   padding: 80px 0;
   background-size: cover;
   background-position: center center;
-  background-attachment: fixed;
+  background-attachment: scroll; /* 改为scroll，fixed在移动设备上可能有问题 */
   position: relative;
-  z-index: 1;
+  z-index: 2;
   margin-top: 50px;
+  min-height: 400px; /* 确保有足够的高度显示背景 */
+  width: 100%;
 }
 
 .call_us .section-title {
@@ -441,14 +444,15 @@
   animation: bounce 2s infinite;
 }
 
-.overlay {
+.call_us .overlay {
   position: absolute;
   left: 0;
   top: 0;
   height: 100%;
   width: 100%;
   background: rgba(0, 0, 0, 0.5);
-  z-index: -1;
+  z-index: -1; /* 确保overlay在内容下面 */
+  pointer-events: none; /* 确保不会阻挡点击事件 */
 }
 
 @keyframes bounce {
@@ -2331,66 +2335,172 @@ html.fullscreen-scroll-active body::after {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
+  backdrop-filter: blur(10px);
 }
 
 .global-loader .loader-container {
   text-align: center;
-  background: white;
-  padding: 3rem;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 3rem 2.5rem;
+  border-radius: 25px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  max-width: 450px;
+  width: 90%;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: containerFloat 3s ease-in-out infinite;
+}
+
+@keyframes containerFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.global-loader .loader-logo-container {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 2rem;
+}
+
+.global-loader .loader-logo {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  max-width: 400px;
-  width: 90%;
+  animation: logoFloat 2s ease-in-out infinite;
+  background: white;
+  padding: 10px;
 }
 
-.global-loader .loader-spinner {
-  width: 60px;
-  height: 60px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #007bff;
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-5px) scale(1.05); }
+}
+
+.global-loader .loader-spinner-ring {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: 140px;
+  height: 140px;
+  border: 3px solid transparent;
+  border-top: 3px solid #007bff;
+  border-right: 3px solid #28a745;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 1.5rem;
+  animation: spinRing 2s linear infinite;
 }
 
-@keyframes spin {
+@keyframes spinRing {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
 
 .global-loader .loader-title {
   color: #333;
-  font-size: 1.8rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  background: linear-gradient(45deg, #007bff, #6610f2);
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+  background: linear-gradient(45deg, #007bff, #28a745, #6610f2);
+  background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  animation: gradientShift 3s ease-in-out infinite;
+  letter-spacing: 1px;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 .global-loader .loader-text {
   color: #666;
-  font-size: 1rem;
-  margin: 0;
-  animation: pulse 2s ease-in-out infinite;
+  font-size: 1.1rem;
+  margin: 0 0 1.5rem 0;
+  animation: textPulse 2s ease-in-out infinite;
+  font-weight: 500;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 0.7; }
-  50% { opacity: 1; }
+@keyframes textPulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.02); }
+}
+
+.global-loader .loader-progress {
+  width: 100%;
+  height: 4px;
+  background: rgba(0, 123, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+
+.global-loader .loader-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #007bff, #28a745);
+  border-radius: 2px;
+  animation: progressMove 2s ease-in-out infinite;
+}
+
+@keyframes progressMove {
+  0% { width: 0%; transform: translateX(-100%); }
+  50% { width: 70%; transform: translateX(0%); }
+  100% { width: 100%; transform: translateX(100%); }
 }
 
 /* 响应式设计 */
+@media (max-width: 768px) {
+  .global-loader .loader-container {
+    padding: 2.5rem 2rem;
+    margin: 1rem;
+    max-width: 380px;
+  }
+  
+  .global-loader .loader-logo {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .global-loader .loader-spinner-ring {
+    width: 120px;
+    height: 120px;
+    top: -10px;
+    left: -10px;
+  }
+  
+  .global-loader .loader-title {
+    font-size: 1.7rem;
+  }
+  
+  .global-loader .loader-text {
+    font-size: 1rem;
+  }
+}
+
 @media (max-width: 576px) {
   .global-loader .loader-container {
-    padding: 2rem;
+    padding: 2rem 1.5rem;
     margin: 1rem;
+    max-width: 320px;
+  }
+  
+  .global-loader .loader-logo {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .global-loader .loader-spinner-ring {
+    width: 100px;
+    height: 100px;
+    top: -10px;
+    left: -10px;
   }
   
   .global-loader .loader-title {
