@@ -37,6 +37,12 @@
     </url>
     
     <!-- 目的地页面 -->
+    <url>
+        <loc>https://www.htas.com.au/destinations</loc>
+        <lastmod>2024-12-19</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
     
     <!-- 图片画廊 -->
     <url>
@@ -53,7 +59,6 @@
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
     </url>
-    
     
     <!-- 用户登录页面 -->
     <url>
@@ -153,51 +158,37 @@
         <priority>0.7</priority>
     </url>
     
-    <url>
-        <loc>https://www.htas.com.au/group-tours/4</loc>
-        <lastmod>2024-12-19</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    
-    <url>
-        <loc>https://www.htas.com.au/group-tours/5</loc>
-        <lastmod>2024-12-19</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    
     <!-- 热门目的地详情页面 -->
     <url>
-        <loc>https://www.htas.com.au/region-detail/1</loc>
+        <loc>https://www.htas.com.au/region-detail/hobart</loc>
         <lastmod>2024-12-19</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     
     <url>
-        <loc>https://www.htas.com.au/region-detail/2</loc>
+        <loc>https://www.htas.com.au/region-detail/launceston</loc>
         <lastmod>2024-12-19</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     
     <url>
-        <loc>https://www.htas.com.au/region-detail/3</loc>
+        <loc>https://www.htas.com.au/region-detail/cradle-mountain</loc>
         <lastmod>2024-12-19</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     
     <url>
-        <loc>https://www.htas.com.au/region-detail/4</loc>
+        <loc>https://www.htas.com.au/region-detail/wineglass-bay</loc>
         <lastmod>2024-12-19</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     
     <url>
-        <loc>https://www.htas.com.au/region-detail/5</loc>
+        <loc>https://www.htas.com.au/region-detail/bruny-island</loc>
         <lastmod>2024-12-19</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>

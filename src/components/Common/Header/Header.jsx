@@ -16,29 +16,11 @@ import { logoutUser } from "../../../store/slices/authSlice";
 import "./header.css";
 
 import logo from "../../../assets/images/logo/logo.png";
-import { FaUser, FaSignInAlt, FaUserTie, FaPercent } from "react-icons/fa";
-
-// 格式化折扣率为百分比
-const formatDiscountRate = (rate) => {
-  // 确保rate是数字
-  let numRate = Number(rate);
-  if (isNaN(numRate) || numRate <= 0) {
-    return "";
-  }
-  
-  // 如果折扣率大于1，它可能已经是百分比格式
-  if (numRate > 1) {
-    return `${Math.round(numRate)}%`;
-  }
-  
-  // 将折扣率转换为百分比
-  return `${Math.round(numRate * 100)}%`;
-};
+import { FaUser, FaSignInAlt, FaUserTie } from "react-icons/fa";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
   const { isAuthenticated, user } = useSelector(state => state.auth);
-  const { discountRate } = useSelector(state => state.ui);
   const dispatch = useDispatch();
 
   // 从用户信息或本地存储中获取用户角色，确保正确识别代理商
@@ -61,10 +43,6 @@ const Header = () => {
     if (userType === 'agent') return '代理商';
     return '用户';
   };
-  
-  // 获取有效的折扣率 - 操作员不显示折扣信息
-  const effectiveDiscountRate = !isOperator ? (user?.discountRate || discountRate || localStorage.getItem('discountRate')) : null;
-  const formattedDiscountRate = !isOperator ? formatDiscountRate(effectiveDiscountRate) : null;
 
   const toggleMenu = () => {
     setOpen(!open);
@@ -204,9 +182,7 @@ const Header = () => {
                               <FaUser className="me-1" />
                             )}
                             {getUserDisplayName()}
-                            {isAgent && !isOperator && formattedDiscountRate && (
-                              <span className="ms-1 discount-badge-mobile">{formattedDiscountRate}折</span>
-                            )}
+
                           </Dropdown.Toggle>
                           <Dropdown.Menu>
                             {!isAgent && (
@@ -252,12 +228,7 @@ const Header = () => {
                           <FaUserTie className="me-1" /> 
                           <span className="user-name agent">
                             {getUserDisplayName()}
-                            {!isOperator && formattedDiscountRate && (
-                              <Badge bg="info" className="ms-2 discount-badge">
-                                <FaPercent className="me-1" size="0.8em" />
-                                {formattedDiscountRate}折
-                              </Badge>
-                            )}
+
                           </span>
                         </>
                       ) : (
