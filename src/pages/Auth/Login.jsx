@@ -132,7 +132,9 @@ const Login = () => {
   return (
     <div className="auth-container">
       <div className="auth-form-container">
-        <h2>用户登录</h2>
+        <h2>普通用户登录</h2>
+        
+        
         
         {error && (
           <Alert variant="danger">

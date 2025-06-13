@@ -155,6 +155,7 @@ const AgentLogin = () => {
           )}
           <div className="title">
             <img src={LoginLogo} alt="Logo" />
+            
           </div>
           
           {error && (
