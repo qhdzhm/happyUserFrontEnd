@@ -219,7 +219,7 @@ export const login = async (credentials, loginPath = '/user/login') => {
     let apiPath;
     if (loginPath.includes('agent')) {
       // 代理商登录：先尝试主账号登录，失败后尝试操作员登录
-      apiPath = '/agent/login'; // 使用支持主账号和操作员的统一端点
+      apiPath = '/api/agent/login'; // 使用支持主账号和操作员的统一端点
     } else {
       apiPath = '/user/login'; // 普通用户登录使用固定的API路径
     }
@@ -417,13 +417,7 @@ export const logout = async () => {
     // 即使后端logout失败，也要继续清除本地数据
   }
   
-  // 清除CSRF Token
-  try {
-    const { clearCSRFToken } = require('./auth');
-    clearCSRFToken();
-  } catch (error) {
-    // 静默处理错误
-  }
+  // CSRF Token已禁用 - 无需清理
   
   // 停止TokenManager的定时检查，防止自动刷新token
   try {
@@ -482,27 +476,65 @@ export const logout = async () => {
     const cookiesToClear = [
       'userInfo', 'authToken', 'auth_token', 'token', 
       'refreshToken', 'refresh_token', 'session_token',
-      'jwt_token', 'access_token', 'authentication'
+      'jwt_token', 'access_token', 'authentication',
+      'agentToken', 'operatorToken', 'userToken'
+    ];
+    
+    // 获取所有可能的路径和域名组合
+    const paths = ['/', '/api', '/agent', '/user'];
+    const domains = [
+      window.location.hostname,
+      `.${window.location.hostname}`,
+      'localhost',
+      '.localhost',
+      '127.0.0.1',
+      '.127.0.0.1'
     ];
     
     cookiesToClear.forEach(cookieName => {
       // 多种方式尝试清除cookie，确保在不同路径和域名下都能清除
-      const variations = [
-        `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`,
-        `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`,
-        `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${window.location.hostname};`,
-        `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax;`,
-        `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict;`
-      ];
-      
-      variations.forEach(cookieString => {
-        document.cookie = cookieString;
+      paths.forEach(path => {
+        domains.forEach(domain => {
+          const variations = [
+            `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${path}; domain=${domain};`,
+            `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${path}; domain=${domain}; SameSite=Lax;`,
+            `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${path}; domain=${domain}; SameSite=Strict;`,
+            `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${path}; domain=${domain}; SameSite=None; Secure;`,
+            `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${path};`,
+            `${cookieName}=; Max-Age=0; path=${path}; domain=${domain};`
+          ];
+          
+          variations.forEach(cookieString => {
+            try {
+              document.cookie = cookieString;
+            } catch (e) {
+              // 忽略设置cookie失败的错误
+            }
+          });
+        });
       });
     });
     
-    // Cookie清理完成
+    console.log('Cookie清理完成，尝试清理了', cookiesToClear.length, '个不同的cookie');
   } catch (error) {
     console.warn('前端Cookie清理失败:', error.message);
+  }
+  
+  // 强制刷新页面状态，确保清理生效
+  try {
+    // 延迟一点时间，确保清理操作完成
+    setTimeout(() => {
+      // 触发storage事件，通知其他标签页
+      localStorage.setItem('logout_event', Date.now().toString());
+      localStorage.removeItem('logout_event');
+      
+      // 发送自定义事件
+      window.dispatchEvent(new CustomEvent('forceLogout', {
+        detail: { reason: 'logout_called', timestamp: Date.now() }
+      }));
+    }, 100);
+  } catch (error) {
+    console.warn('触发登出事件失败:', error.message);
   }
   
   // 用户已退出登录

@@ -35,13 +35,7 @@ const LandingBanner = ({ dayTours = [], groupTours = [], loading = false }) => {
       // 获取产品图片 - 优先使用bannerimg/bannerImage，然后是coverImage
       const tourImage = tour.bannerimg || tour.bannerImage || tour.coverImage || tour.thumbnailUrl || tour.imageUrl || tour.image || '';
       
-      console.log(`LandingBanner - 第${index + 1}个产品图片:`, {
-        name: tour.name,
-        bannerimg: tour.bannerimg,
-        bannerImage: tour.bannerImage,
-        coverImage: tour.coverImage,
-        finalImage: tourImage
-      });
+      
       
       slides.push({
         id: tour.id || index + 1,

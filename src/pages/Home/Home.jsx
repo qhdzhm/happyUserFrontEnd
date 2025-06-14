@@ -17,6 +17,7 @@ import * as api from '../../utils/api';
 import PriceDisplay from '../../components/PriceDisplay';
 import { useSelector } from 'react-redux';
 import RedesignedCard from "../../components/Cards/RedesignedCard";
+import CachedImage from "../../components/CachedImage/CachedImage";
 
 // 导入图片
 import themeNature from "../../assets/images/new/1.jpg";
@@ -637,7 +638,7 @@ const Home = () => {
       <Col xs={12} md={6} lg={4} key={tour.id || index} className="mb-4">
         <div className={`destination-card ${isVisible ? 'visible' : ''}`}>
           <div className="destination-image">
-            <img src={tour.coverImage || themeNature} alt={tour.name || tour.title || "目的地"} />
+            <CachedImage src={tour.coverImage || themeNature} alt={tour.name || tour.title || "目的地"} />
           </div>
           <div className="destination-content">
             <h3 className="destination-title">{tour.name || tour.title || "旅游目的地"}</h3>
@@ -685,7 +686,7 @@ const Home = () => {
     <div className="global-loader">
       <div className="loader-container">
         <div className="loader-logo-container">
-          <img 
+          <CachedImage 
             src={logoImage} 
             alt="Happy Tassie Travel" 
             className="loader-logo"

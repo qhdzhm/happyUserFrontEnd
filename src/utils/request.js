@@ -299,19 +299,7 @@ instance.interceptors.request.use(
     config.headers['X-Requested-With'] = 'XMLHttpRequest';
     config.headers['Accept'] = 'application/json';
     
-    // 添加CSRF Token（如果可用且不是skipAuth请求）
-    if (!config.skipAuth) {
-      try {
-        // 动态导入auth模块避免循环依赖
-        const { getCSRFToken } = require('./auth');
-        const csrfToken = getCSRFToken();
-        if (csrfToken) {
-          config.headers['X-CSRF-Token'] = csrfToken;
-        }
-      } catch (error) {
-        // 静默处理CSRF Token获取失败
-      }
-    }
+    // CSRF Token已禁用 - 后端使用JWT和CORS白名单保护
     
     // 🔧 最后一道防线：确保method在最后是正确的
     if (!config.method || typeof config.method !== 'string' || config.method === '') {

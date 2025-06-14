@@ -24,20 +24,19 @@ function App() {
   useEffect(() => {
     dispatch(validateToken());
     
-    // 初始化CSRF保护和用户信息同步
-    const initCSRF = async () => {
+    // 初始化用户信息同步（CSRF已禁用）
+    const initUserSync = async () => {
       try {
-        const { initializeCSRFProtection, syncUserInfoToLocalStorage } = require('./utils/auth');
-        await initializeCSRFProtection();
+        const { syncUserInfoToLocalStorage } = require('./utils/auth');
         
         // 同步用户信息到localStorage（用于ChatBot等组件）
         syncUserInfoToLocalStorage();
       } catch (error) {
-        // 静默处理CSRF初始化失败
+        // 静默处理初始化失败
       }
     };
     
-    initCSRF();
+    initUserSync();
   }, [dispatch]);
 
   /**

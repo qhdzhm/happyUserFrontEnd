@@ -47,62 +47,30 @@ const isTokenExpired = (token) => {
 };
 
 /**
- * 获取CSRF Token
+ * 获取CSRF Token - 已禁用
+ * @deprecated CSRF保护已禁用，使用JWT和CORS白名单保护
  */
 export const getCSRFToken = () => {
-  // 优先从内存获取
-  if (csrfToken) return csrfToken;
-  
-  // 从meta标签获取
-  const metaToken = document.querySelector('meta[name="csrf-token"]');
-  if (metaToken) {
-    csrfToken = metaToken.getAttribute('content');
-    return csrfToken;
-  }
-  
-  // 从localStorage获取（临时方案）
-  const storedToken = localStorage.getItem('csrf_token');
-  if (storedToken) {
-    csrfToken = storedToken;
-    return csrfToken;
-  }
-  
   return null;
 };
 
 /**
  * 设置CSRF Token
  */
+/**
+ * 设置CSRF Token - 已禁用
+ * @deprecated CSRF保护已禁用，使用JWT和CORS白名单保护
+ */
 export const setCSRFToken = (token) => {
-  csrfToken = token;
-  
-  // 设置到meta标签
-  let metaToken = document.querySelector('meta[name="csrf-token"]');
-  if (!metaToken) {
-    metaToken = document.createElement('meta');
-    metaToken.setAttribute('name', 'csrf-token');
-    document.head.appendChild(metaToken);
-  }
-  metaToken.setAttribute('content', token);
-  
-  // 临时也存储到localStorage（后续可移除）
-  localStorage.setItem('csrf_token', token);
-  
-
+  // CSRF已禁用，不执行任何操作
 };
 
 /**
- * 清除CSRF Token
+ * 清除CSRF Token - 已禁用
+ * @deprecated CSRF保护已禁用，使用JWT和CORS白名单保护
  */
 export const clearCSRFToken = () => {
-  csrfToken = null;
-  
-  const metaToken = document.querySelector('meta[name="csrf-token"]');
-  if (metaToken) {
-    metaToken.remove();
-  }
-  
-  localStorage.removeItem('csrf_token');
+  // CSRF已禁用，不执行任何操作
 };
 
 /**
@@ -355,12 +323,7 @@ export const clearToken = () => {
 export const addAuthHeaders = (headers = {}) => {
   const authHeaders = { ...headers };
   
-  // 添加CSRF Token
-  const csrf = getCSRFToken();
-  if (csrf) {
-    authHeaders['X-CSRF-Token'] = csrf;
-    authHeaders['X-Requested-With'] = 'XMLHttpRequest';
-  }
+  // CSRF Token已禁用 - 使用JWT和CORS白名单保护
   
   // 如果仍有localStorage token（向后兼容），也添加
   const token = getTokenFromStorage();
@@ -452,7 +415,6 @@ export const secureLogout = async () => {
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRF-Token': getCSRFToken() || '',
         'X-Requested-With': 'XMLHttpRequest'
       }
     });
@@ -465,7 +427,6 @@ export const secureLogout = async () => {
   }
   
   // 清除前端数据
-  clearCSRFToken();
   clearAllLocalStorage();
   
   console.log('安全登出完成');
@@ -474,36 +435,13 @@ export const secureLogout = async () => {
 /**
  * 初始化CSRF保护
  */
+/**
+ * 初始化CSRF保护 - 已禁用
+ * @deprecated CSRF保护已禁用，使用JWT和CORS白名单保护
+ */
 export const initializeCSRFProtection = async () => {
-  try {
-    // 从后端获取CSRF Token - 使用相对路径（通过nginx代理）
-    const apiUrl = '/auth/csrf-token';
-    
-    const response = await fetch(apiUrl, {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    
-    if (response.ok) {
-      const data = await response.json();
-      if (data.data && data.data.csrfToken) {
-        setCSRFToken(data.data.csrfToken);
-        return true;
-      } else if (data.csrfToken) {
-        setCSRFToken(data.csrfToken);
-        return true;
-      }
-    } else {
-      console.error('CSRF Token请求失败:', response.status, response.statusText);
-    }
-  } catch (error) {
-    console.error('初始化CSRF保护失败:', error);
-  }
-  
-  return false;
+  // CSRF已禁用，直接返回成功
+  return true;
 };
 
 /**
