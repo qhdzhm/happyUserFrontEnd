@@ -11,48 +11,46 @@ const OSS_DOMAINS = [
 
 /**
  * 将OSS URL转换为CDN URL
- * @param {string} ossUrl - OSS原始URL
- * @param {boolean} useFallback - 是否使用OSS域名作为备用
- * @returns {string} CDN URL 或原始OSS URL
+ * @param {string} originalUrl - 原始OSS URL
+ * @param {boolean} useOssDirectly - 是否直接使用OSS域名（备用方案）
+ * @returns {string} CDN URL或原始URL
  */
-export const convertToCdnUrl = (ossUrl, useFallback = false) => {
-  if (!ossUrl || typeof ossUrl !== 'string') return ossUrl;
+export const convertToCdnUrl = (originalUrl, useOssDirectly = false) => {
+  if (!originalUrl || typeof originalUrl !== 'string') {
+    return originalUrl;
+  }
+
+  // 暂时禁用CDN转换，因为SSL证书问题
+  // TODO: 修复CDN域名SSL证书后再启用
+  console.log('⚠️ CDN暂时禁用，使用原始URL:', originalUrl);
+  return originalUrl;
+
+  // 以下代码暂时注释，等SSL证书修复后恢复
+  /*
+  const OSS_DOMAIN = 'hmlead22.oss-cn-beijing.aliyuncs.com';
+  const CDN_DOMAIN = 'img.htas.com.au';
   
-  // 如果已经是CDN URL，直接返回
-  if (ossUrl.includes('img.htas.com.au')) {
-    // 如果使用备用方案，转换回OSS URL
-    if (useFallback) {
-      return ossUrl.replace('http://img.htas.com.au', 'https://hmlead22.oss-cn-beijing.aliyuncs.com');
+  // 如果明确要求使用OSS直连
+  if (useOssDirectly) {
+    if (originalUrl.includes(CDN_DOMAIN)) {
+      return originalUrl.replace(CDN_DOMAIN, OSS_DOMAIN);
     }
-    return ossUrl;
+    return originalUrl;
   }
   
-  // 如果使用备用方案，直接返回OSS URL
-  if (useFallback) {
-    return ossUrl;
+  // 检查是否是OSS域名，如果是则转换为CDN
+  if (originalUrl.includes(OSS_DOMAIN)) {
+    const cdnUrl = originalUrl.replace(OSS_DOMAIN, CDN_DOMAIN);
+    console.log('🔄 URL转换: OSS -> CDN', {
+      original: originalUrl,
+      cdn: cdnUrl
+    });
+    return cdnUrl;
   }
   
-  // 转换OSS URL为CDN URL
-  for (const ossDomain of OSS_DOMAINS) {
-    if (ossUrl.includes(ossDomain)) {
-      // 提取文件路径
-      const urlParts = ossUrl.split(ossDomain);
-      if (urlParts.length > 1) {
-        let filePath = urlParts[1];
-        // 移除查询参数
-        if (filePath.includes('?')) {
-          filePath = filePath.split('?')[0];
-        }
-        // 确保路径以/开头
-        if (!filePath.startsWith('/')) {
-          filePath = '/' + filePath;
-        }
-        return CDN_DOMAIN + filePath;
-      }
-    }
-  }
-  
-  return ossUrl; // 如果无法转换，返回原URL
+  // 如果已经是CDN域名或其他域名，直接返回
+  return originalUrl;
+  */
 };
 
 /**

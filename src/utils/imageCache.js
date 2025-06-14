@@ -145,58 +145,89 @@ const addToMemoryCache = (url, objectUrl) => {
 };
 
 /**
- * 网络请求图片
+ * 从网络获取图片并缓存
  */
-const fetchImage = async (url) => {
+async function fetchAndCacheImage(originalUrl, cacheKey) {
+  console.log('开始从网络获取图片:', originalUrl);
+  
   try {
-    const response = await fetch(url, {
-      // 添加缓存头
-      headers: {
-        'Cache-Control': 'public, max-age=31536000', // 1年
-      }
-    });
+    // 1. 首先尝试CDN URL
+    const cdnUrl = convertToCdnUrl(originalUrl);
+    console.log('尝试CDN URL:', cdnUrl);
     
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-    
-    const blob = await response.blob();
-    
-    // 保存到IndexedDB（异步，不阻塞）
-    saveToIndexedDB(url, blob).catch(console.warn);
-    
-    return blob;
-  } catch (error) {
-    console.warn('网络请求图片失败:', error);
-    
-    // 如果是CDN域名失败，尝试使用OSS原始域名
-    if (url.includes('img.htas.com.au')) {
+    if (cdnUrl !== originalUrl) {
       try {
-        console.log('CDN失败，尝试使用OSS原始域名...');
-        const fallbackUrl = convertToCdnUrl(url, true); // 使用备用方案
+        const cdnResponse = await fetch(cdnUrl, {
+          mode: 'cors',
+          headers: {
+            'Accept': 'image/*,*/*;q=0.8'
+          }
+        });
         
-        if (fallbackUrl !== url) {
-          const fallbackResponse = await fetch(fallbackUrl, {
-            headers: {
-              'Cache-Control': 'public, max-age=31536000',
-            }
+        if (cdnResponse.ok) {
+          const blob = await cdnResponse.blob();
+          const objectUrl = URL.createObjectURL(blob);
+          
+          // 缓存到内存和IndexedDB
+          memoryCache.set(cacheKey, objectUrl);
+          await saveToIndexedDB(cacheKey, {
+            url: objectUrl,
+            blob: blob,
+            timestamp: Date.now(),
+            originalUrl: originalUrl,
+            source: 'cdn'
           });
           
-          if (fallbackResponse.ok) {
-            const blob = await fallbackResponse.blob();
-            // 使用原始URL作为key保存到缓存
-            saveToIndexedDB(url, blob).catch(console.warn);
-            return blob;
-          }
+          console.log('✓ CDN图片获取成功，已缓存');
+          return objectUrl;
         }
-      } catch (fallbackError) {
-        console.warn('OSS备用方案也失败:', fallbackError);
+      } catch (cdnError) {
+        console.log('网络请求图片失败:', cdnError);
+        console.log('CDN失败，尝试使用OSS原始域名...');
       }
     }
     
-    throw error;
+    // 2. CDN失败，尝试OSS原始URL（仅当URL不同时）
+    if (cdnUrl !== originalUrl) {
+      try {
+        const ossResponse = await fetch(originalUrl, {
+          mode: 'cors',
+          headers: {
+            'Accept': 'image/*,*/*;q=0.8'
+          }
+        });
+        
+        if (ossResponse.ok) {
+          const blob = await ossResponse.blob();
+          const objectUrl = URL.createObjectURL(blob);
+          
+          // 缓存到内存和IndexedDB
+          memoryCache.set(cacheKey, objectUrl);
+          await saveToIndexedDB(cacheKey, {
+            url: objectUrl,
+            blob: blob, 
+            timestamp: Date.now(),
+            originalUrl: originalUrl,
+            source: 'oss'
+          });
+          
+          console.log('✓ OSS图片获取成功，已缓存');
+          return objectUrl;
+        }
+      } catch (ossError) {
+        console.log('OSS备用方案也失败:', ossError);
+      }
+    }
+    
+    // 3. 都失败了，直接返回原始URL（不进行fetch，避免CORS问题）
+    console.log('⚠️ CDN和OSS都失败，直接使用原始URL（不缓存）');
+    return originalUrl;
+    
+  } catch (error) {
+    console.log('获取缓存图片失败，使用原始URL:', error);
+    return originalUrl;
   }
-};
+}
 
 /**
  * 获取缓存的图片URL
@@ -222,9 +253,7 @@ export const getCachedImageUrl = async (imageUrl) => {
     }
     
     // 3. 网络请求
-    const blob = await fetchImage(imageUrl);
-    const objectUrl = URL.createObjectURL(blob);
-    addToMemoryCache(imageUrl, objectUrl);
+    const objectUrl = await fetchAndCacheImage(imageUrl, imageUrl);
     
     return objectUrl;
   } catch (error) {
