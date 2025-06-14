@@ -20,9 +20,7 @@ export const convertToCdnUrl = (originalUrl, useOssDirectly = false) => {
     return originalUrl;
   }
 
-  // 暂时禁用CDN转换，因为SSL证书问题
-  // TODO: 修复CDN域名SSL证书后再启用
-  console.log('⚠️ CDN暂时禁用，使用原始URL:', originalUrl);
+  // 简化版本，直接返回原始URL
   return originalUrl;
 
   // 以下代码暂时注释，等SSL证书修复后恢复

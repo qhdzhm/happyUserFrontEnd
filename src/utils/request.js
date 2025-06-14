@@ -226,8 +226,9 @@ instance.interceptors.request.use(
       reject: requestPromiseReject
     };
     
-    // 从localStorage获取token，尝试多个可能的键名
-    let token = localStorage.getItem(STORAGE_KEYS.TOKEN) || localStorage.getItem('token');
+    // 检查认证模式
+    const { shouldUseCookieAuth, getToken } = require('./auth');
+    const useCookieAuth = shouldUseCookieAuth();
     
     // 获取用户类型
     const userType = localStorage.getItem('userType') || 'regular';
@@ -268,26 +269,28 @@ instance.interceptors.request.use(
     if (hasAuthHeader) {
       console.log(`请求已包含认证头部，优先使用: ${config.url}`);
     }
-    // 如果有token且不是公共API，添加认证头部
-    else if (token && !shouldTreatAsPublic) {
-      config.headers.authentication = token;
-      config.headers.Authorization = `Bearer ${token}`;
-      config.headers.token = token;
-      config.headers.Authentication = token;
-      
-      console.log(`请求: ${config.url}, 添加认证头部: authentication=${token.substring(0, 10)}...`);
+    // Cookie认证模式下，不需要手动添加token头部
+    else if (useCookieAuth) {
+      console.log(`Cookie认证模式: ${config.url}, 依赖HttpOnly Cookie自动认证`);
     }
-    else if (!token && !shouldTreatAsPublic) {
-      // 对于非公共API，如果没有token，记录警告但不阻止请求
-      console.warn(`警告: 需要认证的API请求 ${config.url} 没有可用的token`);
+    // Token认证模式下，尝试添加token头部
+    else if (!shouldTreatAsPublic) {
+      const token = getToken();
+      if (token && token !== 'cookie-auth-enabled') {
+        config.headers.authentication = token;
+        config.headers.Authorization = `Bearer ${token}`;
+        config.headers.token = token;
+        config.headers.Authentication = token;
+        
+        console.log(`Token认证模式: ${config.url}, 添加认证头部: ${token.substring(0, 10)}...`);
+      } else {
+        console.warn(`警告: Token认证模式下没有可用的token: ${config.url}`);
+      }
     }
     
     // 记录认证模式
-    if (token) {
-      console.log('使用token认证模式');
-    } else {
-      console.log('可能使用Cookie认证模式或公共API');
-    }
+    console.log(`认证模式: ${useCookieAuth ? 'Cookie' : 'Token'}`);
+    
     
     // 添加请求记录到状态管理
     config._requestStartTime = Date.now();

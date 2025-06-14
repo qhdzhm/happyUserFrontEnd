@@ -398,4 +398,23 @@
 
 .order-tour-card .btn {
   font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+/* 可点击元素的悬停效果 */
+.order-tour-card .card-img-top:hover {
+  transform: scale(1.02);
+  transition: transform 0.2s ease;
+}
+
+.order-tour-card .card-title:hover {
+  color: #0056b3 !important;
+  transition: color 0.2s ease;
+}
+
+/* 再来一单按钮样式 */
+.btn-outline-success:hover {
+  background-color: #28a745;
+  border-color: #28a745;
+  color: white;
 } 

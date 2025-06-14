@@ -44,11 +44,12 @@ const ProtectedRoute = ({
       }
       
       // 备用：从localStorage获取（验证一致性）
+      const { getToken } = require('../../../utils/auth');
       const localUserType = localStorage.getItem('userType');
       const localUsername = localStorage.getItem('username');
-      const token = localStorage.getItem('token');
+      const token = getToken();
       
-      if (token && localUserType && localUsername) {
+      if (token && token !== 'cookie-auth-enabled' && localUserType && localUsername) {
         return {
           userType: localUserType,
           username: localUsername,
@@ -181,8 +182,9 @@ const ProtectedRoute = ({
     if (shouldUseCookieAuth()) {
       return isAuthenticated() && userInfo;
     } else {
-      const token = localStorage.getItem('token');
-      return reduxAuth && token && userInfo;
+      const { getToken } = require('../../../utils/auth');
+      const token = getToken();
+      return reduxAuth && token && token !== 'cookie-auth-enabled' && userInfo;
     }
   };
   

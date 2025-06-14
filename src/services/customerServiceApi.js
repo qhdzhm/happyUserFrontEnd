@@ -10,10 +10,26 @@ const apiClient = axios.create({
 // 请求拦截器 - 添加认证token
 apiClient.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('token') || localStorage.getItem('agent-token');
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
+        // 检查认证模式
+        const { shouldUseCookieAuth, getToken } = require('../utils/auth');
+        const useCookieAuth = shouldUseCookieAuth();
+        
+        // 确保发送Cookie
+        config.withCredentials = true;
+        
+        if (useCookieAuth) {
+            console.log(`客服API Cookie认证模式: ${config.url}`);
+        } else {
+            // Token认证模式
+            const token = getToken();
+            if (token && token !== 'cookie-auth-enabled') {
+                config.headers.Authorization = `Bearer ${token}`;
+                console.log(`客服API Token认证模式: ${config.url}`);
+            } else {
+                console.warn(`客服API Token认证模式下没有可用token: ${config.url}`);
+            }
         }
+        
         return config;
     },
     (error) => {

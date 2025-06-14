@@ -1,9 +1,7 @@
 /**
- * 图片缓存系统
- * 多层缓存策略：内存缓存 -> IndexedDB -> 网络请求
+ * 简化版图片缓存系统
+ * 直接缓存图片到用户电脑，不依赖CDN
  */
-
-import { convertToCdnUrl } from './imageUtils.js';
 
 // 内存缓存 - 最快速访问
 const memoryCache = new Map();
@@ -104,32 +102,6 @@ const deleteFromIndexedDB = async (url) => {
 };
 
 /**
- * 清理过期的IndexedDB缓存
- */
-const cleanupIndexedDB = async () => {
-  try {
-    const db = await initDB();
-    const transaction = db.transaction([STORE_NAME], 'readwrite');
-    const store = transaction.objectStore(STORE_NAME);
-    const index = store.index('timestamp');
-    
-    // 删除7天前的缓存
-    const cutoffTime = Date.now() - CACHE_DURATION;
-    const range = IDBKeyRange.upperBound(cutoffTime);
-    
-    index.openCursor(range).onsuccess = (event) => {
-      const cursor = event.target.result;
-      if (cursor) {
-        cursor.delete();
-        cursor.continue();
-      }
-    };
-  } catch (error) {
-    console.warn('清理IndexedDB缓存失败:', error);
-  }
-};
-
-/**
  * 内存缓存管理
  */
 const addToMemoryCache = (url, objectUrl) => {
@@ -148,92 +120,39 @@ const addToMemoryCache = (url, objectUrl) => {
  * 从网络获取图片并缓存
  */
 async function fetchAndCacheImage(originalUrl, cacheKey) {
-  console.log('开始从网络获取图片:', originalUrl);
+  console.log('开始缓存图片:', originalUrl);
   
   try {
-    // 1. 首先尝试CDN URL
-    const cdnUrl = convertToCdnUrl(originalUrl);
-    console.log('尝试CDN URL:', cdnUrl);
-    
-    if (cdnUrl !== originalUrl) {
-      try {
-        const cdnResponse = await fetch(cdnUrl, {
-          mode: 'cors',
-          headers: {
-            'Accept': 'image/*,*/*;q=0.8'
-          }
-        });
-        
-        if (cdnResponse.ok) {
-          const blob = await cdnResponse.blob();
-          const objectUrl = URL.createObjectURL(blob);
-          
-          // 缓存到内存和IndexedDB
-          memoryCache.set(cacheKey, objectUrl);
-          await saveToIndexedDB(cacheKey, {
-            url: objectUrl,
-            blob: blob,
-            timestamp: Date.now(),
-            originalUrl: originalUrl,
-            source: 'cdn'
-          });
-          
-          console.log('✓ CDN图片获取成功，已缓存');
-          return objectUrl;
-        }
-      } catch (cdnError) {
-        console.log('网络请求图片失败:', cdnError);
-        console.log('CDN失败，尝试使用OSS原始域名...');
+    const response = await fetch(originalUrl, {
+      method: 'GET',
+      headers: {
+        'Accept': 'image/*,*/*;q=0.9'
       }
-    }
+    });
     
-    // 2. CDN失败，尝试OSS原始URL（仅当URL不同时）
-    if (cdnUrl !== originalUrl) {
-      try {
-        const ossResponse = await fetch(originalUrl, {
-          mode: 'cors',
-          headers: {
-            'Accept': 'image/*,*/*;q=0.8'
-          }
-        });
-        
-        if (ossResponse.ok) {
-          const blob = await ossResponse.blob();
-          const objectUrl = URL.createObjectURL(blob);
-          
-          // 缓存到内存和IndexedDB
-          memoryCache.set(cacheKey, objectUrl);
-          await saveToIndexedDB(cacheKey, {
-            url: objectUrl,
-            blob: blob, 
-            timestamp: Date.now(),
-            originalUrl: originalUrl,
-            source: 'oss'
-          });
-          
-          console.log('✓ OSS图片获取成功，已缓存');
-          return objectUrl;
-        }
-      } catch (ossError) {
-        console.log('OSS备用方案也失败:', ossError);
-      }
+    if (response.ok) {
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      
+      // 缓存到内存和IndexedDB
+      addToMemoryCache(cacheKey, objectUrl);
+      await saveToIndexedDB(cacheKey, blob);
+      
+      console.log('✓ 图片已缓存到本地:', originalUrl);
+      return objectUrl;
+    } else {
+      console.log('📷 图片请求失败，使用原始URL:', response.status);
+      return originalUrl;
     }
-    
-    // 3. 都失败了，直接返回原始URL（不进行fetch，避免CORS问题）
-    console.log('⚠️ CDN和OSS都失败，直接使用原始URL（不缓存）');
-    return originalUrl;
     
   } catch (error) {
-    console.log('获取缓存图片失败，使用原始URL:', error);
+    console.log('📷 图片缓存失败，使用原始URL:', error.message);
     return originalUrl;
   }
 }
 
 /**
  * 获取缓存的图片URL
- * @param {string} imageUrl - 图片URL
- * @param {Object} options - 选项
- * @returns {Promise<string>} 可用的图片URL
  */
 export const getCachedImageUrl = async (imageUrl) => {
   if (!imageUrl) return imageUrl;
@@ -241,6 +160,7 @@ export const getCachedImageUrl = async (imageUrl) => {
   try {
     // 1. 检查内存缓存
     if (memoryCache.has(imageUrl)) {
+      console.log('✓ 从内存缓存获取图片:', imageUrl);
       return memoryCache.get(imageUrl);
     }
     
@@ -249,22 +169,22 @@ export const getCachedImageUrl = async (imageUrl) => {
     if (cachedBlob) {
       const objectUrl = URL.createObjectURL(cachedBlob);
       addToMemoryCache(imageUrl, objectUrl);
+      console.log('✓ 从IndexedDB缓存获取图片:', imageUrl);
       return objectUrl;
     }
     
-    // 3. 网络请求
+    // 3. 尝试缓存（包括OSS图片）
     const objectUrl = await fetchAndCacheImage(imageUrl, imageUrl);
-    
     return objectUrl;
+    
   } catch (error) {
     console.warn('获取缓存图片失败，使用原始URL:', error);
-    return imageUrl; // 降级到原始URL
+    return imageUrl;
   }
 };
 
 /**
  * 预加载图片
- * @param {string[]} imageUrls - 图片URL数组
  */
 export const preloadImages = async (imageUrls) => {
   const promises = imageUrls
@@ -289,6 +209,7 @@ export const clearImageCache = async () => {
     const transaction = db.transaction([STORE_NAME], 'readwrite');
     const store = transaction.objectStore(STORE_NAME);
     store.clear();
+    console.log('✓ 缓存已清理');
   } catch (error) {
     console.warn('清理IndexedDB失败:', error);
   }
@@ -327,6 +248,32 @@ export const getCacheStatus = async () => {
   }
 };
 
+/**
+ * 清理过期的IndexedDB缓存
+ */
+const cleanupIndexedDB = async () => {
+  try {
+    const db = await initDB();
+    const transaction = db.transaction([STORE_NAME], 'readwrite');
+    const store = transaction.objectStore(STORE_NAME);
+    const index = store.index('timestamp');
+    
+    // 删除7天前的缓存
+    const cutoffTime = Date.now() - CACHE_DURATION;
+    const range = IDBKeyRange.upperBound(cutoffTime);
+    
+    index.openCursor(range).onsuccess = (event) => {
+      const cursor = event.target.result;
+      if (cursor) {
+        cursor.delete();
+        cursor.continue();
+      }
+    };
+  } catch (error) {
+    console.warn('清理IndexedDB缓存失败:', error);
+  }
+};
+
 // 定期清理过期缓存
 setInterval(cleanupIndexedDB, 24 * 60 * 60 * 1000); // 每天清理一次
 
@@ -335,4 +282,45 @@ if (typeof window !== 'undefined') {
   window.addEventListener('beforeunload', () => {
     memoryCache.forEach(objectUrl => URL.revokeObjectURL(objectUrl));
   });
-} 
+}
+
+/**
+ * 清理特定图片的缓存
+ */
+export const clearSpecificImageCache = async (imageUrl) => {
+  try {
+    // 清理内存缓存
+    if (memoryCache.has(imageUrl)) {
+      const objectUrl = memoryCache.get(imageUrl);
+      URL.revokeObjectURL(objectUrl);
+      memoryCache.delete(imageUrl);
+    }
+    
+    // 清理IndexedDB缓存
+    await deleteFromIndexedDB(imageUrl);
+    
+    console.log('✓ 已清理特定图片缓存:', imageUrl);
+    return true;
+  } catch (error) {
+    console.warn('清理特定图片缓存失败:', error);
+    return false;
+  }
+};
+
+/**
+ * 强制重新缓存图片
+ */
+export const forceRecacheImage = async (imageUrl) => {
+  try {
+    // 先清理旧缓存
+    await clearSpecificImageCache(imageUrl);
+    
+    // 重新获取并缓存
+    const newUrl = await getCachedImageUrl(imageUrl);
+    console.log('✓ 已强制重新缓存图片:', imageUrl);
+    return newUrl;
+  } catch (error) {
+    console.warn('强制重新缓存失败:', error);
+    return imageUrl;
+  }
+}; 

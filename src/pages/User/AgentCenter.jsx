@@ -79,45 +79,32 @@ const AgentCenter = () => {
         // 检查Cookie认证
         const { shouldUseCookieAuth, isAuthenticated, getUserInfoFromCookie, getToken } = require('../../utils/auth');
         const useCookieAuth = shouldUseCookieAuth();
-        console.log('使用Cookie认证:', useCookieAuth);
+        console.log('AgentCenter - 认证模式:', useCookieAuth ? 'Cookie' : 'Token');
         console.log('认证状态:', isAuthenticated());
         
-        // 构建请求头
-        const headers = {};
+        // 构建请求配置
+        const requestConfig = {
+          withCredentials: true // 确保发送Cookie
+        };
         
-        if (useCookieAuth) {
-          // Cookie认证模式：不发送Authorization header，依赖浏览器自动发送cookies
-          console.log('Cookie认证模式：依赖浏览器cookies，不发送Authorization header');
-          
-          // 添加CSRF token（如果有）
-          const { getCSRFToken } = require('../../utils/auth');
-          const csrfToken = getCSRFToken();
-          if (csrfToken) {
-            headers['X-CSRF-Token'] = csrfToken;
-            headers['X-Requested-With'] = 'XMLHttpRequest';
-          }
-        } else {
-          // 传统认证模式：从Redux或localStorage获取token
-          const token = localStorage.getItem('token');
-          const authToken = user?.token || token;
-          console.log('传统认证模式，token:', authToken ? authToken.substring(0, 20) + '...' : 'null');
-          
-          if (!authToken) {
+        if (!useCookieAuth) {
+          // Token认证模式：添加Authorization头部
+          const token = getToken();
+          if (!token || token === 'cookie-auth-enabled') {
             setError('未登录或会话已过期，请重新登录');
             setIsLoading(false);
             return;
           }
-          
-          headers['Authorization'] = `Bearer ${authToken}`;
+          requestConfig.headers = { Authorization: `Bearer ${token}` };
+          console.log('AgentCenter - 使用Token认证');
+        } else {
+          console.log('AgentCenter - 使用Cookie认证，依赖HttpOnly Cookie');
         }
         
-        console.log('发送请求到 /api/agent/profile，headers:', headers);
+        console.log('发送请求到 /api/agent/profile');
         
         // Fetch profile data
-        const response = await axios.get('/api/agent/profile', {
-          headers,
-          withCredentials: true // 确保包含cookies
-        });
+        const response = await axios.get('/api/agent/profile', requestConfig);
         
         console.log('API响应:', response.data);
         
@@ -178,27 +165,18 @@ const AgentCenter = () => {
             
             // 获取统计数据
             try {
-              const statsHeaders = {};
+              const statsConfig = {
+                withCredentials: true
+              };
+              
               if (!useCookieAuth) {
-                const token = localStorage.getItem('token');
-                const authToken = user?.token || token;
-                if (authToken) {
-                  statsHeaders['Authorization'] = `Bearer ${authToken}`;
-                }
-              } else {
-                // Cookie认证模式：添加CSRF token
-                const { getCSRFToken } = require('../../utils/auth');
-                const csrfToken = getCSRFToken();
-                if (csrfToken) {
-                  statsHeaders['X-CSRF-Token'] = csrfToken;
-                  statsHeaders['X-Requested-With'] = 'XMLHttpRequest';
+                const token = getToken();
+                if (token && token !== 'cookie-auth-enabled') {
+                  statsConfig.headers = { Authorization: `Bearer ${token}` };
                 }
               }
               
-              const statsResponse = await axios.get('/api/agent/statistics', {
-                headers: statsHeaders,
-                withCredentials: true
-              });
+              const statsResponse = await axios.get('/api/agent/statistics', statsConfig);
               
               if (statsResponse.data.code === 1) {
                 setStats(statsResponse.data.data);
@@ -355,35 +333,27 @@ const AgentCenter = () => {
       
       console.log('提交更新的个人信息:', updateData);
       
-      // 构建请求头
-      const headers = {};
+      // 构建请求配置
+      const requestConfig = {
+        withCredentials: true
+      };
       
-      if (useCookieAuth) {
-        // Cookie认证模式：添加CSRF token
-        const csrfToken = getCSRFToken();
-        if (csrfToken) {
-          headers['X-CSRF-Token'] = csrfToken;
-          headers['X-Requested-With'] = 'XMLHttpRequest';
-        }
-      } else {
-        // 传统认证模式：添加Authorization header
-        const token = localStorage.getItem('token');
-        const authToken = user?.token || token;
+      if (!useCookieAuth) {
+        // Token认证模式：添加Authorization头部
+        const { getToken } = require('../../utils/auth');
+        const token = getToken();
         
-        if (!authToken) {
+        if (!token || token === 'cookie-auth-enabled') {
           setError('未登录或会话已过期，请重新登录');
           setIsLoading(false);
           return;
         }
         
-        headers['Authorization'] = `Bearer ${authToken}`;
+        requestConfig.headers = { Authorization: `Bearer ${token}` };
       }
       
       // Submit updated profile data
-      const response = await axios.put('/api/agent/profile', updateData, {
-        headers,
-        withCredentials: true
-      });
+      const response = await axios.put('/api/agent/profile', updateData, requestConfig);
       
       if (response.data.code === 1) {
         toast.success('个人信息更新成功');

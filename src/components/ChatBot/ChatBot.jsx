@@ -1151,17 +1151,22 @@ const ChatBot = ({ userType = 1, userId = null }) => {
         <>
             {/* 悬浮按钮 */}
             <div className={`chatbot-float-container ${visible ? 'chatbot-hidden' : ''}`}>
-                <Tooltip title="AI客服助手" placement="left">
-                    <div 
-                        className="chatbot-float-btn"
-                        onClick={handleFloatBtnClick}
-                    >
-                        <MessageOutlined className="chatbot-float-icon" />
-                        {unreadCount > 0 && (
-                            <span className="chatbot-badge">{unreadCount}</span>
-                        )}
+                <div className="chatbot-float-wrapper">
+                    <div className="chatbot-float-label">
+                        AI助手
                     </div>
-                </Tooltip>
+                    <Tooltip title="点击开始与AI助手对话" placement="left">
+                        <div 
+                            className="chatbot-float-btn"
+                            onClick={handleFloatBtnClick}
+                        >
+                            <MessageOutlined className="chatbot-float-icon" />
+                            {unreadCount > 0 && (
+                                <span className="chatbot-badge">{unreadCount}</span>
+                            )}
+                        </div>
+                    </Tooltip>
+                </div>
             </div>
             
             {/* 聊天窗口 */}

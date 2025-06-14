@@ -47,7 +47,7 @@ const BookingForm = () => {
   const guestDropdownRef = useRef(null);
   
   // 产品类型选项
-  const tourTypeOptions = ['一日游', '跟团游'];
+  const tourTypeOptions = ['一日游', '多日游'];
 
   // 点击外部关闭下拉框
   useEffect(() => {
@@ -108,9 +108,9 @@ const BookingForm = () => {
         
         const formattedGroupTours = groupTours.map(tour => ({
           id: tour.id,
-          name: tour.title || tour.name || `跟团游 ${tour.id}`,
+          name: tour.title || tour.name || `多日游 ${tour.id}`,
           type: 'group-tours',
-          tourType: '跟团游',
+          tourType: '多日游',
           image: tour.coverImage || tour.image || '/images/placeholder.jpg',
           uniqueKey: `group-${tour.id}`
         }));
@@ -157,8 +157,8 @@ const BookingForm = () => {
     if (type === '一日游' && startDate) {
       setEndDate(startDate);
     }
-    // 如果选择跟团游，清空结束日期让用户重新选择或等待产品选择后自动计算
-    else if (type === '跟团游') {
+    // 如果选择多日游，清空结束日期让用户重新选择或等待产品选择后自动计算
+    else if (type === '多日游') {
       setEndDate(null);
     }
   };
@@ -180,7 +180,7 @@ const BookingForm = () => {
       setEndDate(startDate);
     }
     // 如果是多日游且已选择开始日期，自动计算结束日期
-    else if (tour.tourType === '跟团游' && startDate) {
+    else if (tour.tourType === '多日游' && startDate) {
       calculateEndDate(tour, startDate);
     }
   };
@@ -205,7 +205,7 @@ const BookingForm = () => {
     }
     
     // 多日游：根据产品信息计算结束日期
-    if (tour.tourType === "跟团游") {
+    if (tour.tourType === "多日游") {
       const duration = extractDurationFromTourName(tour.name);
       
       // 为了避免时区问题，创建一个新的日期对象，使用本地时间
@@ -283,7 +283,7 @@ const BookingForm = () => {
       setEndDate(date);
     }
     // 如果选择了具体的多日游产品，重新计算结束日期
-    else if (selectedTour && selectedTour.tourType === '跟团游' && date) {
+    else if (selectedTour && selectedTour.tourType === '多日游' && date) {
       calculateEndDate(selectedTour, date);
     }
   };

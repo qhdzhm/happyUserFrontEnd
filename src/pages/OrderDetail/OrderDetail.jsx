@@ -4,7 +4,7 @@ import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import { FaCheckCircle, FaDownload, FaCalendarAlt, FaMapMarkerAlt, 
          FaUsers, FaHotel, FaClipboard, FaPhoneAlt, FaWeixin, 
          FaStar, FaBed, FaInfoCircle, FaArrowLeft, FaTimes, FaTag,
-         FaUtensils, FaMapMarked, FaCar, FaRoute, FaCalendarDay, FaEdit, FaSave } from 'react-icons/fa';
+         FaUtensils, FaMapMarked, FaCar, FaRoute, FaCalendarDay, FaEdit, FaSave, FaRedo } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { getOrderDetail, cancelOrder, updateOrderByAgent } from '../../services/bookingService';
 import './OrderDetail.css';
@@ -464,6 +464,38 @@ const OrderDetail = () => {
   const handleBackToOrders = () => {
     navigate('/orders');
   };
+
+  // 再来一单处理函数
+  const handleReorder = () => {
+    if (!orderData) return;
+    
+    // 构建跳转URL，根据旅游类型跳转到相应的预定页面
+    let bookingUrl = '';
+    
+    if (orderData.tourType === 'day_tour') {
+      // 一日游
+      bookingUrl = `/booking/day-tour/${orderData.tourId || orderData.productId}`;
+    } else if (orderData.tourType === 'group_tour') {
+      // 跟团游
+      bookingUrl = `/booking/group-tour/${orderData.tourId || orderData.productId}`;
+    } else {
+      // 默认跳转到旅游产品列表
+      bookingUrl = '/tours';
+    }
+    
+    console.log('再来一单 - 跳转到:', bookingUrl);
+    console.log('订单数据:', { 
+      tourType: orderData.tourType, 
+      tourId: orderData.tourId, 
+      productId: orderData.productId 
+    });
+    
+    // 跳转到预定页面
+    navigate(bookingUrl);
+    
+    // 显示提示信息
+    toast.success('正在为您重新预定相同产品...');
+  };
   
   // 下载文档
   const handleDownloadDocument = async () => {
@@ -625,7 +657,16 @@ const OrderDetail = () => {
             <FaArrowLeft /> <span className="ms-1">返回列表</span>
           </Button>
           <h1 className="mb-0">订单详情</h1>
-          <div className="ms-auto">
+          <div className="ms-auto d-flex align-items-center">
+            {/* 醒目的再来一单按钮 */}
+            <Button 
+              variant="success" 
+              size="lg"
+              className="me-3 px-4 py-2 reorder-btn-highlight"
+              onClick={handleReorder}
+            >
+              <FaRedo className="me-2" /> 再来一单
+            </Button>
             {getStatusBadge(orderData.status)} {getPaymentStatusBadge(orderData.paymentStatus)}
           </div>
         </div>
@@ -1256,15 +1297,25 @@ const OrderDetail = () => {
             </Card.Header>
             <Card.Body>
               <div className="action-buttons">
-                {/* 发票下载权限控制：操作员不能下载发票（显示具体金额），只能下载确认单 */}
-                {orderData.paymentStatus === 'paid' && !isOperator() ? (
-                  <Button variant="outline-primary" className="w-100 mb-3" onClick={handleDownloadDocument}>
-                    <FaDownload className="me-2" /> 下载发票
-                  </Button>
+                {/* 只有支付成功后才能下载确认单和发票 */}
+                {orderData.paymentStatus === 'paid' ? (
+                  <>
+                    {/* 发票下载权限控制：操作员不能下载发票（显示具体金额），只能下载确认单 */}
+                    {!isOperator() ? (
+                      <Button variant="outline-primary" className="w-100 mb-3" onClick={handleDownloadDocument}>
+                        <FaDownload className="me-2" /> 下载发票
+                      </Button>
+                    ) : (
+                      <Button variant="outline-primary" className="w-100 mb-3" onClick={handleDownloadDocument}>
+                        <FaDownload className="me-2" /> 下载确认单
+                      </Button>
+                    )}
+                  </>
                 ) : (
-                  <Button variant="outline-primary" className="w-100 mb-3" onClick={handleDownloadDocument}>
-                    <FaDownload className="me-2" /> 下载确认单
-                  </Button>
+                  <Alert variant="info" className="mb-3">
+                    <FaInfoCircle className="me-2" />
+                    <small>支付成功后，您可以下载确认单和发票</small>
+                  </Alert>
                 )}
                 
                 {/* 未支付且未取消订单才显示支付、修改和取消按钮 */}
@@ -1332,6 +1383,14 @@ const OrderDetail = () => {
                   </>
                 )}
 
+                {/* 再来一单按钮 - 在所有状态下都显示 */}
+                <Button 
+                  variant="success" 
+                  className="w-100 mb-3"
+                  onClick={handleReorder}
+                >
+                  <FaRedo className="me-2" /> 再来一单
+                </Button>
                 
                 <Link to="/orders" className="d-block">
                   <Button variant="outline-secondary" className="w-100">

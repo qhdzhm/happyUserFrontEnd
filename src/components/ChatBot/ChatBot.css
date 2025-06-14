@@ -5,8 +5,34 @@
     right: 20px;
     z-index: 2147483647; /* 使用最大z-index值，确保在最顶层 */
     transition: opacity 0.3s ease, transform 0.3s ease; /* 明确指定transition属性 */
-    width: 64px; /* 明确指定容器大小 */
-    height: 64px;
+}
+
+.chatbot-float-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.chatbot-float-label {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+    white-space: nowrap;
+    user-select: none;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    opacity: 0.9;
+}
+
+.chatbot-float-wrapper:hover .chatbot-float-label {
+    opacity: 1;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    transform: translateY(-1px);
 }
 
 /* 在预订页面时调整位置 */
@@ -650,6 +676,15 @@
     /* 移动端时恢复原位置，因为订单面板不会粘性定位 */
     .booking-page .chatbot-float-container {
         right: 15px; /* 在移动端恢复原位置 */
+    }
+    
+    .chatbot-float-wrapper {
+        gap: 8px;
+    }
+    
+    .chatbot-float-label {
+        font-size: 12px;
+        padding: 6px 12px;
     }
     
     .chatbot-float-btn {

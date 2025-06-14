@@ -27,25 +27,15 @@ const GlobalChatBot = () => {
                              localStorage.getItem('agentId');
                 }
                 
-                // 方式3: 从token中解析用户ID（如果需要）
+                // 方式3: 如果还没有用户ID，生成临时ID
                 if (!userId) {
-                    const token = localStorage.getItem('token') || localStorage.getItem('agent-token');
-                    if (token) {
-                        try {
-                            // 这里可以解析JWT token获取用户ID
-                            // 暂时生成一个临时ID
-                            userId = 'temp_' + Date.now();
-                        } catch (error) {
-                            console.warn('解析token失败:', error);
-                        }
-                    }
+                    userId = 'temp_' + Date.now();
                 }
                 
                 if (user || userId) {
                     setUserInfo({ ...user, id: userId });
                     
                     // 判断用户类型 - 区分三种类型
-                    const agentToken = localStorage.getItem('agent-token');
                     const userTypeFromStorage = localStorage.getItem('userType');
                     
                 
@@ -66,10 +56,6 @@ const GlobalChatBot = () => {
                         // 操作员
                         computedUserType = 2;
                 
-                    } else if (agentToken) {
-                        // 有代理商token但不能确定具体角色，默认为操作员
-                        computedUserType = 2;
-                        console.log('有代理商token，默认判断为操作员');
                     } else {
                         // 普通用户
                         computedUserType = 1;

@@ -12,9 +12,13 @@ import ErrorHandler from './components/Error/ErrorHandler';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import GlobalChatBot from './components/ChatBot/GlobalChatBot';
+import { initTokenManager } from './utils/tokenManager';
 
 // 缓存自动清理的时间间隔 (30分钟)
 const CACHE_AUTO_CLEAR_INTERVAL = 30 * 60 * 1000;
+
+// Token检查间隔 (15分钟，延长检查时间)
+const TOKEN_CHECK_INTERVAL = 15 * 60 * 1000;
 
 function App() {
   const dispatch = useDispatch();
@@ -23,6 +27,14 @@ function App() {
   // 当组件挂载时，验证token有效性并初始化CSRF保护
   useEffect(() => {
     dispatch(validateToken());
+    
+    // 初始化TokenManager
+    try {
+      initTokenManager();
+      console.log('TokenManager已初始化');
+    } catch (error) {
+      console.error('TokenManager初始化失败:', error);
+    }
     
     // 初始化用户信息同步（CSRF已禁用）
     const initUserSync = async () => {
@@ -102,6 +114,18 @@ function App() {
       clearPriceCache();
     }, CACHE_AUTO_CLEAR_INTERVAL);
     
+    // 设置定期Token检查机制
+    const tokenCheckInterval = setInterval(() => {
+      const { isAuthenticated } = require('./utils/auth');
+      const hasToken = localStorage.getItem('token') || localStorage.getItem('authentication');
+      
+      // 如果有token但验证失败，可能是token过期了
+      if (hasToken && !isAuthenticated()) {
+        console.log('检测到token可能过期，重新验证...');
+        dispatch(validateToken());
+      }
+    }, TOKEN_CHECK_INTERVAL);
+    
     // 监听storage事件，当其他页面/标签修改localStorage时触发
     const handleStorageChange = (e) => {
       if (e.key === 'token' || e.key === 'userType' || e.key === 'agentId') {
@@ -127,6 +151,7 @@ function App() {
     // 清理函数
     return () => {
       clearInterval(autoCleanInterval);
+      clearInterval(tokenCheckInterval);
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('forceTokenValidation', handleForceTokenValidation);
     };

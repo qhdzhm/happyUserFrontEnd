@@ -608,20 +608,25 @@ const authSlice = createSlice({
           state.user = action.payload;
           state.userType = action.payload.userType; // 设置userType到顶级
           state.isAuthenticated = true;
-          console.log('Token验证成功，用户信息已恢复:', action.payload);
-          
-          // 同步用户信息到localStorage（用于ChatBot等组件）
-          try {
-            const { syncUserInfoToLocalStorage } = require('../../utils/auth');
-            syncUserInfoToLocalStorage();
-          } catch (error) {
-            console.warn('同步用户信息失败:', error);
-          }
+          console.log('Token验证成功，用户已认证');
         } else {
           state.user = null;
           state.userType = null;
           state.isAuthenticated = false;
-          console.log('Token验证失败或无效，用户已登出');
+          
+          // Token验证失败时，清理localStorage中的用户信息
+          localStorage.removeItem('user');
+          localStorage.removeItem('username');
+          localStorage.removeItem('userType');
+          localStorage.removeItem('agentId');
+          localStorage.removeItem('operatorId');
+          localStorage.removeItem('discountRate');
+          localStorage.removeItem('canSeeDiscount');
+          localStorage.removeItem('canSeeCredit');
+          localStorage.removeItem('token');
+          localStorage.removeItem('authentication');
+          
+          console.log('Token验证失败或无效，用户已登出，localStorage已清理');
         }
       })
       .addCase(validateToken.rejected, (state, action) => {
@@ -631,7 +636,56 @@ const authSlice = createSlice({
         state.userType = null;
         state.isAuthenticated = false;
         state.error = action.payload;
-        console.log('Token验证失败:', action.payload);
+        
+        // Token验证失败时，清理localStorage中的用户信息
+        localStorage.removeItem('user');
+        localStorage.removeItem('username');
+        localStorage.removeItem('userType');
+        localStorage.removeItem('agentId');
+        localStorage.removeItem('operatorId');
+        localStorage.removeItem('discountRate');
+        localStorage.removeItem('canSeeDiscount');
+        localStorage.removeItem('canSeeCredit');
+        localStorage.removeItem('token');
+        localStorage.removeItem('authentication');
+        
+        console.log('Token验证失败:', action.payload, 'localStorage已清理');
+        
+        // 如果页面上有用户正在操作，给出友好提示
+        const currentPath = window.location.pathname;
+        if (currentPath !== '/login' && currentPath !== '/agent-login' && currentPath !== '/register') {
+          // 导入toast进行通知
+          setTimeout(() => {
+            try {
+              const { toast } = require('react-toastify');
+              const userType = action.payload?.userType || 'regular';
+              const isAgent = userType === 'agent' || userType === 'agent_operator';
+              
+              toast.warning(
+                isAgent ? '登录已过期，请重新登录' : '登录已过期，请重新登录',
+                {
+                  position: "top-center",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                }
+              );
+              
+              // 3秒后自动跳转到登录页面
+              setTimeout(() => {
+                window.location.href = isAgent ? '/agent-login' : '/login';
+              }, 3000);
+            } catch (error) {
+              // 如果toast加载失败，直接跳转
+              console.warn('无法显示提示消息，直接跳转');
+              const userType = localStorage.getItem('userType');
+              const isAgent = userType === 'agent' || userType === 'agent_operator';
+              window.location.href = isAgent ? '/agent-login' : '/login';
+            }
+          }, 1000);
+        }
       })
       // 登录
       .addCase(loginUser.pending, (state) => {
@@ -793,6 +847,20 @@ const authSlice = createSlice({
         state.error = null;
         state.tokenValidated = true;
         
+        // 完全清理localStorage中的用户信息
+        localStorage.removeItem('user');
+        localStorage.removeItem('username');
+        localStorage.removeItem('userType');
+        localStorage.removeItem('agentId');
+        localStorage.removeItem('operatorId');
+        localStorage.removeItem('discountRate');
+        localStorage.removeItem('canSeeDiscount');
+        localStorage.removeItem('canSeeCredit');
+        localStorage.removeItem('token');
+        localStorage.removeItem('authentication');
+        
+        console.log('用户已登出，localStorage已清理');
+        
         // 触发登出状态变化事件，通知其他组件
         setTimeout(() => {
           if (typeof window !== 'undefined') {
@@ -808,6 +876,20 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         state.error = null;
         state.tokenValidated = true;
+        
+        // 即使登出失败，也要清理localStorage
+        localStorage.removeItem('user');
+        localStorage.removeItem('username');
+        localStorage.removeItem('userType');
+        localStorage.removeItem('agentId');
+        localStorage.removeItem('operatorId');
+        localStorage.removeItem('discountRate');
+        localStorage.removeItem('canSeeDiscount');
+        localStorage.removeItem('canSeeCredit');
+        localStorage.removeItem('token');
+        localStorage.removeItem('authentication');
+        
+        console.log('登出失败但已清理本地状态，localStorage已清理');
         
         // 触发登出状态变化事件，通知其他组件
         setTimeout(() => {

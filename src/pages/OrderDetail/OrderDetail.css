@@ -210,4 +210,57 @@
 .btn-warning:hover {
   background-color: #e0a800;
   border-color: #d39e00;
+}
+
+/* 再来一单按钮样式 */
+.reorder-btn-highlight {
+  background: linear-gradient(45deg, #28a745, #20c997) !important;
+  border: none !important;
+  border-radius: 25px !important;
+  font-weight: bold !important;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3) !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.reorder-btn-highlight:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4) !important;
+  background: linear-gradient(45deg, #20c997, #28a745) !important;
+}
+
+.reorder-btn-highlight:active {
+  transform: translateY(0) !important;
+}
+
+/* 再来一单按钮动画效果 */
+.reorder-btn-highlight::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.reorder-btn-highlight:hover::before {
+  left: 100%;
+}
+
+/* 订单操作区域的再来一单按钮 */
+.action-buttons .btn-success {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  border: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(40, 167, 69, 0.2);
+}
+
+.action-buttons .btn-success:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+  background: linear-gradient(135deg, #20c997, #28a745);
 } 

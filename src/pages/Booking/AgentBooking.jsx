@@ -249,6 +249,23 @@ const AgentBooking = () => {
       return null;
     }
   };
+
+  // 解析时间字符串为小时和分钟
+  const parseTimeToHourMinute = (timeStr) => {
+    if (!timeStr || timeStr === '待定') return { hour: '', minute: '' };
+    try {
+      const time24Match = timeStr.match(/(\d{1,2}):(\d{2})/);
+      if (time24Match) {
+        const hour = time24Match[1].padStart(2, '0');
+        const minute = time24Match[2].padStart(2, '0');
+        return { hour, minute };
+      }
+      return { hour: '', minute: '' };
+    } catch (error) {
+      console.error('时间解析错误:', error, timeStr);
+      return { hour: '', minute: '' };
+    }
+  };
   
   // 日期处理 - AI参数优先，然后是普通参数
   const parseDateFromParam = (dateStr) => {
@@ -376,10 +393,14 @@ const AgentBooking = () => {
     // AI航班信息
     arrival_flight: (isAIProcessed && aiArrivalFlight && aiArrivalFlight !== '待定') ? aiArrivalFlight : '',
     departure_flight: (isAIProcessed && aiDepartureFlight && aiDepartureFlight !== '待定') ? aiDepartureFlight : '',
-    arrival_departure_time: null,
-    arrival_landing_time: (isAIProcessed && aiArrivalTime) ? parseTimeToDate(aiArrivalTime, finalStartDate) : null,
-    departure_departure_time: null,
-    departure_landing_time: null,
+    // 航班日期
+    arrival_landing_date: finalStartDate,
+    departure_departure_date: finalEndDate,
+    // 航班时间字段 - 从AI时间中解析
+    arrival_landing_hour: (isAIProcessed && aiArrivalTime) ? parseTimeToHourMinute(aiArrivalTime).hour : '',
+    arrival_landing_minute: (isAIProcessed && aiArrivalTime) ? parseTimeToHourMinute(aiArrivalTime).minute : '',
+    departure_departure_hour: '', // 返程时间暂无AI参数，用户手动输入
+    departure_departure_minute: '', // 返程时间暂无AI参数，用户手动输入
     // 酒店入住退房日期
     hotel_checkin_date: finalStartDate,
     hotel_checkout_date: finalEndDate,
@@ -579,7 +600,7 @@ const AgentBooking = () => {
           hotel_level: (isAIProcessed && aiHotelLevel) ? normalizeHotelLevel(aiHotelLevel) : prev.hotel_level,
           hotel_room_count: Math.ceil(newAdults / 2),
           roomTypes: Array(Math.ceil(newAdults / 2)).fill(
-            (isAIProcessed && aiRoomType) ? normalizeRoomType(aiRoomType) : ''
+            (isAIProcessed && aiRoomType) ? normalizeRoomType(aiRoomType) : '双人间'
           ),
           pickup_location: (isAIProcessed && aiDeparture) ? decodeURIComponent(aiDeparture) : prev.pickup_location,
           dropoff_location: (isAIProcessed && aiDeparture) ? decodeURIComponent(aiDeparture) : prev.dropoff_location,
@@ -587,7 +608,12 @@ const AgentBooking = () => {
           dropoff_date: newEndDate,
           arrival_flight: (isAIProcessed && aiArrivalFlight && aiArrivalFlight !== '待定') ? aiArrivalFlight : prev.arrival_flight,
           departure_flight: (isAIProcessed && aiDepartureFlight && aiDepartureFlight !== '待定') ? aiDepartureFlight : prev.departure_flight,
-          arrival_landing_time: (isAIProcessed && aiArrivalTime) ? parseTimeToDate(aiArrivalTime, newStartDate) : prev.arrival_landing_time,
+          // 航班日期更新
+          arrival_landing_date: newStartDate,
+          departure_departure_date: newEndDate,
+          // 航班时间字段更新
+          arrival_landing_hour: (isAIProcessed && aiArrivalTime) ? parseTimeToHourMinute(aiArrivalTime).hour : prev.arrival_landing_hour,
+          arrival_landing_minute: (isAIProcessed && aiArrivalTime) ? parseTimeToHourMinute(aiArrivalTime).minute : prev.arrival_landing_minute,
           hotel_checkin_date: newStartDate,
           hotel_checkout_date: newEndDate,
           special_requests: (isAIProcessed && aiSpecialRequests) ? decodeURIComponent(aiSpecialRequests) : prev.special_requests
@@ -860,9 +886,33 @@ const AgentBooking = () => {
         updated.hotel_checkout_date = value;
       }
       
-      // 如果是更新房间数量，同时更新房型数组
+      // 如果是更新房间数量，智能更新房型数组
       if (field === 'hotel_room_count') {
-        updated.roomTypes = Array(value).fill('');
+        const newRoomCount = parseInt(value) || 0;
+        const currentRoomTypes = formData.roomTypes || [];
+        
+        if (newRoomCount > currentRoomTypes.length) {
+          // 增加房间：保留现有房型，为新房间添加默认房型
+          const additionalRooms = newRoomCount - currentRoomTypes.length;
+          updated.roomTypes = [...currentRoomTypes, ...Array(additionalRooms).fill('双人间')];
+          console.log('🏨 增加房间，保留现有房型:', {
+            原房间数: currentRoomTypes.length,
+            新房间数: newRoomCount,
+            新增房间: additionalRooms,
+            更新后房型: updated.roomTypes
+          });
+        } else if (newRoomCount < currentRoomTypes.length) {
+          // 减少房间：保留前N个房型
+          updated.roomTypes = currentRoomTypes.slice(0, newRoomCount);
+          console.log('🏨 减少房间，保留前N个房型:', {
+            原房间数: currentRoomTypes.length,
+            新房间数: newRoomCount,
+            更新后房型: updated.roomTypes
+          });
+        } else {
+          // 房间数量没变，保持原有房型
+          updated.roomTypes = currentRoomTypes;
+        }
       }
       
       return updated;
@@ -885,6 +935,43 @@ const AgentBooking = () => {
           calculatePrice();
         }
       }, 100);
+    }
+  };
+
+  // 处理时间输入的函数
+  const handleTimeInput = (field, value, nextField = null) => {
+    // 只允许数字输入
+    const numericValue = value.replace(/[^0-9]/g, '');
+    
+    // 验证输入范围
+    let validatedValue = numericValue;
+    if (field.includes('hour')) {
+      // 小时：00-23
+      const hour = parseInt(numericValue) || 0;
+      if (hour > 23) validatedValue = '23';
+    } else if (field.includes('minute')) {
+      // 分钟：00-59
+      const minute = parseInt(numericValue) || 0;
+      if (minute > 59) validatedValue = '59';
+    }
+    
+    // 更新表单数据
+    setFormData(prev => ({
+      ...prev,
+      [field]: validatedValue
+    }));
+    
+    // 自动跳转到下一个输入框
+    if (validatedValue.length === 2 && nextField) {
+      // 延迟一点点，确保当前值已更新
+      setTimeout(() => {
+        // 使用完整的字段名作为类名来精确定位
+        const nextInput = document.querySelector(`.${nextField.replace(/_/g, '-')}`);
+        if (nextInput) {
+          nextInput.focus();
+          nextInput.select(); // 选中所有文本，方便用户直接覆盖
+        }
+      }, 10);
     }
   };
   
@@ -1021,7 +1108,28 @@ const AgentBooking = () => {
         儿童数量: formData.child_count
       });
 
-      // 格式化航班时间 - 匹配后端Jackson配置格式
+      // 格式化航班时间 - 从分离的小时和分钟字段构造时间
+      const formatTimeFromFields = (dateField, hourField, minuteField) => {
+        const date = formData[dateField];
+        const hour = formData[hourField];
+        const minute = formData[minuteField];
+        
+        if (!date || !hour || !minute) return null;
+        
+        // 构造完整的日期时间
+        const fullDate = new Date(date);
+        fullDate.setHours(parseInt(hour) || 0, parseInt(minute) || 0, 0, 0);
+        
+        // 后端JacksonObjectMapper配置的LocalDateTime格式是 "yyyy-MM-dd HH:mm"
+        const year = fullDate.getFullYear();
+        const month = String(fullDate.getMonth() + 1).padStart(2, '0');
+        const day = String(fullDate.getDate()).padStart(2, '0');
+        const hours = String(fullDate.getHours()).padStart(2, '0');
+        const minutes = String(fullDate.getMinutes()).padStart(2, '0');
+        return `${year}-${month}-${day} ${hours}:${minutes}`;
+      };
+
+      // 格式化航班时间 - 兼容原有的date格式
       const formatFlightTime = (date) => {
         if (!date) return null;
         // 后端JacksonObjectMapper配置的LocalDateTime格式是 "yyyy-MM-dd HH:mm"
@@ -1086,8 +1194,8 @@ const AgentBooking = () => {
         returnFlightNumber: formData.departure_flight || null,
         // 航班时间信息
         arrivalDepartureTime: null, // 抵达起飞时间（暂不使用）
-        arrivalLandingTime: formatFlightTime(formData.arrival_landing_time),
-        departureDepartureTime: formatFlightTime(formData.departure_departure_time),
+        arrivalLandingTime: formatTimeFromFields('arrival_landing_date', 'arrival_landing_hour', 'arrival_landing_minute'),
+        departureDepartureTime: formatTimeFromFields('departure_departure_date', 'departure_departure_hour', 'departure_departure_minute'),
         departureLandingTime: null, // 返程降落时间（暂不使用）
         // 接送信息
         pickupLocation: formData.pickup_location,
@@ -1249,21 +1357,14 @@ const AgentBooking = () => {
                 {/* 代理商价格显示 - 只有中介主号才能看到价格 */}
                 {isAgentMain && (
                   <div className="agent-price-display mt-4 p-3 border rounded bg-primary bg-opacity-10">
-                    <h6 className="mb-3 text-primary">
-                      <FaDollarSign className="me-2" />
-                      代理商价格
-                    </h6>
+                    
                     {totalPrice !== null && totalPrice !== undefined ? (
                       <>
                         <div className="price-amount">
                           <span className="currency">$</span>
                           <span className="amount">{parseFloat(totalPrice).toFixed(2)}</span>
                         </div>
-                        <div className="text-center mt-2">
-                          <small className="text-muted">
-                            主号专享价格
-                          </small>
-                        </div>
+                        
                       </>
                     ) : (
                       <div className="text-center text-muted">
@@ -1273,18 +1374,7 @@ const AgentBooking = () => {
                   </div>
                 )}
                 
-                {/* 操作员提示信息 */}
-                {isAgent && !isAgentMain && (
-                  <div className="operator-notice mt-4 p-3 border rounded bg-warning bg-opacity-10">
-                    <h6 className="mb-2 text-warning">
-                      <i className="fas fa-info-circle me-2"></i>
-                      操作员提示
-                    </h6>
-                    <small className="text-muted">
-                      您当前以操作员身份登录，价格信息仅对中介主号可见。
-                    </small>
-                  </div>
-                )}
+
               </Card.Body>
             </Card>
           </Col>
@@ -1302,6 +1392,9 @@ const AgentBooking = () => {
                       <i className="fas fa-robot me-2"></i>
                       <div>
                         <strong>AI智能解析完成</strong>
+                        <div className="small text-muted mb-1">
+                          AI助手自动识别并解析了您的需求，将信息智能填入订单表单
+                        </div>
                         <div className="small">
                           订单信息已自动填充，请核对以下信息并根据需要进行调整
                         </div>
@@ -1659,20 +1752,67 @@ const AgentBooking = () => {
                               <FaPlaneArrival className="me-2" />
                               抵达航班降落时间
                             </Form.Label>
-                            <DatePicker
-                              selected={formData.arrival_landing_time}
-                              onChange={(date) => handleInputChange('arrival_landing_time', date)}
-                              showTimeSelect
-                              timeFormat="HH:mm"
-                              timeIntervals={15}
-                              timeCaption="时间"
-                              dateFormat="yyyy-MM-dd HH:mm"
-                              className="form-control"
-                              placeholderText="选择降落时间（选填）"
-                            />
+                            <Row>
+                              <Col md={7}>
+                                <DatePicker
+                                  selected={formData.arrival_landing_date}
+                                  onChange={(date) => handleInputChange('arrival_landing_date', date)}
+                                  dateFormat="yyyy-MM-dd"
+                                  className="form-control"
+                                  placeholderText="选择降落日期（选填）"
+                                />
+                              </Col>
+                              <Col md={5}>
+                                <div 
+                                  className="time-input-container d-flex align-items-center"
+                                  style={{
+                                    border: '1px solid #ced4da',
+                                    borderRadius: '0.375rem',
+                                    padding: '0.375rem 0.75rem',
+                                    background: 'white',
+                                    maxWidth: '120px'
+                                  }}
+                                >
+                                  <input
+                                    type="text"
+                                    value={formData.arrival_landing_hour || ''}
+                                    onChange={(e) => handleTimeInput('arrival_landing_hour', e.target.value, 'arrival_landing_minute')}
+                                    placeholder="HH"
+                                    maxLength="2"
+                                    className="arrival-landing-hour text-center"
+                                    style={{
+                                      width: '25px',
+                                      border: 'none',
+                                      outline: 'none',
+                                      padding: '0',
+                                      background: 'transparent',
+                                      fontSize: '1rem'
+                                    }}
+                                  />
+                                  <span className="mx-1 fw-bold">:</span>
+                                  <input
+                                    type="text"
+                                    value={formData.arrival_landing_minute || ''}
+                                    onChange={(e) => handleTimeInput('arrival_landing_minute', e.target.value)}
+                                    placeholder="mm"
+                                    maxLength="2"
+                                    className="arrival-landing-minute text-center"
+                                    style={{
+                                      width: '25px',
+                                      border: 'none',
+                                      outline: 'none',
+                                      padding: '0',
+                                      background: 'transparent',
+                                      fontSize: '1rem'
+                                    }}
+                                  />
+                                </div>
+                              </Col>
+                            </Row>
                             <Form.Text className="text-muted">
-                              填写抵达航班降落时间
+                              选择降落日期，并输入具体时间（24小时制，如：14:30）
                             </Form.Text>
+
                           </Form.Group>
                         </Col>
                         
@@ -1682,19 +1822,65 @@ const AgentBooking = () => {
                               <FaPlaneDeparture className="me-2" />
                               返程航班起飞时间
                             </Form.Label>
-                            <DatePicker
-                              selected={formData.departure_departure_time}
-                              onChange={(date) => handleInputChange('departure_departure_time', date)}
-                              showTimeSelect
-                              timeFormat="HH:mm"
-                              timeIntervals={15}
-                              timeCaption="时间"
-                              dateFormat="yyyy-MM-dd HH:mm"
-                              className="form-control"
-                              placeholderText="选择起飞时间（选填）"
-                            />
+                            <Row>
+                              <Col md={7}>
+                                <DatePicker
+                                  selected={formData.departure_departure_date}
+                                  onChange={(date) => handleInputChange('departure_departure_date', date)}
+                                  dateFormat="yyyy-MM-dd"
+                                  className="form-control"
+                                  placeholderText="选择起飞日期（选填）"
+                                />
+                              </Col>
+                              <Col md={5}>
+                                <div 
+                                  className="time-input-container d-flex align-items-center"
+                                  style={{
+                                    border: '1px solid #ced4da',
+                                    borderRadius: '0.375rem',
+                                    padding: '0.375rem 0.75rem',
+                                    background: 'white',
+                                    maxWidth: '120px'
+                                  }}
+                                >
+                                  <input
+                                    type="text"
+                                    value={formData.departure_departure_hour || ''}
+                                    onChange={(e) => handleTimeInput('departure_departure_hour', e.target.value, 'departure_departure_minute')}
+                                    placeholder="HH"
+                                    maxLength="2"
+                                    className="departure-departure-hour text-center"
+                                    style={{
+                                      width: '25px',
+                                      border: 'none',
+                                      outline: 'none',
+                                      padding: '0',
+                                      background: 'transparent',
+                                      fontSize: '1rem'
+                                    }}
+                                  />
+                                  <span className="mx-1 fw-bold">:</span>
+                                  <input
+                                    type="text"
+                                    value={formData.departure_departure_minute || ''}
+                                    onChange={(e) => handleTimeInput('departure_departure_minute', e.target.value)}
+                                    placeholder="mm"
+                                    maxLength="2"
+                                    className="departure-departure-minute text-center"
+                                    style={{
+                                      width: '25px',
+                                      border: 'none',
+                                      outline: 'none',
+                                      padding: '0',
+                                      background: 'transparent',
+                                      fontSize: '1rem'
+                                    }}
+                                  />
+                                </div>
+                              </Col>
+                            </Row>
                             <Form.Text className="text-muted">
-                              填写返程航班起飞时间
+                              选择起飞日期，并输入具体时间（24小时制，如：14:30）
                             </Form.Text>
                           </Form.Group>
                         </Col>

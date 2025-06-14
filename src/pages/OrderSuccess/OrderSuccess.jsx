@@ -11,7 +11,6 @@ import { toast } from 'react-hot-toast';
 import { cancelOrder } from '../../services/bookingService';
 import axios from 'axios';
 import { addAuthHeaders, isOperator } from '../../utils/auth';
-import { generateOrderConfirmation } from '../../utils/helpers';
 
 const OrderSuccess = () => {
   const { orderId } = useParams();
@@ -335,129 +334,7 @@ const OrderSuccess = () => {
   };
   
   // 下载订单确认单
-  const handleDownloadConfirmation = async () => {
-    if (!orderData) return;
-    
-    try {
-      toast.loading('正在获取订单信息...');
-      
-      // 获取当前订单ID
-      const orderIdToUse = orderData.bookingId || orderData.id || orderId;
-      if (!orderIdToUse) {
-        toast.error('无法获取订单ID，请刷新页面重试');
-        return;
-      }
-      
-      // 1. 从API重新获取最新的订单数据
-      const headers = addAuthHeaders();
-      const orderResponse = await axios.get(`/api/user/bookings/${orderIdToUse}`, { headers });
-      
-      if (!orderResponse.data || !orderResponse.data.data) {
-        toast.error('获取订单数据失败，请刷新页面重试');
-        return;
-      }
-      
-      // 获取到最新的订单数据
-      const freshOrderData = orderResponse.data.data;
-      console.log('从API获取的最新订单数据:', freshOrderData);
-      
-      // 2. 获取行程信息
-      const tourId = freshOrderData.tour_id || freshOrderData.tourId;
-      const tourType = freshOrderData.tour_type || freshOrderData.tourType || 'day';
-      
-      if (!tourId) {
-        toast.error('订单缺少行程信息，无法生成确认单');
-        return;
-      }
-      
-      // 构建获取行程信息的URL
-      const tourApiUrl = tourType.toLowerCase().includes('group') 
-        ? `/api/user/group-tours/${tourId}`
-        : `/api/user/day-tours/${tourId}`;
-      
-      toast.loading('正在获取行程信息...');
-      const tourResponse = await axios.get(tourApiUrl, { headers });
-      
-      let tourData = null;
-      if (tourResponse.data && (tourResponse.data.code === 1 || tourResponse.data.code === 200)) {
-        tourData = tourResponse.data.data;
-        console.log('从API获取的行程数据:', tourData);
-      }
-      
-      // 3. 格式化订单数据，准备生成确认单
-      toast.loading('正在生成确认单...');
-      
-      // 从API获取的数据优先级高于页面已有数据
-      const dataForConfirmation = {
-        // 基本订单信息
-        id: freshOrderData.order_number || freshOrderData.orderNumber || orderData.id,
-        orderNumber: freshOrderData.order_number || freshOrderData.orderNumber || orderData.id,
-        bookingId: freshOrderData.id || orderIdToUse,
-        createdAt: freshOrderData.created_at || freshOrderData.createdAt || new Date().toISOString(),
-        
-        // 用户信息
-        contactPerson: freshOrderData.contact_person || freshOrderData.contactPerson || 
-                     freshOrderData.passenger_name || freshOrderData.passengerName,
-        contactPhone: freshOrderData.contact_phone || freshOrderData.contactPhone || 
-                     freshOrderData.passenger_phone || freshOrderData.passengerPhone,
-        contact: {
-          name: freshOrderData.contact_person || freshOrderData.contactPerson || 
-                freshOrderData.passenger_name || freshOrderData.passengerName,
-          phone: freshOrderData.contact_phone || freshOrderData.contactPhone || 
-                freshOrderData.passenger_phone || freshOrderData.passengerPhone
-        },
-        
-        // 行程信息 
-        tour: {
-          id: tourId,
-          name: freshOrderData.tour_name || freshOrderData.tourName,
-          startDate: freshOrderData.tour_start_date || freshOrderData.tourStartDate,
-          endDate: freshOrderData.tour_end_date || freshOrderData.tourEndDate,
-          duration: freshOrderData.duration || tourData?.duration || 1,
-          adults: freshOrderData.adult_count || freshOrderData.adultCount || 0,
-          children: freshOrderData.child_count || freshOrderData.childCount || 0,
-          hotelLevel: freshOrderData.hotel_level || freshOrderData.hotelLevel || '',
-          pickupLocation: freshOrderData.pickup_location || freshOrderData.pickupLocation || ''
-        },
-        
-        // 行程安排数据
-        itineraryData: tourData || {},
-        
-        // 结合API中可能的日期字段
-        departureDate: freshOrderData.tour_start_date || freshOrderData.tourStartDate || 
-                      freshOrderData.departure_date || freshOrderData.departureDate,
-        returnDate: freshOrderData.tour_end_date || freshOrderData.tourEndDate || 
-                   freshOrderData.return_date || freshOrderData.returnDate,
-        pickupLocation: freshOrderData.pickup_location || freshOrderData.pickupLocation || '',
-      };
-      
-      console.log('传递给确认单生成的数据:', dataForConfirmation);
-      
-      // 生成确认单PDF
-      const pdfBlob = await generateOrderConfirmation(dataForConfirmation);
-      
-      // 创建下载链接
-      const url = URL.createObjectURL(pdfBlob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `订单确认单_${dataForConfirmation.id}.pdf`;
-      
-      // 模拟点击下载
-      document.body.appendChild(link);
-      link.click();
-      
-      // 清理
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      
-      toast.dismiss();
-      toast.success('确认单已下载');
-    } catch (error) {
-      console.error('下载确认单出错:', error);
-      toast.dismiss();
-      toast.error('下载确认单失败: ' + (error.message || '请稍后再试'));
-    }
-  };
+
   
   // 返回产品详情
   const handleBackToDetail = () => {
@@ -846,13 +723,9 @@ const OrderSuccess = () => {
                   立即支付
                 </Button>
                 
-                <Button 
-                  variant="outline-primary" 
-                  className="w-100 mb-3"
-                  onClick={handleDownloadConfirmation}
-                >
-                  <FaDownload className="me-2" /> 下载确认单
-                </Button>
+                {/* 支付后下载提示 */}
+                
+
                 <Link to="/orders" className="w-100 mb-3 d-block">
                   <Button variant="outline-primary" className="w-100">
                     查看我的订单
@@ -868,6 +741,13 @@ const OrderSuccess = () => {
                     <FaTimes className="me-2" /> 申请取消订单
                   </Button>
                 )}
+                <Button 
+                  variant="outline-success" 
+                  className="w-100 mb-3"
+                  onClick={() => navigate('/booking-form')}
+                >
+                  <FaCalendarAlt className="me-2" /> 再来一单
+                </Button>
                 <Button variant="outline-secondary" className="w-100" onClick={handleBackToDetail}>
                   返回产品详情
                 </Button>
@@ -936,10 +816,19 @@ const OrderSuccess = () => {
                     variant="top" 
                     src={tour.imageUrl} 
                     alt={tour.title}
-                    style={{ height: '180px', objectFit: 'cover' }}
+                    style={{ height: '180px', objectFit: 'cover', cursor: 'pointer' }}
+                    onClick={() => navigate('/booking-form')}
+                    title="点击立即预订"
                   />
                   <Card.Body className="d-flex flex-column">
-                    <Card.Title className="fs-5 mb-3">{tour.title}</Card.Title>
+                    <Card.Title 
+                      className="fs-5 mb-3" 
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => navigate('/booking-form')}
+                      title="点击立即预订"
+                    >
+                      {tour.title}
+                    </Card.Title>
                     <div className="d-flex align-items-center mb-2">
                       <BsGeoAlt className="text-primary me-2" />
                       <small className="text-muted">{tour.location}</small>
@@ -955,9 +844,13 @@ const OrderSuccess = () => {
                       ) : (
                         <div className="fs-5 fw-bold text-muted">价格已隐藏</div>
                       )}
-                      <Link to={`/tours/${tour.id}`} className="btn btn-sm btn-outline-primary">
-                        查看详情
-                      </Link>
+                      <Button 
+                        size="sm" 
+                        variant="outline-primary"
+                        onClick={() => navigate('/booking-form')}
+                      >
+                        立即预订
+                      </Button>
                     </div>
                   </Card.Body>
                 </Card>

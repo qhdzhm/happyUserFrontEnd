@@ -517,17 +517,19 @@ const Payment = () => {
                     <p className="lead mb-4">您的订单已支付完成，我们将为您安排行程。</p>
                     
                     <Alert variant="info" className="mb-4">
-                      <Col md={6} className="text-start">
-                        <p className="mb-0">支付成功，{isOperator() ? '订单已处理' : '使用代理商优惠价格'}</p>
-                      </Col>
-                      <Col md={6} className="text-end">
-                        {!isOperator() && (
-                          <>
-                            <p className="mb-1">支付金额: ${formatPrice(orderData.totalPrice || orderData.total || 0)}</p>
-                            <p className="mb-0">剩余信用额度: ${formatPrice(availableCredit)}</p>
-                          </>
-                        )}
-                      </Col>
+                      <div className="d-flex justify-content-between">
+                        <div>
+                          <p className="mb-0">支付成功，{isOperator() ? '订单已处理' : '使用代理商优惠价格'}</p>
+                        </div>
+                        <div className="text-end">
+                          {!isOperator() && (
+                            <>
+                              <p className="mb-1">支付金额: ${formatPrice(orderData.totalPrice || orderData.total || 0)}</p>
+                              <p className="mb-0">剩余信用额度: ${formatPrice(availableCredit)}</p>
+                            </>
+                          )}
+                        </div>
+                      </div>
                     </Alert>
                     
                     <Button 
@@ -692,8 +694,8 @@ const Payment = () => {
                             <div>
                               <h6 className="mb-0">{option.name}</h6>
                               {option.id === 'agent_credit' && (
-                                <small className={`${isCreditSufficient || isAgentOperator ? 'text-muted' : 'text-danger'}`}>
-                                  {isAgentOperator ? (
+                                <small className={`${isCreditSufficient || isOperator() ? 'text-muted' : 'text-danger'}`}>
+                                  {isOperator() ? (
                                     '使用代理商信用额度'
                                   ) : (
                                     <>
@@ -711,7 +713,7 @@ const Payment = () => {
                             checked={paymentMethod === option.id}
                             onChange={() => handlePaymentMethodChange(option.id)}
                             className="ms-auto"
-                            disabled={option.id === 'agent_credit' && !isCreditSufficient && !isAgentOperator}
+                            disabled={option.id === 'agent_credit' && !isCreditSufficient && !isOperator()}
                           />
                         </div>
                       ))}
@@ -734,7 +736,7 @@ const Payment = () => {
                         size="lg"
                         className="w-100"
                         onClick={handleSubmitPayment}
-                        disabled={!agreement || submitting || loading || (isOperator() && !isCreditSufficient)}
+                        disabled={!agreement || submitting || loading || (paymentMethod === 'agent_credit' && !isCreditSufficient)}
                       >
                         {submitting ? '处理中...' : (
                           isOperator() ? (
@@ -788,11 +790,7 @@ const Payment = () => {
                   <div className="d-flex justify-content-between align-items-center">
                     <span className="fw-bold">总价</span>
                     <div className="text-end">
-                      {canUseCredit && !isAgentOperator ? (
-                        <>
-                          <h5 className="mb-0 text-success">使用代理商优惠价格</h5>
-                        </>
-                      ) : isAgentOperator ? (
+                      {isOperator() ? (
                         <h5 className="mb-0 text-muted">价格已隐藏</h5>
                       ) : (
                         <h5 className="mb-0 text-success">${formatPrice(orderData.totalPrice || orderData.total || 0)}</h5>

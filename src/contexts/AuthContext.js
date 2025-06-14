@@ -10,31 +10,53 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 初始化时从localStorage加载用户状态并验证token有效性
+  // 初始化时检查认证状态
   useEffect(() => {
     const initializeAuth = async () => {
-      const token = localStorage.getItem('token');
-      const username = localStorage.getItem('username');
-      const userType = localStorage.getItem('userType');
-      const agentId = localStorage.getItem('agentId');
+      const { shouldUseCookieAuth, isAuthenticated, getUserInfoFromCookie, getToken } = require('../utils/auth');
+      const useCookieAuth = shouldUseCookieAuth();
       
-      if (token && username) {
-        // 验证token是否仍然有效
-        const isTokenValid = await verifyTokenValidity();
+      console.log('AuthContext - 初始化认证，模式:', useCookieAuth ? 'Cookie' : 'Token');
+      
+      if (useCookieAuth) {
+        // Cookie认证模式：从Cookie获取用户信息
+        if (isAuthenticated()) {
+          const cookieUserInfo = getUserInfoFromCookie();
+          if (cookieUserInfo) {
+            setCurrentUser({
+              username: cookieUserInfo.username,
+              userType: cookieUserInfo.userType || 'regular',
+              agentId: cookieUserInfo.agentId ? parseInt(cookieUserInfo.agentId, 10) : null,
+              isAuthenticated: true
+            });
+            console.log('Cookie认证 - 用户登录状态已恢复:', cookieUserInfo);
+          }
+        }
+      } else {
+        // Token认证模式：从localStorage获取并验证
+        const token = getToken();
+        const username = localStorage.getItem('username');
+        const userType = localStorage.getItem('userType');
+        const agentId = localStorage.getItem('agentId');
         
-        if (isTokenValid) {
-          // token有效，设置用户信息
-          setCurrentUser({
-            username,
-            userType: userType || 'regular', // 确保用户类型正确
-            agentId: agentId ? parseInt(agentId, 10) : null,
-            isAuthenticated: true
-          });
-          console.log('用户登录状态已恢复:', { username, userType, agentId });
-        } else {
-          // token无效，清除状态
-          console.log('Token验证失败，清除登录状态');
-          setCurrentUser(null);
+        if (token && token !== 'cookie-auth-enabled' && username) {
+          // 验证token是否仍然有效
+          const isTokenValid = await verifyTokenValidity();
+          
+          if (isTokenValid) {
+            // token有效，设置用户信息
+            setCurrentUser({
+              username,
+              userType: userType || 'regular',
+              agentId: agentId ? parseInt(agentId, 10) : null,
+              isAuthenticated: true
+            });
+            console.log('Token认证 - 用户登录状态已恢复:', { username, userType, agentId });
+          } else {
+            // token无效，清除状态
+            console.log('Token验证失败，清除登录状态');
+            setCurrentUser(null);
+          }
         }
       }
       

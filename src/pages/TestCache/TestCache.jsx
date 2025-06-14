@@ -10,10 +10,10 @@ const TestCache = () => {
   const [tours, setTours] = useState([]);
   const [loading, setLoading] = useState(true);
   const [testUrls] = useState([
-    'https://hmlead22.oss-ap-southeast-2.aliyuncs.com/images/2025/06/13/149c2355-ad43-4bce-808a-01b78b5e2cfe.jpg',
-    'https://hmlead22.oss-ap-southeast-2.aliyuncs.com/images/2025/06/13/de43d750-d6ae-41a4-8124-adee979379ca.jpg',
-    'https://hmlead22.oss-ap-southeast-2.aliyuncs.com/images/2025/06/13/ca67710b-96fe-4d54-94b6-b020ca63f487.jpg',
-    'https://hmlead22.oss-ap-southeast-2.aliyuncs.com/images/2025/06/13/cf1c8436-d9ce-49d3-a935-7e14e5f5a478.jpg',
+    'https://hmlead22.oss-cn-beijing.aliyuncs.com/images/2025/06/13/149c2355-ad43-4bce-808a-01b78b5e2cfe.jpg',
+    'https://hmlead22.oss-cn-beijing.aliyuncs.com/images/2025/06/13/de43d750-d6ae-41a4-8124-adee979379ca.jpg',
+    'https://hmlead22.oss-cn-beijing.aliyuncs.com/images/2025/06/13/ca67710b-96fe-4d54-94b6-b020ca63f487.jpg',
+    'https://hmlead22.oss-cn-beijing.aliyuncs.com/images/2025/06/13/cf1c8436-d9ce-49d3-a935-7e14e5f5a478.jpg',
   ]);
 
   // 预加载测试

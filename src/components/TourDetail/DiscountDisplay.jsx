@@ -43,15 +43,32 @@ const DiscountDisplay = ({ tour, isAgent, onPriceCalculated }) => {
         
         console.log('准备计算折扣价格，旅游产品信息:', JSON.stringify(tour, null, 2));
         
-        // 从localStorage获取关键信息
-        const token = localStorage.getItem('token');
-        const userType = localStorage.getItem('userType');
-        const agentId = localStorage.getItem('agentId');
+        // 检查认证模式并获取关键信息
+        const { shouldUseCookieAuth, getToken, getUserInfoFromCookie } = require('../../utils/auth');
+        const useCookieAuth = shouldUseCookieAuth();
+        
+        let userType, agentId, token;
+        
+        if (useCookieAuth) {
+          // Cookie认证模式：从Cookie获取用户信息
+          const cookieUserInfo = getUserInfoFromCookie();
+          userType = cookieUserInfo?.userType;
+          agentId = cookieUserInfo?.agentId;
+          token = 'cookie-auth-enabled';
+          console.log('DiscountDisplay - Cookie认证模式，用户信息:', cookieUserInfo);
+        } else {
+          // Token认证模式：从localStorage获取
+          token = getToken();
+          userType = localStorage.getItem('userType');
+          agentId = localStorage.getItem('agentId');
+          console.log('DiscountDisplay - Token认证模式');
+        }
         
         console.log('当前用户信息:', {
-          token: token ? `${token.substring(0, 10)}...` : '无Token',
+          token: token === 'cookie-auth-enabled' ? 'Cookie认证' : (token ? `${token.substring(0, 10)}...` : '无Token'),
           userType,
-          agentId
+          agentId,
+          认证模式: useCookieAuth ? 'Cookie' : 'Token'
         });
         
         if (!agentId) {

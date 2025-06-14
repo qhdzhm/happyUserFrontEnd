@@ -419,7 +419,7 @@ export const cancelOrder = async (orderId) => {
     
     // 发送取消订单请求
     console.log(`发送取消订单请求: ${orderId}`);
-    const response = await request.post(`/user/orders/${orderId}/cancel`, {}, { headers });
+    const response = await request.post(`/orders/${orderId}/cancel`, {}, { headers });
     
     // 清除缓存，确保数据一致性
     request.clearCache(`/user/orders/${orderId}`);

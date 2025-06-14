@@ -148,17 +148,34 @@ const UserProfile = () => {
     
     setFetchLoading(true);
     try {
-      // 尝试从API获取最新用户信息
-      const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
-      if (!token) throw new Error('未找到认证令牌');
+      // 检查认证模式
+      const { shouldUseCookieAuth, getToken } = require('../../utils/auth');
+      const useCookieAuth = shouldUseCookieAuth();
+      
+      console.log('UserProfile - 认证模式:', useCookieAuth ? 'Cookie' : 'Token');
       
       const apiUrl = isAgent 
         ? `/api/agent/profile` 
         : `/api/user/profile`;
       
-      const response = await axios.get(apiUrl, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      // 构建请求配置
+      const requestConfig = {
+        withCredentials: true // 确保发送Cookie
+      };
+      
+      if (!useCookieAuth) {
+        // Token认证模式：添加Authorization头部
+        const token = getToken();
+        if (!token || token === 'cookie-auth-enabled') {
+          throw new Error('未找到有效的认证令牌');
+        }
+        requestConfig.headers = { Authorization: `Bearer ${token}` };
+        console.log('UserProfile - 使用Token认证');
+      } else {
+        console.log('UserProfile - 使用Cookie认证，依赖HttpOnly Cookie');
+      }
+      
+      const response = await axios.get(apiUrl, requestConfig);
       
       let creditInfo = { balance: 0, totalEarned: 0 };
       

@@ -11,8 +11,8 @@ class TokenManager {
     this.refreshTimer = null; // 定时刷新器
     this.isRefreshing = false; // 刷新状态标记
     this.failedQueue = []; // 失败请求队列
-    this.checkInterval = 60000; // 检查间隔：1分钟
-    this.refreshThreshold = 5; // 刷新阈值：5分钟
+    this.checkInterval = 300000; // 检查间隔：5分钟
+    this.refreshThreshold = 15; // 刷新阈值：15分钟
     
     // 检查是否使用Cookie认证
     if (shouldUseCookieAuth()) {
@@ -340,3 +340,5 @@ export { TokenManager };
 
 // 默认导出Token管理器实例获取函数
 export default getTokenManager;
+
+

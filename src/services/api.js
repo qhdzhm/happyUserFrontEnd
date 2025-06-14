@@ -22,12 +22,16 @@ let isRedirecting = false;
 
 // 请求拦截器
 apiClient.interceptors.request.use(config => {
-  // 从localStorage获取token
-  const token = localStorage.getItem('token') || localStorage.getItem(STORAGE_KEYS.TOKEN);
+  // 检查认证模式
+  const { shouldUseCookieAuth, getToken } = require('../utils/auth');
+  const useCookieAuth = shouldUseCookieAuth();
   const userType = localStorage.getItem('userType') || 'regular';
   
   // 记录详细的请求信息，帮助调试
-  console.log(`API请求: ${config.url}，用户类型: ${userType || 'regular'}`);
+  console.log(`API请求: ${config.url}，用户类型: ${userType}，认证模式: ${useCookieAuth ? 'Cookie' : 'Token'}`);
+  
+  // 确保发送Cookie
+  config.withCredentials = true;
   
   // 如果已经有Authorization或authentication头，不覆盖
   if (config.headers && (config.headers.Authorization || config.headers.authentication || config.headers.token || config.headers.Authentication)) {
@@ -35,11 +39,19 @@ apiClient.interceptors.request.use(config => {
     return config;
   }
   
-  // 添加认证头部
-  if (token) {
-    // 使用辅助函数添加所有认证头部
-    Object.assign(config.headers, addAuthHeaders());
-    console.log(`已添加认证头部到请求: ${config.url}`);
+  // Cookie认证模式下，依赖HttpOnly Cookie，不需要手动添加token
+  if (useCookieAuth) {
+    console.log(`Cookie认证模式: ${config.url}, 依赖HttpOnly Cookie自动认证`);
+  } else {
+    // Token认证模式下，添加认证头部
+    const token = getToken();
+    if (token && token !== 'cookie-auth-enabled') {
+      // 使用辅助函数添加所有认证头部
+      Object.assign(config.headers, addAuthHeaders());
+      console.log(`Token认证模式: ${config.url}, 已添加认证头部`);
+    } else {
+      console.warn(`Token认证模式下没有可用的token: ${config.url}`);
+    }
   }
   
   return config;

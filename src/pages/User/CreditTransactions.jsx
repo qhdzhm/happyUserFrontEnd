@@ -14,14 +14,24 @@ import './User.css';
 const transactionTypes = {
   referral_reward: '推荐奖励',
   order_reward: '订单奖励',
-  used: '积分使用'
+  used: '积分使用',
+  payment: '订单支付',
+  topup: '充值还款',
+  repayment: '还款',
+  credit_payment: '信用支付',
+  credit_topup: '信用充值'
 };
 
 // 交易类型对应的颜色
 const transactionTypeColors = {
   referral_reward: 'success',
   order_reward: 'info',
-  used: 'primary'
+  used: 'primary',
+  payment: 'warning',
+  topup: 'success',
+  repayment: 'success',
+  credit_payment: 'warning',
+  credit_topup: 'success'
 };
 
 const CreditTransactions = () => {
@@ -49,9 +59,81 @@ const CreditTransactions = () => {
   
   const fetchCreditInfo = async () => {
     try {
-      const response = await getUserCreditInfo();
-      if (response && response.code === 1 && response.data) {
-        setCreditInfo(response.data);
+      // 检查是否为代理商用户，使用不同的API
+      const userType = localStorage.getItem('userType');
+      let response;
+      
+      if (userType === 'agent' || userType === 'agent_operator') {
+        // 代理商使用专用API - 从cookie获取token
+        const getCookieValue = (name) => {
+          const cookies = document.cookie.split('; ');
+          const cookie = cookies.find(row => row.startsWith(name + '='));
+          return cookie ? cookie.split('=')[1] : null;
+        };
+        
+        const { shouldUseCookieAuth, getToken } = require('../../utils/auth');
+        const useCookieAuth = shouldUseCookieAuth();
+        
+        console.log('正在请求代理商信用API:', '/api/agent/credit/info');
+        console.log('认证模式:', useCookieAuth ? 'Cookie' : 'Token');
+        
+        const headers = { 'Content-Type': 'application/json' };
+        
+        // 只在Token认证模式下添加Authorization头部
+        if (!useCookieAuth) {
+          const token = getToken();
+          if (token && token !== 'cookie-auth-enabled') {
+            headers.Authorization = `Bearer ${token}`;
+            console.log('Token认证模式: 已添加Authorization头部');
+          } else {
+            console.warn('Token认证模式: 没有可用的token');
+          }
+        } else {
+          console.log('Cookie认证模式: 依赖HttpOnly Cookie');
+        }
+        
+        response = await axios.get('/api/agent/credit/info', {
+          headers,
+          withCredentials: true  // 确保发送cookie
+        });
+        if (response.data && response.data.code === 1 && response.data.data) {
+          // 转换为前端需要的格式
+          const data = response.data.data;
+          setCreditInfo({
+            balance: data.availableCredit || 0,
+            totalEarned: data.totalCredit || 0,
+            totalUsed: data.usedCredit || 0
+          });
+          
+          // 如果有最近交易记录，直接使用
+          if (data.recentTransactions && data.recentTransactions.length > 0) {
+            console.log('使用API返回的最近交易记录:', data.recentTransactions);
+            const convertedRecords = data.recentTransactions.map(record => {
+              // 根据余额变化计算实际的变动方向
+              const balanceChange = (record.balanceAfter || 0) - (record.balanceBefore || 0);
+              return {
+                id: record.id,
+                createdAt: record.createdAt,
+                type: record.transactionType,
+                referenceId: record.bookingId,
+                amount: balanceChange, // 使用余额变化作为显示金额
+                description: record.description,
+                transactionNo: record.transactionNo,
+                originalAmount: record.amount // 保留原始金额
+              };
+            });
+            console.log('转换后的交易记录:', convertedRecords);
+            setTransactions(convertedRecords);
+            setLoading(false);
+            return; // 直接返回，不需要再次请求交易记录
+          }
+        }
+      } else {
+        // 普通用户使用原API
+        response = await getUserCreditInfo();
+        if (response && response.code === 1 && response.data) {
+          setCreditInfo(response.data);
+        }
       }
     } catch (error) {
       console.error('获取用户积分信息失败', error);
@@ -62,37 +144,103 @@ const CreditTransactions = () => {
   const fetchTransactions = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
-      if (!token) {
-        setError('未找到认证令牌，请重新登录');
+      // 检查用户是否已登录
+      const userType = localStorage.getItem('userType');
+      const isAuthenticated = localStorage.getItem('username'); // 检查基本登录状态
+      
+      if (!isAuthenticated) {
+        setError('用户未登录，请重新登录');
         return;
       }
       
-      // 构建请求参数
-      const params = {};
-      if (filter.type) {
-        params.type = filter.type;
-      }
-      if (filter.startDate) {
-        params.startDate = moment(filter.startDate).format('YYYY-MM-DD');
-      }
-      if (filter.endDate) {
-        params.endDate = moment(filter.endDate).format('YYYY-MM-DD');
-      }
-      if (filter.searchText) {
-        params.keyword = filter.searchText;
-      }
+      // 检查是否为代理商用户
+      let response;
       
-      // 调用API获取交易记录
-      const response = await axios.get('/api/user/credit/transactions', {
-        params,
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
-      if (response.data && response.data.code === 1) {
-        setTransactions(response.data.data || []);
+      if (userType === 'agent' || userType === 'agent_operator') {
+        // 代理商使用专用API
+        const params = {
+          page: 1,
+          pageSize: 100
+        };
+        if (filter.type) {
+          params.type = filter.type;
+        }
+        if (filter.startDate) {
+          params.startDate = moment(filter.startDate).format('YYYY-MM-DD');
+        }
+        if (filter.endDate) {
+          params.endDate = moment(filter.endDate).format('YYYY-MM-DD');
+        }
+        
+        response = await axios.get('/api/agent/credit/transactions', {
+          params,
+          headers: { 
+            'Content-Type': 'application/json'
+          },
+          withCredentials: true  // 确保发送cookie
+        });
+        
+        if (response.data && response.data.code === 1) {
+          // 转换代理商交易记录格式为前端格式
+          const records = response.data.data?.records || [];
+          const convertedRecords = records.map(record => {
+            // 根据余额变化计算实际的变动方向
+            const balanceChange = (record.balanceAfter || 0) - (record.balanceBefore || 0);
+            return {
+              id: record.id,
+              createdAt: record.createdAt,
+              type: record.transactionType || record.type,
+              referenceId: record.bookingId || record.referenceId,
+              amount: balanceChange, // 使用余额变化作为显示金额
+              description: record.description,
+              transactionNo: record.transactionNo,
+              originalAmount: record.amount // 保留原始金额
+            };
+          });
+          setTransactions(convertedRecords);
+        } else {
+          setError(response.data?.msg || '获取交易记录失败');
+        }
       } else {
-        setError(response.data?.msg || '获取交易记录失败');
+        // 普通用户使用原API
+        const params = {};
+        if (filter.type) {
+          params.type = filter.type;
+        }
+        if (filter.startDate) {
+          params.startDate = moment(filter.startDate).format('YYYY-MM-DD');
+        }
+        if (filter.endDate) {
+          params.endDate = moment(filter.endDate).format('YYYY-MM-DD');
+        }
+        if (filter.searchText) {
+          params.keyword = filter.searchText;
+        }
+        
+        const { shouldUseCookieAuth, getToken } = require('../../utils/auth');
+        const useCookieAuth = shouldUseCookieAuth();
+        
+        const headers = {};
+        
+        // 只在Token认证模式下添加Authorization头部
+        if (!useCookieAuth) {
+          const token = getToken();
+          if (token && token !== 'cookie-auth-enabled') {
+            headers.Authorization = `Bearer ${token}`;
+          }
+        }
+        
+        response = await axios.get('/api/user/credit/transactions', {
+          params,
+          headers,
+          withCredentials: true  // 确保发送cookie
+        });
+        
+        if (response.data && response.data.code === 1) {
+          setTransactions(response.data.data || []);
+        } else {
+          setError(response.data?.msg || '获取交易记录失败');
+        }
       }
     } catch (error) {
       console.error('获取交易记录异常', error);
@@ -123,25 +271,38 @@ const CreditTransactions = () => {
     });
   };
   
+  const userType = localStorage.getItem('userType');
+  const isAgent = userType === 'agent' || userType === 'agent_operator';
+  
   return (
     <Container className="py-5">
-      <h2 className="mb-4">积分交易记录</h2>
+      <h2 className="mb-4">
+        {isAgent ? '信用记录' : '积分交易记录'}
+      </h2>
       
-      {/* 积分概览卡片 */}
+             
+      
+      {/* 积分/信用概览卡片 */}
       <Card className="mb-4 shadow-sm">
         <Card.Body>
           <Row>
             <Col md={4} className="text-center border-end py-3">
-              <h6 className="text-muted mb-2">当前积分余额</h6>
-              <h3 className="text-success">{creditInfo.balance?.toFixed(2) || '0.00'}</h3>
+              <h6 className="text-muted mb-2">
+                {isAgent ? '可用信用额度' : '当前积分余额'}
+              </h6>
+              <h3 className="text-success">${creditInfo.balance?.toFixed(2) || '0.00'}</h3>
             </Col>
             <Col md={4} className="text-center border-end py-3">
-              <h6 className="text-muted mb-2">累计获得积分</h6>
-              <h3 className="text-primary">{creditInfo.totalEarned?.toFixed(2) || '0.00'}</h3>
+              <h6 className="text-muted mb-2">
+                {isAgent ? '总信用额度' : '累计获得积分'}
+              </h6>
+              <h3 className="text-primary">${creditInfo.totalEarned?.toFixed(2) || '0.00'}</h3>
             </Col>
             <Col md={4} className="text-center py-3">
-              <h6 className="text-muted mb-2">累计使用积分</h6>
-              <h3>{creditInfo.totalUsed?.toFixed(2) || '0.00'}</h3>
+              <h6 className="text-muted mb-2">
+                {isAgent ? '已使用信用' : '累计使用积分'}
+              </h6>
+              <h3>${creditInfo.totalUsed?.toFixed(2) || '0.00'}</h3>
             </Col>
           </Row>
         </Card.Body>
@@ -160,9 +321,19 @@ const CreditTransactions = () => {
                     onChange={(e) => handleFilterChange('type', e.target.value)}
                   >
                     <option value="">全部类型</option>
-                    <option value="referral_reward">推荐奖励</option>
-                    <option value="order_reward">订单奖励</option>
-                    <option value="used">积分使用</option>
+                    {localStorage.getItem('userType') === 'agent' || localStorage.getItem('userType') === 'agent_operator' ? (
+                      <>
+                        <option value="payment">订单支付</option>
+                        <option value="topup">充值还款</option>
+                        <option value="repayment">还款</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="referral_reward">推荐奖励</option>
+                        <option value="order_reward">订单奖励</option>
+                        <option value="used">积分使用</option>
+                      </>
+                    )}
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -254,8 +425,8 @@ const CreditTransactions = () => {
                       <th>日期</th>
                       <th>交易类型</th>
                       <th>相关订单</th>
-                      <th>推荐级别</th>
-                      <th>积分变动</th>
+                      <th>{isAgent ? '业务类型' : '推荐级别'}</th>
+                      <th>{isAgent ? '信用额度变动' : '积分变动'}</th>
                       <th>说明</th>
                     </tr>
                   </thead>
@@ -265,12 +436,12 @@ const CreditTransactions = () => {
                         <td>{moment(transaction.createdAt).format('YYYY-MM-DD HH:mm')}</td>
                         <td>
                           <Badge bg={transactionTypeColors[transaction.type] || 'secondary'}>
-                            {transactionTypes[transaction.type] || transaction.type}
+                            {transactionTypes[transaction.type] || transaction.type || (isAgent ? '信用支付' : '未知类型')}
                           </Badge>
                         </td>
                         <td>
                           {transaction.referenceId ? (
-                            <Link to={`/orders/${transaction.referenceId}`}>
+                            <Link to={`/orders/${transaction.referenceId}`} className="text-primary">
                               #{transaction.referenceId}
                             </Link>
                           ) : (
@@ -278,15 +449,19 @@ const CreditTransactions = () => {
                           )}
                         </td>
                         <td>
-                          {transaction.level ? (
-                            transaction.level === 1 ? '直接推荐' : '间接推荐'
-                          ) : '-'}
+                          {isAgent ? (
+                            transaction.businessType || '订单结算'
+                          ) : (
+                            transaction.level ? (
+                              transaction.level === 1 ? '直接推荐' : '间接推荐'
+                            ) : '-'
+                          )}
                         </td>
                         <td className={transaction.amount > 0 ? 'text-success' : 'text-danger'}>
                           {transaction.amount > 0 ? (
-                            <><FaArrowUp className="me-1" /> +{transaction.amount.toFixed(2)}</>
+                            <><FaArrowUp className="me-1" /> +${Math.abs(transaction.amount).toFixed(2)}</>
                           ) : (
-                            <><FaArrowDown className="me-1" /> {transaction.amount.toFixed(2)}</>
+                            <><FaArrowDown className="me-1" /> -${Math.abs(transaction.amount).toFixed(2)}</>
                           )}
                         </td>
                         <td>{transaction.description || '-'}</td>
@@ -299,11 +474,13 @@ const CreditTransactions = () => {
                   <FaCreditCard size={48} className="text-muted mb-3" />
                   <h5>暂无交易记录</h5>
                   <p className="text-muted">
-                    邀请好友注册并完成订单可获得积分奖励！
+                    {isAgent ? '还没有信用额度交易记录。使用信用支付订单后将在这里显示记录。' : '邀请好友注册并完成订单可获得积分奖励！'}
                   </p>
-                  <Link to="/user/profile">
-                    <Button variant="primary">去邀请好友</Button>
-                  </Link>
+                  {!isAgent && (
+                    <Link to="/user/profile">
+                      <Button variant="primary">去邀请好友</Button>
+                    </Link>
+                  )}
                 </div>
               )}
             </>

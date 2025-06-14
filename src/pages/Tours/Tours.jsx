@@ -159,8 +159,20 @@ const Tours = () => {
   
   // 认证检查
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsAuthenticated(!!token);
+    const { shouldUseCookieAuth, isAuthenticated: checkAuth, getToken } = require('../../utils/auth');
+    const useCookieAuth = shouldUseCookieAuth();
+    
+    if (useCookieAuth) {
+      // Cookie认证模式：使用auth工具函数检查
+      setIsAuthenticated(checkAuth());
+      console.log('Tours - Cookie认证模式，认证状态:', checkAuth());
+    } else {
+      // Token认证模式：检查localStorage中的token
+      const token = getToken();
+      const isAuth = !!(token && token !== 'cookie-auth-enabled');
+      setIsAuthenticated(isAuth);
+      console.log('Tours - Token认证模式，认证状态:', isAuth);
+    }
   }, []);
 
   // 获取产品描述，提供默认值
