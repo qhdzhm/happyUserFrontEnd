@@ -28,18 +28,7 @@ const Breadcrumbs = (props) => {
 
   return (
     <div className="breadcrumbs-section">
-      {/* 主标题区域 */}
-      <div className="page-header" >
-        <div className="overlay"></div>
-        <Container>
-          <div className="page-header-content">
-            <h1>{props.title}</h1>
-            {props.subtitle && <p className="page-subtitle">{props.subtitle}</p>}
-          </div>
-        </Container>
-      </div>
-      
-      {/* 面包屑导航区域 */}
+      {/* 面包屑导航区域 - 移除了黑色的page-header部分 */}
       <div className="breadcrumbs-container">
         <Container>
           <div className="breadcrumbs-wrapper">

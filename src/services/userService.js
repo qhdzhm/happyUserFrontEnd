@@ -1,5 +1,5 @@
 import request from '../utils/request';
-import { addAuthHeaders, setToken } from '../utils/auth';
+import { addAuthHeaders } from '../utils/auth';
 
 /**
  * 用户服务 - 处理与用户相关的API请求
@@ -12,16 +12,17 @@ import { addAuthHeaders, setToken } from '../utils/auth';
  */
 export const login = (data) => {
   return request.post('/api/auth/login', data).then(response => {
-    // 如果登录成功，保存token
+    // 如果登录成功，保存用户信息（不保存token，使用HttpOnly Cookie）
     if (response && response.code === 1 && response.data) {
-      const { token, userId, userType } = response.data;
+      const { userId, userType, username, name } = response.data;
       
-      // 保存token
-      setToken(token);
-      
-      // 保存其他用户信息
+      // 只保存非敏感的用户信息到localStorage
       if (userId) localStorage.setItem('userId', userId);
       if (userType) localStorage.setItem('userType', userType);
+      if (username) localStorage.setItem('username', username);
+      if (name) localStorage.setItem('name', name);
+      
+      console.log('✅ 登录成功，使用Cookie认证模式');
     }
     
     return response;
@@ -35,17 +36,17 @@ export const login = (data) => {
  */
 export const register = (data) => {
   return request.post('/api/user/register', data).then(response => {
-    // 如果注册成功，保存token
+    // 如果注册成功，保存用户信息（不保存token，使用HttpOnly Cookie）
     if (response && response.code === 1 && response.data) {
-      const { token, id, username, userType } = response.data;
+      const { id, username, userType, name } = response.data;
       
-      // 保存token
-      setToken(token);
-      
-      // 保存其他用户信息
+      // 只保存非敏感的用户信息到localStorage
       if (id) localStorage.setItem('userId', id);
       if (username) localStorage.setItem('username', username);
       if (userType) localStorage.setItem('userType', userType);
+      if (name) localStorage.setItem('name', name);
+      
+      console.log('✅ 注册成功，使用Cookie认证模式');
     }
     
     return response;

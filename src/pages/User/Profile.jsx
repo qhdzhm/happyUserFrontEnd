@@ -8,7 +8,14 @@ const Profile = () => {
   const navigate = useNavigate();
   const { user } = useSelector(state => state.auth);
   const userType = localStorage.getItem('userType');
-  const isAgent = user?.role === 'agent' || userType === 'agent';
+  // 统一的中介身份验证逻辑（包括agent主账号和操作员）
+  const localUserType = localStorage.getItem('userType');
+  const isAgent = user?.role === 'agent' || 
+                  user?.role === 'agent_operator' ||
+                  userType === 'agent' ||
+                  userType === 'agent_operator' ||
+                  localUserType === 'agent' || 
+                  localUserType === 'agent_operator';
   const [isRedirecting, setIsRedirecting] = useState(false);
 
   // Only run this effect once on mount

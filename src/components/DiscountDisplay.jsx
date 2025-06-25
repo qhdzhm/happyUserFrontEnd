@@ -17,7 +17,12 @@ const DiscountDisplay = ({ originalPrice }) => {
   const { isAuthenticated, user, userType } = useSelector(state => state.auth);
   
   // 判断是否为代理商
-  const isAgent = userType === 'agent' || localStorage.getItem('userType') === 'agent';
+  // 统一的中介身份验证逻辑（包括agent主账号和操作员）
+  const localUserType = localStorage.getItem('userType');
+  const isAgent = userType === 'agent' || 
+                  userType === 'agent_operator' ||
+                  localUserType === 'agent' || 
+                  localUserType === 'agent_operator';
   
   // 计算折扣
   useEffect(() => {
@@ -84,7 +89,11 @@ const DiscountDisplay = ({ originalPrice }) => {
   
   // 计算折扣百分比
   const calculateDiscountPercentage = () => {
-    if (!discountedPrice || !originalPrice || discountedPrice >= originalPrice) {
+    if (!discountedPrice || !originalPrice || originalPrice <= 0) {
+      return 0;
+    }
+    // 修复：只有当折扣价真正小于原价时才显示折扣
+    if (discountedPrice >= originalPrice) {
       return 0;
     }
     return Math.round((1 - discountedPrice / originalPrice) * 100);
@@ -101,17 +110,23 @@ const DiscountDisplay = ({ originalPrice }) => {
     );
   }
   
-  // 如果有错误且不是因为使用原价导致的
-  if (error && discountedPrice !== originalPrice) {
+  // 如果有错误
+  if (error) {
     return (
       <div className="discount-error">
-        <small className="text-danger">{error}</small>
+        <small className="text-warning">折扣计算失败，显示原价</small>
       </div>
     );
   }
   
-  // 如果没有折扣或折扣价与原价相同
-  if (!discountedPrice || discountPercentage === 0 || discountedPrice >= originalPrice) {
+  // 修复：更严格的显示条件检查
+  const shouldShowDiscount = discountedPrice && 
+                             originalPrice && 
+                             discountedPrice < originalPrice && 
+                             discountPercentage > 0;
+  
+  // 如果没有有效的折扣，不显示
+  if (!shouldShowDiscount) {
     return null;
   }
   
@@ -121,9 +136,12 @@ const DiscountDisplay = ({ originalPrice }) => {
       <div className="discount-price">
         <span className="price-label">代理商价格: </span>
         <span className="price-value">${discountedPrice.toFixed(2)}</span>
+        <small className="text-muted ms-2">
+          (原价: ${originalPrice.toFixed(2)})
+        </small>
       </div>
-      <Badge bg="danger" className="discount-badge">
-        节省 {discountPercentage}%
+      <Badge bg="success" className="discount-badge">
+        节省 {discountPercentage}% (${(originalPrice - discountedPrice).toFixed(2)})
       </Badge>
     </div>
   );

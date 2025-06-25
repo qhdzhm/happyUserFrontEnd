@@ -311,11 +311,16 @@ instance.interceptors.request.use(
     }
     
     // 🔧 确保method是大写的，这很重要 - 添加额外的安全检查
-    if (config.method && typeof config.method === 'string') {
-      config.method = config.method.toUpperCase();
-    } else {
+    try {
+      if (config.method && typeof config.method === 'string' && config.method.trim() !== '') {
+        config.method = config.method.trim().toUpperCase();
+      } else {
+        config.method = 'GET';
+        console.warn(`🚨 紧急修复: method不是字符串或为空，强制设置为GET: ${config.url}, method类型: ${typeof config.method}, 值: ${config.method}`);
+      }
+    } catch (e) {
+      console.error('🚨 method处理失败:', e);
       config.method = 'GET';
-      console.warn(`🚨 紧急修复: method不是字符串，强制设置为GET: ${config.url}, method类型: ${typeof config.method}, 值: ${config.method}`);
     }
     
     return config;
@@ -423,17 +428,34 @@ instance.interceptors.response.use(
       console.log('执行自动登出...');
       store.dispatch({ type: 'auth/logout' });
       
-      // 检查用户类型，重定向到对应的登录页面
+      // 检查用户类型，只在受保护页面才重定向到对应的登录页面
       const currentPath = window.location.pathname;
-      if (currentPath !== '/login' && currentPath !== '/register' && currentPath !== '/agent-login') {
+      const isProtectedPage = currentPath.startsWith('/booking') || 
+                             currentPath.startsWith('/checkout') || 
+                             currentPath.startsWith('/profile') || 
+                             currentPath.startsWith('/orders') || 
+                             currentPath.startsWith('/payment') || 
+                             currentPath.startsWith('/agent-center') || 
+                             currentPath.startsWith('/credit-transactions');
+      
+      if (isProtectedPage && currentPath !== '/login' && currentPath !== '/register' && currentPath !== '/agent-login') {
         const userType = localStorage.getItem('userType');
         const isAgentUser = userType === 'agent' || userType === 'agent_operator';
         
-        if (isAgentUser) {
+        // 额外检查当前路径是否在agent页面，如果是agent页面则重定向到agent登录
+        const isOnAgentPage = currentPath.startsWith('/agent') || 
+                              currentPath.includes('agent') ||
+                              window.location.href.includes('agent');
+        
+        if (isAgentUser || isOnAgentPage) {
+          console.log('🔄 Request拦截器：Agent用户token失效，重定向到agent登录页面');
           window.location.href = `/agent-login?redirect=${encodeURIComponent(currentPath)}`;
         } else {
-        window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+          console.log('🔄 Request拦截器：普通用户token失效，重定向到普通登录页面');
+          window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
         }
+      } else {
+        console.log('ℹ️ Request拦截器：Token失效但当前页面不需要强制登录');
       }
     
       return Promise.reject(error);

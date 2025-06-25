@@ -43,6 +43,9 @@ const OrderDetail = () => {
   const [editFormData, setEditFormData] = useState(null);
   const [editLoading, setEditLoading] = useState(false);
   
+  // 添加乘客编辑相关状态
+  const [editPassengers, setEditPassengers] = useState([]);
+  
   // 检查是否为价格敏感字段
   const isPriceSensitiveField = (fieldName) => {
     const priceSensitiveFields = [
@@ -52,9 +55,8 @@ const OrderDetail = () => {
       'hotelLevel',           // 酒店等级
       'roomType',             // 房间类型
       'tourStartDate',        // 行程开始日期
-      'tourEndDate',          // 行程结束日期
-      'pickupLocation',       // 接机地点
-      'dropoffLocation'       // 送机地点
+      'tourEndDate'           // 行程结束日期
+      // 注意：接送地点和日期、航班信息现在允许修改
     ];
     return priceSensitiveFields.includes(fieldName);
   };
@@ -109,26 +111,66 @@ const OrderDetail = () => {
   // 获取订单详情后初始化编辑表单数据
   useEffect(() => {
     if (orderData) {
+      // 只初始化允许修改的字段，避免在表单中存储价格敏感字段
       setEditFormData({
         bookingId: orderData.bookingId,
+        // 航班信息 - 允许修改
         flightNumber: orderData.flightNumber || '',
         returnFlightNumber: orderData.returnFlightNumber || '',
-        tourStartDate: orderData.tourStartDate ? formatDateForInput(orderData.tourStartDate) : '',
-        tourEndDate: orderData.tourEndDate ? formatDateForInput(orderData.tourEndDate) : '',
-        pickupDate: orderData.pickupDate ? formatDateForInput(orderData.pickupDate) : '',
-        dropoffDate: orderData.dropoffDate ? formatDateForInput(orderData.dropoffDate) : '',
+        arrivalLandingTime: orderData.arrivalLandingTime || '',
+        departureDepartureTime: orderData.departureDepartureTime || '',
+        // 接送信息 - 允许修改
+        pickupDate: formatDateForInput(orderData.pickupDate),
+        dropoffDate: formatDateForInput(orderData.dropoffDate),
         pickupLocation: orderData.pickupLocation || '',
         dropoffLocation: orderData.dropoffLocation || '',
-        adultCount: orderData.adultCount || 0,
-        childCount: orderData.childCount || 0,
-        luggageCount: orderData.luggageCount || 0,
+        // 联系人信息 - 允许修改
         contactPerson: orderData.contactPerson || '',
         contactPhone: orderData.contactPhone || '',
-        hotelLevel: orderData.hotelLevel || '',
-        roomType: orderData.roomType || '',
-        hotelRoomCount: orderData.hotelRoomCount || 1,
+        // 其他非价格相关信息 - 允许修改
+        luggageCount: orderData.luggageCount || 0,
+        roomDetails: orderData.roomDetails || '',
         specialRequests: orderData.specialRequests || ''
+        // 注意：移除了价格敏感字段，包括：
+        // tourStartDate, tourEndDate, adultCount, childCount,
+        // hotelLevel, roomType, hotelRoomCount
       });
+      
+      // 初始化乘客信息
+      if (orderData.passengers && orderData.passengers.length > 0) {
+        setEditPassengers(orderData.passengers.map(passenger => ({
+          passengerId: passenger.passengerId || null,
+          fullName: passenger.fullName || '',
+          phone: passenger.phone || '',
+          wechatId: passenger.wechatId || '',
+          isChild: passenger.isChild || false,
+          childAge: passenger.childAge || null,
+          isPrimary: passenger.isPrimary || false,
+          gender: passenger.gender || '',
+          dateOfBirth: passenger.dateOfBirth || null,
+          passportNumber: passenger.passportNumber || '',
+          nationality: passenger.nationality || '',
+          email: passenger.email || ''
+        })));
+      } else {
+        // 如果没有乘客信息，创建一个默认的主要联系人乘客
+        // 注意：不再依赖adultCount和childCount，因为这些是价格敏感字段
+        const newPassengers = [{
+          passengerId: null,
+          fullName: orderData.contactPerson || '',
+          phone: orderData.contactPhone || '',
+          wechatId: '',
+          isChild: false,
+          childAge: null,
+          isPrimary: true, // 默认为主要联系人
+          gender: '',
+          dateOfBirth: null,
+          passportNumber: '',
+          nationality: '',
+          email: ''
+        }];
+        setEditPassengers(newPassengers);
+      }
     }
   }, [orderData]);
 
@@ -141,6 +183,15 @@ const OrderDetail = () => {
     }));
   };
 
+  // 处理乘客信息变化
+  const handlePassengerChange = (index, field, value) => {
+    setEditPassengers(prev => 
+      prev.map((passenger, i) => 
+        i === index ? { ...passenger, [field]: value } : passenger
+      )
+    );
+  };
+
   // 开始编辑
   const handleStartEdit = () => {
     setShowEditModal(true);
@@ -148,28 +199,43 @@ const OrderDetail = () => {
 
   // 取消编辑
   const handleCancelEdit = () => {
-    // 重置表单数据
+    // 重置表单数据 - 只重置允许修改的字段
     if (orderData) {
       setEditFormData({
         bookingId: orderData.bookingId,
+        // 航班信息 - 允许修改
         flightNumber: orderData.flightNumber || '',
         returnFlightNumber: orderData.returnFlightNumber || '',
-        tourStartDate: orderData.tourStartDate ? formatDateForInput(orderData.tourStartDate) : '',
-        tourEndDate: orderData.tourEndDate ? formatDateForInput(orderData.tourEndDate) : '',
-        pickupDate: orderData.pickupDate ? formatDateForInput(orderData.pickupDate) : '',
-        dropoffDate: orderData.dropoffDate ? formatDateForInput(orderData.dropoffDate) : '',
-        pickupLocation: orderData.pickupLocation || '',
-        dropoffLocation: orderData.dropoffLocation || '',
-        adultCount: orderData.adultCount || 0,
-        childCount: orderData.childCount || 0,
-        luggageCount: orderData.luggageCount || 0,
+        arrivalDepartureTime: orderData.arrivalDepartureTime || '',
+        arrivalLandingTime: orderData.arrivalLandingTime || '',
+        departureDepartureTime: orderData.departureDepartureTime || '',
+        departureLandingTime: orderData.departureLandingTime || '',
+        // 联系人信息 - 允许修改
         contactPerson: orderData.contactPerson || '',
         contactPhone: orderData.contactPhone || '',
-        hotelLevel: orderData.hotelLevel || '',
-        roomType: orderData.roomType || '',
-        hotelRoomCount: orderData.hotelRoomCount || 1,
+        // 其他非价格相关信息 - 允许修改
+        luggageCount: orderData.luggageCount || 0,
+        roomDetails: orderData.roomDetails || '',
         specialRequests: orderData.specialRequests || ''
       });
+      
+      // 重置乘客信息
+      if (orderData.passengers && orderData.passengers.length > 0) {
+        setEditPassengers(orderData.passengers.map(passenger => ({
+          passengerId: passenger.passengerId || null,
+          fullName: passenger.fullName || '',
+          phone: passenger.phone || '',
+          wechatId: passenger.wechatId || '',
+          isChild: passenger.isChild || false,
+          childAge: passenger.childAge || null,
+          isPrimary: passenger.isPrimary || false,
+          gender: passenger.gender || '',
+          dateOfBirth: passenger.dateOfBirth || null,
+          passportNumber: passenger.passportNumber || '',
+          nationality: passenger.nationality || '',
+          email: passenger.email || ''
+        })));
+      }
     }
     setShowEditModal(false);
   };
@@ -187,11 +253,94 @@ const OrderDetail = () => {
         return;
       }
       
+      // 验证乘客信息
+      const validPassengers = editPassengers.filter(passenger => 
+        passenger.fullName && passenger.fullName.trim() !== ''
+      );
+      
+      if (validPassengers.length === 0) {
+        toast.error('请至少填写一个乘客的姓名');
+        return;
+      }
+      
+      // 检查主要联系人
+      const primaryPassenger = validPassengers.find(p => p.isPrimary);
+      if (!primaryPassenger || !primaryPassenger.phone) {
+        toast.error('主要联系人必须填写电话号码');
+        return;
+      }
+      
+      // 准备更新数据 - 只发送允许修改的字段，过滤掉价格敏感字段和空值
+      const rawFields = {
+        bookingId: editFormData.bookingId,
+        // 航班信息 - 允许修改
+        flightNumber: editFormData.flightNumber,
+        returnFlightNumber: editFormData.returnFlightNumber,
+        arrivalLandingTime: editFormData.arrivalLandingTime,
+        departureDepartureTime: editFormData.departureDepartureTime,
+        // 接送信息 - 允许修改
+        pickupDate: editFormData.pickupDate,
+        dropoffDate: editFormData.dropoffDate,
+        pickupLocation: editFormData.pickupLocation,
+        dropoffLocation: editFormData.dropoffLocation,
+        // 联系人信息 - 允许修改
+        contactPerson: editFormData.contactPerson,
+        contactPhone: editFormData.contactPhone,
+        // 其他非价格相关信息 - 允许修改
+        luggageCount: editFormData.luggageCount,
+        roomDetails: editFormData.roomDetails,
+        specialRequests: editFormData.specialRequests
+      };
+      
+      // 过滤掉空字符串和null值，只发送有实际值的字段
+      const allowedFields = Object.fromEntries(
+        Object.entries(rawFields).filter(([key, value]) => {
+          // bookingId必须保留
+          if (key === 'bookingId') return true;
+          // 过滤掉空字符串、null、undefined
+          return value !== '' && value !== null && value !== undefined;
+        })
+      );
+      
+      const updateData = {
+        ...allowedFields,
+        passengers: validPassengers.map(passenger => ({
+          passengerId: passenger.passengerId,
+          fullName: passenger.fullName,
+          phone: passenger.phone,
+          wechatId: passenger.wechatId,
+          isChild: passenger.isChild,
+          childAge: passenger.isChild ? passenger.childAge : null,
+          isPrimary: passenger.isPrimary,
+          gender: passenger.gender || null,
+          dateOfBirth: passenger.dateOfBirth || null,
+          passportNumber: passenger.passportNumber || null,
+          nationality: passenger.nationality || null,
+          email: passenger.email || null
+        }))
+      };
+      
+      console.log('准备发送的更新数据（已过滤价格敏感字段）:', updateData);
+      
+      // 检查是否修改了联系人信息
+      const contactPersonChanged = editFormData.contactPerson !== orderData.contactPerson;
+      const contactPhoneChanged = editFormData.contactPhone !== orderData.contactPhone;
+      const hasContactInfoChange = contactPersonChanged || contactPhoneChanged;
+      const hasPassengerInfoChange = validPassengers.length > 0;
+      
       // 发送更新请求
-      const response = await updateOrderByAgent(editFormData);
+      const response = await updateOrderByAgent(updateData);
       
       if (response && response.code === 1) {
-        toast.success('订单修改成功');
+        // 根据修改的内容显示不同的成功消息
+        if (hasContactInfoChange || hasPassengerInfoChange) {
+          toast.success('订单修改成功！系统已自动同步更新乘客信息和排团安排。', {
+            duration: 4000,
+            position: 'top-center'
+          });
+        } else {
+          toast.success('订单修改成功');
+        }
         
         // 重新获取订单数据
         const updatedOrderDetail = await getOrderDetail(editFormData.bookingId);
@@ -469,32 +618,18 @@ const OrderDetail = () => {
   const handleReorder = () => {
     if (!orderData) return;
     
-    // 构建跳转URL，根据旅游类型跳转到相应的预定页面
-    let bookingUrl = '';
-    
-    if (orderData.tourType === 'day_tour') {
-      // 一日游
-      bookingUrl = `/booking/day-tour/${orderData.tourId || orderData.productId}`;
-    } else if (orderData.tourType === 'group_tour') {
-      // 跟团游
-      bookingUrl = `/booking/group-tour/${orderData.tourId || orderData.productId}`;
-    } else {
-      // 默认跳转到旅游产品列表
-      bookingUrl = '/tours';
-    }
-    
-    console.log('再来一单 - 跳转到:', bookingUrl);
+    console.log('再来一单 - 跳转到立即预订页面');
     console.log('订单数据:', { 
       tourType: orderData.tourType, 
       tourId: orderData.tourId, 
       productId: orderData.productId 
     });
     
-    // 跳转到预定页面
-    navigate(bookingUrl);
+    // 直接跳转到立即预订页面
+    navigate('/booking-form');
     
     // 显示提示信息
-    toast.success('正在为您重新预定相同产品...');
+    toast.success('正在为您准备新的预订...');
   };
   
   // 下载文档
@@ -827,12 +962,18 @@ const OrderDetail = () => {
                     <div className="d-flex flex-wrap">
                       {orderData.flightNumber && (
                         <div className="me-4 mb-2">
-                          <span className="text-muted">去程航班:</span> {orderData.flightNumber}
+                          <span className="text-muted">到达航班:</span> {orderData.flightNumber}
+                          {orderData.arrivalLandingTime && (
+                            <div className="text-muted small">到达时间: {orderData.arrivalLandingTime}</div>
+                          )}
                         </div>
                       )}
                       {orderData.returnFlightNumber && (
                         <div className="me-4 mb-2">
-                          <span className="text-muted">返程航班:</span> {orderData.returnFlightNumber}
+                          <span className="text-muted">离开航班:</span> {orderData.returnFlightNumber}
+                          {orderData.departureDepartureTime && (
+                            <div className="text-muted small">离开时间: {orderData.departureDepartureTime}</div>
+                          )}
                         </div>
                       )}
                       {orderData.luggageCount > 0 && (
@@ -1515,41 +1656,83 @@ const OrderDetail = () => {
                   </Col>
                 </Row>
                 
+                <Alert variant="warning" className="mb-3">
+                  <FaInfoCircle className="me-2" />
+                  <strong>注意：</strong>行程日期、人数、酒店信息等影响价格的字段不能修改。如需更改这些信息，请联系客服。
+                </Alert>
+
+                {/* 航班信息 */}
+                <h6 className="mb-3 text-primary">航班信息</h6>
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>
-                        {renderFieldLabel('行程开始日期', 'tourStartDate')}
-                      </Form.Label>
+                      <Form.Label>到达航班号</Form.Label>
                       <Form.Control
-                        type="date"
-                        name="tourStartDate"
-                        value={editFormData.tourStartDate}
+                        type="text"
+                        name="flightNumber"
+                        value={editFormData.flightNumber}
                         onChange={handleEditFormChange}
-                        disabled={isFieldDisabled('tourStartDate')}
+                        placeholder="如：CA123"
+                        disabled={isFieldDisabled('flightNumber')}
                       />
                     </Form.Group>
                   </Col>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>
-                        {renderFieldLabel('行程结束日期', 'tourEndDate')}
-                      </Form.Label>
+                      <Form.Label>离开航班号</Form.Label>
                       <Form.Control
-                        type="date"
-                        name="tourEndDate"
-                        value={editFormData.tourEndDate}
+                        type="text"
+                        name="returnFlightNumber"
+                        value={editFormData.returnFlightNumber}
                         onChange={handleEditFormChange}
-                        disabled={isFieldDisabled('tourEndDate')}
+                        placeholder="如：CA456"
+                        disabled={isFieldDisabled('returnFlightNumber')}
                       />
                     </Form.Group>
                   </Col>
                 </Row>
-                
+
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>接客日期</Form.Label>
+                      <Form.Label>到达时间</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="arrivalLandingTime"
+                        value={editFormData.arrivalLandingTime}
+                        onChange={handleEditFormChange}
+                        placeholder="如：1430（14:30）"
+                        disabled={isFieldDisabled('arrivalLandingTime')}
+                      />
+                      <Form.Text className="text-muted">
+                        请输入4位数字，如：1430表示14:30
+                      </Form.Text>
+                    </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>离开时间</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="departureDepartureTime"
+                        value={editFormData.departureDepartureTime}
+                        onChange={handleEditFormChange}
+                        placeholder="如：1645（16:45）"
+                        disabled={isFieldDisabled('departureDepartureTime')}
+                      />
+                      <Form.Text className="text-muted">
+                        请输入4位数字，如：1645表示16:45
+                      </Form.Text>
+                    </Form.Group>
+                  </Col>
+                </Row>
+
+                {/* 接送信息 */}
+                <h6 className="mb-3 text-primary mt-4">接送信息</h6>
+                <Row>
+                  <Col md={6}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>接机日期</Form.Label>
                       <Form.Control
                         type="date"
                         name="pickupDate"
@@ -1561,7 +1744,7 @@ const OrderDetail = () => {
                   </Col>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>送客日期</Form.Label>
+                      <Form.Label>送机日期</Form.Label>
                       <Form.Control
                         type="date"
                         name="dropoffDate"
@@ -1572,83 +1755,38 @@ const OrderDetail = () => {
                     </Form.Group>
                   </Col>
                 </Row>
-                
+
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>
-                        {renderFieldLabel('接客地点', 'pickupLocation')}
-                      </Form.Label>
+                      <Form.Label>接机地点</Form.Label>
                       <Form.Control
                         type="text"
                         name="pickupLocation"
                         value={editFormData.pickupLocation}
                         onChange={handleEditFormChange}
+                        placeholder="请输入接机地点"
                         disabled={isFieldDisabled('pickupLocation')}
                       />
                     </Form.Group>
                   </Col>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>
-                        {renderFieldLabel('送客地点', 'dropoffLocation')}
-                      </Form.Label>
+                      <Form.Label>送机地点</Form.Label>
                       <Form.Control
                         type="text"
                         name="dropoffLocation"
                         value={editFormData.dropoffLocation}
                         onChange={handleEditFormChange}
+                        placeholder="请输入送机地点"
                         disabled={isFieldDisabled('dropoffLocation')}
                       />
                     </Form.Group>
                   </Col>
                 </Row>
-                
-                <Row>
-                  <Col md={4}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>
-                        {renderFieldLabel('成人数量', 'adultCount')}
-                      </Form.Label>
-                      <Form.Control
-                        type="number"
-                        name="adultCount"
-                        value={editFormData.adultCount}
-                        onChange={handleEditFormChange}
-                        min="1"
-                        disabled={isFieldDisabled('adultCount')}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={4}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>
-                        {renderFieldLabel('儿童数量', 'childCount')}
-                      </Form.Label>
-                      <Form.Control
-                        type="number"
-                        name="childCount"
-                        value={editFormData.childCount}
-                        onChange={handleEditFormChange}
-                        min="0"
-                        disabled={isFieldDisabled('childCount')}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={4}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>行李数量</Form.Label>
-                      <Form.Control
-                        type="number"
-                        name="luggageCount"
-                        value={editFormData.luggageCount}
-                        onChange={handleEditFormChange}
-                        min="0"
-                        disabled={isFieldDisabled('luggageCount')}
-                      />
-                    </Form.Group>
-                  </Col>
-                </Row>
+
+                {/* 联系人信息 */}
+                <h6 className="mb-3 text-primary mt-4">联系人信息</h6>
                 
                 <Row>
                   <Col md={6}>
@@ -1676,57 +1814,20 @@ const OrderDetail = () => {
                     </Form.Group>
                   </Col>
                 </Row>
-                
+
+                {/* 其他信息 */}
+                <h6 className="mb-3 text-primary mt-4">其他信息</h6>
                 <Row>
-                  <Col md={4}>
+                  <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>
-                        {renderFieldLabel('酒店等级', 'hotelLevel')}
-                      </Form.Label>
-                      <Form.Select
-                        name="hotelLevel"
-                        value={editFormData.hotelLevel}
-                        onChange={handleEditFormChange}
-                        disabled={isFieldDisabled('hotelLevel')}
-                      >
-                        <option value="">不指定</option>
-                        <option value="3星">3星级</option>
-                        <option value="4星">4星级</option>
-                        <option value="5星">5星级</option>
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
-                  <Col md={4}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>
-                        {renderFieldLabel('房间类型', 'roomType')}
-                      </Form.Label>
-                      <Form.Select
-                        name="roomType"
-                        value={editFormData.roomType}
-                        onChange={handleEditFormChange}
-                        disabled={isFieldDisabled('roomType')}
-                      >
-                        <option value="">不指定</option>
-                        <option value="单人房">单人房</option>
-                        <option value="双床房">双床房</option>
-                        <option value="大床房">大床房</option>
-                        <option value="家庭房">家庭房</option>
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
-                  <Col md={4}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>
-                        {renderFieldLabel('房间数量', 'hotelRoomCount')}
-                      </Form.Label>
+                      <Form.Label>行李数量</Form.Label>
                       <Form.Control
                         type="number"
-                        name="hotelRoomCount"
-                        value={editFormData.hotelRoomCount}
+                        name="luggageCount"
+                        value={editFormData.luggageCount || 0}
                         onChange={handleEditFormChange}
-                        min="1"
-                        disabled={isFieldDisabled('hotelRoomCount')}
+                        min="0"
+                        disabled={isFieldDisabled('luggageCount')}
                       />
                     </Form.Group>
                   </Col>
@@ -1743,6 +1844,156 @@ const OrderDetail = () => {
                     disabled={isFieldDisabled('specialRequests')}
                   />
                 </Form.Group>
+                
+                {/* 乘客信息编辑 */}
+                <div className="mt-4">
+                  <h5 className="mb-3">
+                    <FaUsers className="me-2" />
+                    乘客信息 ({editPassengers.length}人)
+                  </h5>
+                  <Alert variant="info" className="mb-3">
+                    <small>
+                      💡 请填写所有乘客的完整信息。主要联系人的电话号码为必填项。
+                    </small>
+                  </Alert>
+                  
+                  {editPassengers.map((passenger, index) => (
+                    <Card key={index} className="mb-3 passenger-edit-card">
+                      <Card.Header className="bg-light py-2">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <span className="fw-medium">
+                            {passenger.isChild ? '儿童' : '成人'} {index + 1}
+                            {passenger.isPrimary && (
+                              <Badge bg="primary" className="ms-2 small">主要联系人</Badge>
+                            )}
+                          </span>
+                          {passenger.isChild && (
+                            <Badge bg="info" className="small">
+                              {passenger.childAge ? `${passenger.childAge}岁` : '请填写年龄'}
+                            </Badge>
+                          )}
+                        </div>
+                      </Card.Header>
+                      <Card.Body className="py-3">
+                        <Row>
+                          <Col md={6}>
+                            <Form.Group className="mb-3">
+                              <Form.Label>
+                                姓名 <span className="text-danger">*</span>
+                              </Form.Label>
+                              <Form.Control
+                                type="text"
+                                value={passenger.fullName}
+                                onChange={(e) => handlePassengerChange(index, 'fullName', e.target.value)}
+                                placeholder="请输入乘客姓名"
+                              />
+                            </Form.Group>
+                          </Col>
+                          <Col md={6}>
+                            <Form.Group className="mb-3">
+                              <Form.Label>
+                                电话号码 {passenger.isPrimary && <span className="text-danger">*</span>}
+                              </Form.Label>
+                              <Form.Control
+                                type="text"
+                                value={passenger.phone}
+                                onChange={(e) => handlePassengerChange(index, 'phone', e.target.value)}
+                                placeholder={passenger.isPrimary ? "主要联系人电话（必填）" : "电话号码（选填）"}
+                              />
+                            </Form.Group>
+                          </Col>
+                        </Row>
+                        
+                        <Row>
+                          <Col md={6}>
+                            <Form.Group className="mb-3">
+                              <Form.Label>微信号</Form.Label>
+                              <Form.Control
+                                type="text"
+                                value={passenger.wechatId}
+                                onChange={(e) => handlePassengerChange(index, 'wechatId', e.target.value)}
+                                placeholder="微信号（选填）"
+                              />
+                            </Form.Group>
+                          </Col>
+                          <Col md={6}>
+                            <Form.Group className="mb-3">
+                              <Form.Label>性别</Form.Label>
+                              <Form.Select
+                                value={passenger.gender}
+                                onChange={(e) => handlePassengerChange(index, 'gender', e.target.value)}
+                              >
+                                <option value="">请选择</option>
+                                <option value="男">男</option>
+                                <option value="女">女</option>
+                              </Form.Select>
+                            </Form.Group>
+                          </Col>
+                        </Row>
+                        
+                        {passenger.isChild && (
+                          <Row>
+                            <Col md={6}>
+                              <Form.Group className="mb-3">
+                                <Form.Label>
+                                  儿童年龄 <span className="text-danger">*</span>
+                                </Form.Label>
+                                <Form.Select
+                                  value={passenger.childAge || ''}
+                                  onChange={(e) => handlePassengerChange(index, 'childAge', parseInt(e.target.value))}
+                                >
+                                  <option value="">请选择年龄</option>
+                                  {[...Array(18)].map((_, i) => (
+                                    <option key={i} value={i + 1}>{i + 1}岁</option>
+                                  ))}
+                                </Form.Select>
+                              </Form.Group>
+                            </Col>
+                          </Row>
+                        )}
+                        
+                        <Row>
+                          <Col md={6}>
+                            <Form.Group className="mb-3">
+                              <Form.Label>护照号码</Form.Label>
+                              <Form.Control
+                                type="text"
+                                value={passenger.passportNumber}
+                                onChange={(e) => handlePassengerChange(index, 'passportNumber', e.target.value)}
+                                placeholder="护照号码（选填）"
+                              />
+                            </Form.Group>
+                          </Col>
+                          <Col md={6}>
+                            <Form.Group className="mb-3">
+                              <Form.Label>国籍</Form.Label>
+                              <Form.Control
+                                type="text"
+                                value={passenger.nationality}
+                                onChange={(e) => handlePassengerChange(index, 'nationality', e.target.value)}
+                                placeholder="国籍（选填）"
+                              />
+                            </Form.Group>
+                          </Col>
+                        </Row>
+                        
+                        <Row>
+                          <Col md={12}>
+                            <Form.Group className="mb-0">
+                              <Form.Label>邮箱</Form.Label>
+                              <Form.Control
+                                type="email"
+                                value={passenger.email}
+                                onChange={(e) => handlePassengerChange(index, 'email', e.target.value)}
+                                placeholder="邮箱地址（选填）"
+                              />
+                            </Form.Group>
+                          </Col>
+                        </Row>
+                      </Card.Body>
+                    </Card>
+                  ))}
+                </div>
               </Form>
             </>
           )}

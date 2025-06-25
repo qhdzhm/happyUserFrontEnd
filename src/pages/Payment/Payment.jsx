@@ -32,8 +32,13 @@ const Payment = () => {
   const { isAuthenticated, user } = useSelector(state => state.auth);
   
   // 判断是否为代理商或操作员（都可以使用credit支付）
-  const isAgent = user?.userType === 'agent' || localStorage.getItem('userType') === 'agent';
-  const isAgentOperator = user?.userType === 'agent_operator' || localStorage.getItem('userType') === 'agent_operator';
+  // 统一的中介身份验证逻辑（包括agent主账号和操作员）
+  const localUserType = localStorage.getItem('userType');
+  const isAgent = user?.userType === 'agent' || 
+                  user?.userType === 'agent_operator' ||
+                  localUserType === 'agent' || 
+                  localUserType === 'agent_operator';
+  const isAgentOperator = user?.userType === 'agent_operator' || localUserType === 'agent_operator';
   const canUseCredit = isAgent || isAgentOperator;
   
   // 判断是否可以看到credit详细信息

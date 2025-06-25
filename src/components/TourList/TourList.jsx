@@ -24,7 +24,10 @@ const TourList = ({ category, limit, showViewAll = false }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [toursWithDiscount, setToursWithDiscount] = useState([]);
-  const isAgent = localStorage.getItem('userType') === 'agent';
+  // 统一的中介身份验证逻辑（包括agent主账号和操作员）
+  const localUserType = localStorage.getItem('userType');
+  const isAgent = localUserType === 'agent' || 
+                  localUserType === 'agent_operator';
   const agentId = localStorage.getItem('agentId');
 
   useEffect(() => {

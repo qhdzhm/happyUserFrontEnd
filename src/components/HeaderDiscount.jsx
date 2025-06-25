@@ -11,7 +11,10 @@ const HeaderDiscount = () => {
   const [error, setError] = useState(null);
   
   // 从localStorage获取代理商ID
-  const isAgent = localStorage.getItem('userType') === 'agent';
+  // 统一的中介身份验证逻辑（包括agent主账号和操作员）
+  const localUserType = localStorage.getItem('userType');
+  const isAgent = localUserType === 'agent' || 
+                  localUserType === 'agent_operator';
   const agentId = localStorage.getItem('agentId');
   
   // 从API获取折扣率

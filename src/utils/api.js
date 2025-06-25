@@ -117,34 +117,80 @@ export const refreshToken = async () => {
     
     console.log('Token刷新响应:', response);
     
-    if (response && response.code === 1 && response.data) {
-      const { accessToken, expiresIn } = response.data;
+    // 更详细的响应结构日志
+    if (response) {
+      console.log('响应结构分析:', {
+        hasResponse: !!response,
+        responseCode: response.code,
+        hasData: !!response.data,
+        dataStructure: response.data ? Object.keys(response.data) : null,
+        fullResponse: response
+      });
       
-      if (accessToken) {
-        // 检查是否使用Cookie认证
-        const { shouldUseCookieAuth } = require('./auth');
-        const useCookieAuth = shouldUseCookieAuth();
+      // 深入分析data字段的内容
+      if (response.data) {
+        console.log('data字段详细内容:', response.data);
+        console.log('data字段类型:', typeof response.data);
+        console.log('data字段是否为对象:', typeof response.data === 'object');
         
-        if (!useCookieAuth) {
-          // 更新localStorage中的token
-          localStorage.setItem('token', accessToken);
-          localStorage.setItem(STORAGE_KEYS.TOKEN, accessToken);
-          console.log('Token刷新成功，已更新localStorage');
-        } else {
-          console.log('Token刷新成功，使用Cookie认证模式');
-        }
+        // 检查所有可能的token字段
+        const tokenFields = ['accessToken', 'access_token', 'token', 'authToken', 'jwt'];
+        const foundTokens = tokenFields.filter(field => response.data[field]);
+        console.log('发现的token字段:', foundTokens);
         
-        // 返回新的token信息
-        return {
-          success: true,
-          accessToken,
-          expiresIn
-        };
+        // 检查所有可能的过期时间字段
+        const expiryFields = ['expiresIn', 'expires_in', 'expiry', 'exp', 'expirationTime'];
+        const foundExpiry = expiryFields.filter(field => response.data[field]);
+        console.log('发现的过期时间字段:', foundExpiry);
       }
     }
     
-    console.error('Token刷新失败：无效响应', response);
-    return { success: false, error: 'Invalid refresh response' };
+    // 兼容不同的响应格式
+    let accessToken = null;
+    let expiresIn = null;
+    
+    // 情况1: 标准格式 {code: 1, data: {accessToken, expiresIn}}
+    if (response && response.code === 1 && response.data) {
+      accessToken = response.data.accessToken || response.data.access_token || response.data.token;
+      expiresIn = response.data.expiresIn || response.data.expires_in;
+    }
+    // 情况2: 直接返回token数据 {accessToken, expiresIn}
+    else if (response && (response.accessToken || response.access_token || response.token)) {
+      accessToken = response.accessToken || response.access_token || response.token;
+      expiresIn = response.expiresIn || response.expires_in;
+    }
+    // 情况3: 嵌套在data字段中但没有code字段
+    else if (response && response.data && (response.data.accessToken || response.data.access_token || response.data.token)) {
+      accessToken = response.data.accessToken || response.data.access_token || response.data.token;
+      expiresIn = response.data.expiresIn || response.data.expires_in;
+    }
+    
+    console.log('解析出的token信息:', { accessToken: accessToken ? '存在' : '不存在', expiresIn });
+    
+    if (accessToken) {
+      // 检查是否使用Cookie认证
+      const { shouldUseCookieAuth } = require('./auth');
+      const useCookieAuth = shouldUseCookieAuth();
+      
+      if (!useCookieAuth) {
+        // 更新localStorage中的token
+        localStorage.setItem('token', accessToken);
+        localStorage.setItem(STORAGE_KEYS.TOKEN, accessToken);
+        console.log('Token刷新成功，已更新localStorage');
+      } else {
+        console.log('Token刷新成功，使用Cookie认证模式');
+      }
+      
+      // 返回新的token信息
+      return {
+        success: true,
+        accessToken,
+        expiresIn
+      };
+    }
+    
+    console.error('Token刷新失败：响应中未找到有效的token', response);
+    return { success: false, error: 'Invalid refresh response - no token found' };
     
   } catch (error) {
     console.error('Token刷新请求失败:', error);
@@ -311,11 +357,17 @@ export const login = async (credentials, loginPath = '/user/login') => {
         localStorage.setItem('userId', userData.id.toString());
       }
       
-      // 如果响应中包含token，保存到localStorage（兼容旧版本）
-      if (userData.token) {
+      // 检查是否使用Cookie认证模式
+      const { shouldUseCookieAuth } = require('./auth');
+      const useCookieAuth = shouldUseCookieAuth();
+      
+      // 如果响应中包含token，根据认证模式决定是否保存到localStorage
+      if (userData.token && !useCookieAuth) {
         localStorage.setItem('token', userData.token);
         localStorage.setItem(STORAGE_KEYS.TOKEN, userData.token);
         console.log('保存token到localStorage');
+      } else if (userData.token && useCookieAuth) {
+        console.log('Cookie认证模式，不保存token到localStorage');
       }
       
       // 代理商相关信息
@@ -405,19 +457,36 @@ export const register = (userData) => {
 
 export const logout = async () => {
   // 开始退出登录流程
+  console.log('开始logout流程...');
 
   try {
-    // 调用后端logout接口清除HttpOnly Cookies
-    await request.post('/auth/logout', {}, {
-      withCredentials: true,
-      skipAuth: true
-    });
+    // 根据用户类型选择合适的logout接口
+    const userType = localStorage.getItem('userType') || 'regular';
+    const isAgentUser = userType === 'agent' || userType === 'agent_operator';
+    
+    if (isAgentUser) {
+      console.log('代理商用户，调用代理商专用logout接口');
+      // 代理商用户调用专用接口
+      await request.post('/agent/logout', {}, {
+        withCredentials: true,
+        skipAuth: true
+      });
+    } else {
+      console.log('普通用户，调用普通用户logout接口');
+      // 普通用户调用普通用户接口
+      await request.post('/user/logout', {}, {
+        withCredentials: true,
+        skipAuth: true
+      });
+    }
+    
+    console.log('后端logout请求成功');
   } catch (error) {
     console.warn('后端logout请求失败:', error.message);
     // 即使后端logout失败，也要继续清除本地数据
   }
   
-  // CSRF Token已禁用 - 无需清理
+
   
   // 停止TokenManager的定时检查，防止自动刷新token
   try {
@@ -435,8 +504,7 @@ export const logout = async () => {
     'userType', 'username', 'user', 'userId',
     'agentId', 'operatorId', 'discountRate',
     'canSeeDiscount', 'canSeeCredit',
-    'userProfile', 'loginTime', 'last_activity',
-    'csrf_token'
+    'userProfile', 'loginTime', 'last_activity'
   ];
   
   keysToRemove.forEach(key => {
@@ -490,6 +558,8 @@ export const logout = async () => {
       '127.0.0.1',
       '.127.0.0.1'
     ];
+    
+    console.log('开始清理Cookie，用户类型:', localStorage.getItem('userType'));
     
     cookiesToClear.forEach(cookieName => {
       // 多种方式尝试清除cookie，确保在不同路径和域名下都能清除
@@ -1272,6 +1342,11 @@ export const getGroupTourTips = (tourId) => {
 
 export const getGroupTourImages = (tourId) => {
   return request.get(`/user/group-tours/${tourId}/images`);
+};
+
+// 获取跟团游关联的一日游
+export const getGroupTourDayTours = (tourId) => {
+  return request.get(`/user/group-tours/${tourId}/day-tours`);
 };
 
 export const getGroupTours = (params = {}) => {

@@ -51,15 +51,25 @@ export const createBooking = (data) => {
  * @returns {Promise} - 请求Promise
  */
 export const createTourBooking = (data) => {
-  // 添加认证头部
-  const headers = addAuthHeaders();
+  // 检查用户认证状态
+  const isAuthenticated = !!localStorage.getItem('token') || !!localStorage.getItem('user');
+  
+  // 只在用户已认证时添加认证头部
+  let headers = {};
+  if (isAuthenticated) {
+    headers = addAuthHeaders();
+    console.log('用户已认证，添加认证头部');
+  } else {
+    console.log('游客模式下单，不添加认证头部');
+  }
   
   // 打印请求信息，用于调试
   console.log('创建旅游订单请求:', {
     url: '/user/bookings/tour/create',
     headers: Object.keys(headers),
     authentication: headers.authentication ? `${headers.authentication.substring(0, 10)}...` : 'none',
-    data: { ...data, passengers: data.passengers?.length || 0 }
+    data: { ...data, passengers: data.passengers?.length || 0 },
+    isGuestMode: !isAuthenticated
   });
   
   // 调用新的API接口
@@ -67,7 +77,7 @@ export const createTourBooking = (data) => {
 };
 
 /**
- * 计算旅游价格
+ * 计算旅游价格（统一接口，支持可选项目）
  * @param {number} tourId - 旅游ID
  * @param {string} tourType - 旅游类型 (day_tour, group_tour)
  * @param {number} adultCount - 成人数量
@@ -78,9 +88,10 @@ export const createTourBooking = (data) => {
  * @param {number} userId - 用户ID (可选)
  * @param {Array} childrenAges - 儿童年龄数组 (可选)
  * @param {string} roomType - 房间类型 (可选)
+ * @param {Object} selectedOptionalTours - 用户选择的可选项目 (可选)
  * @returns {Promise} 返回价格数据
  */
-export const calculateTourPrice = async (tourId, tourType, adultCount, childCount, hotelLevel, agentId = null, roomCount = 1, userId = null, childrenAges = [], roomType = null) => {
+export const calculateTourPrice = async (tourId, tourType, adultCount, childCount, hotelLevel, agentId = null, roomCount = 1, userId = null, childrenAges = [], roomType = null, selectedOptionalTours = null) => {
   try {
     // 将所有参数解析为适当的类型
     const numericTourId = parseInt(tourId, 10);
@@ -90,50 +101,13 @@ export const calculateTourPrice = async (tourId, tourType, adultCount, childCoun
     const numericAgentId = agentId ? parseInt(agentId, 10) : null;
     const numericUserId = userId ? parseInt(userId, 10) : null;
     
-    // 构建URL参数
-    const params = new URLSearchParams();
-    params.append('tourId', numericTourId);
-    params.append('tourType', tourType);
-    params.append('adultCount', numericAdultCount);
-    params.append('childCount', numericChildCount);
-    params.append('hotelLevel', hotelLevel);
-    params.append('roomCount', numericRoomCount);
-    
-    // 添加房间类型参数
-    if (roomType) {
-      params.append('roomType', roomType);
-      console.log('添加房间类型参数:', roomType);
-    }
-    
-    // 添加儿童年龄参数，如果有的话
-    if (childrenAges && childrenAges.length > 0) {
-      // 将儿童年龄数组转换为逗号分隔的字符串
-      params.append('childrenAges', childrenAges.join(','));
-    }
-    
-    if (numericAgentId) {
-      params.append('agentId', numericAgentId);
-    }
-    
-    // 获取用户ID
-    const localUserId = localStorage.getItem('userId');
-    
-    // 如果从参数没传但是有登录用户，则添加用户ID
-    if (!numericUserId && localUserId) {
-      params.append('userId', parseInt(localUserId, 10));
-    } else if (numericUserId) {
-      params.append('userId', numericUserId);
-    }
-    
-    // 添加认证头部
+    // 添加认证头部（如果用户已登录）
     const headers = addAuthHeaders();
+    const isAuthenticated = !!localStorage.getItem('token') || !!localStorage.getItem('user');
     
-    // 构建URL - 注意：后端接口路径是 /user/bookings/tour/calculate-price
-    const url = `/user/bookings/tour/calculate-price`;
-    const fullUrl = `${url}?${params.toString()}`;
-    console.log('请求URL:', fullUrl);
+    console.log('价格计算请求 - 用户认证状态:', isAuthenticated);
     
-    // 构建请求体数据，确保数值类型正确
+    // 构建请求体数据
     const requestData = {
       tourId: numericTourId,
       tourType: tourType,
@@ -143,9 +117,17 @@ export const calculateTourPrice = async (tourId, tourType, adultCount, childCoun
       roomCount: numericRoomCount
     };
     
-    // 添加可选参数
+    // 添加可选参数 - 优化房型数据处理
     if (roomType) {
-      requestData.roomType = roomType;
+      // 如果roomType是数组，传递roomTypes参数；否则传递单个roomType
+      if (Array.isArray(roomType)) {
+        requestData.roomTypes = JSON.stringify(roomType);
+        console.log('传递多房间类型:', roomType);
+      } else {
+        // 单个房型也转换为数组格式，保持一致性
+        requestData.roomTypes = JSON.stringify([roomType]);
+        console.log('传递单个房间类型（转为数组）:', [roomType]);
+      }
     }
     
     if (childrenAges && childrenAges.length > 0) {
@@ -156,16 +138,23 @@ export const calculateTourPrice = async (tourId, tourType, adultCount, childCoun
       requestData.agentId = numericAgentId;
     }
     
-    // 添加用户ID（如果有的话）
+    // 添加用户ID
+    const localUserId = localStorage.getItem('userId');
     if (!numericUserId && localUserId) {
       requestData.userId = parseInt(localUserId, 10);
     } else if (numericUserId) {
       requestData.userId = numericUserId;
     }
     
-    console.log('请求体数据:', requestData);
+    // 添加选择的可选项目（如果有）
+    if (selectedOptionalTours && Object.keys(selectedOptionalTours).length > 0) {
+      requestData.selectedOptionalTours = JSON.stringify(selectedOptionalTours);
+      console.log('添加可选项目参数:', selectedOptionalTours);
+    }
     
-    // 构建表单数据（application/x-www-form-urlencoded）
+    console.log('计算价格请求数据:', requestData);
+    
+    // 构建表单数据
     const formData = new URLSearchParams();
     Object.entries(requestData).forEach(([key, value]) => {
       if (value !== null && value !== undefined) {
@@ -173,18 +162,43 @@ export const calculateTourPrice = async (tourId, tourType, adultCount, childCoun
       }
     });
     
-    // 使用POST方法，发送表单数据
-    const response = await request.post(url, formData, { 
+    // 使用统一的API接口 - 清理配置避免toUpperCase错误
+    const url = '/user/bookings/tour/calculate-price';
+    const cleanConfig = { 
       headers: {
-        ...headers,
         'Content-Type': 'application/x-www-form-urlencoded'
       }
-    });
+    };
     
-    // 响应拦截器已经处理了response.data，直接返回response
+    // 只在用户已认证且有认证头时才添加认证信息
+    if (isAuthenticated && headers && Object.keys(headers).length > 0) {
+      Object.assign(cleanConfig.headers, headers);
+      console.log('添加认证头部到价格计算请求');
+    } else {
+      console.log('游客模式价格计算请求，不添加认证头部');
+    }
+    
+    console.log('🚀 即将发送价格计算请求:', {
+      url: url,
+      formData: Object.fromEntries(formData.entries()),
+      config: cleanConfig
+    });
+
+    const response = await request.post(url, formData, cleanConfig);
+    
+    console.log('✅ 价格计算响应成功:', response);
     return response;
+
   } catch (error) {
-    console.error('计算旅游价格时出错:', error);
+    console.error('❌ 计算旅游价格时出错:', error);
+    console.error('❌ 错误详情:', {
+      message: error.message,
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      url: error.config?.url,
+      method: error.config?.method
+    });
     throw error;
   }
 };
@@ -496,9 +510,17 @@ export const updateOrderByAgent = async (updateData) => {
     
     // 根据用户类型选择不同的API端点
     const userType = localStorage.getItem('userType');
-    const endpoint = userType === 'agent' 
-      ? '/api/orders/agent/update' 
-      : '/api/user/orders/update';
+    let endpoint;
+    
+    if (userType === 'agent') {
+      // 代理商使用专用接口
+      endpoint = '/orders/agent/update';
+    } else {
+      // 普通用户使用通用接口，需要在URL中包含订单ID
+      endpoint = `/orders/${updateData.bookingId}`;
+    }
+    
+    console.log(`使用API端点: ${endpoint}, 用户类型: ${userType}`);
     
     // 调用修改订单API
     const response = await request.put(endpoint, updateData, { headers });

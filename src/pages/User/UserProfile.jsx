@@ -37,7 +37,12 @@ const transactionTypeColors = {
 const UserProfile = () => {
   const dispatch = useDispatch();
   const { user, isAuthenticated, loading } = useSelector((state) => state.auth);
-  const isAgent = user?.role === 'agent' || localStorage.getItem('userType') === 'agent';
+  // 统一的中介身份验证逻辑（包括agent主账号和操作员）
+  const localUserType = localStorage.getItem('userType');
+  const isAgent = user?.role === 'agent' || 
+                  user?.role === 'agent_operator' ||
+                  localUserType === 'agent' || 
+                  localUserType === 'agent_operator';
   
   const [userData, setUserData] = useState({
     firstName: '',

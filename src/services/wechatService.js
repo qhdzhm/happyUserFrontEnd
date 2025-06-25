@@ -1,5 +1,5 @@
 import request from '../utils/request';
-import { addAuthHeaders, setToken } from '../utils/auth';
+import { addAuthHeaders } from '../utils/auth';
 
 /**
  * 微信相关服务 - 处理微信登录相关API请求
@@ -20,16 +20,17 @@ export const getWechatQrCodeUrl = () => {
  */
 export const wechatLogin = (code) => {
   return request.get(`/api/user/wechat/login?code=${code}`).then(response => {
-    // 如果登录成功，保存token
+    // 如果登录成功，保存用户信息（不保存token，使用HttpOnly Cookie）
     if (response && response.code === 1 && response.data) {
-      const { token, id, userType } = response.data;
+      const { id, userType, username, name } = response.data;
       
-      // 保存token
-      setToken(token);
-      
-      // 保存其他用户信息
+      // 只保存非敏感的用户信息到localStorage
       if (id) localStorage.setItem('userId', id);
       if (userType) localStorage.setItem('userType', userType);
+      if (username) localStorage.setItem('username', username);
+      if (name) localStorage.setItem('name', name);
+      
+      console.log('✅ 微信登录成功，使用Cookie认证模式');
     }
     
     return response;

@@ -4,7 +4,7 @@ import { Link, useParams, useLocation, useNavigate } from 'react-router-dom';
 import { FaCheckCircle, FaDownload, FaCalendarAlt, FaMapMarkerAlt, 
          FaUsers, FaHotel, FaClipboard, FaPhoneAlt, FaWeixin, 
          FaStar, FaBed, FaInfoCircle, FaChevronRight, FaTimes,
-         FaUtensils, FaRoute, FaCalendarDay, FaExclamationTriangle, FaEnvelope } from 'react-icons/fa';
+         FaUtensils, FaRoute, FaCalendarDay, FaExclamationTriangle, FaEnvelope, FaClock } from 'react-icons/fa';
 import { BsGeoAlt, BsClock } from 'react-icons/bs';
 import './OrderSuccess.css';
 import { toast } from 'react-hot-toast';
@@ -28,6 +28,10 @@ const OrderSuccess = () => {
   const [itineraryData, setItineraryData] = useState(null);
   const [itineraryLoading, setItineraryLoading] = useState(false);
   const [itineraryError, setItineraryError] = useState(null);
+  
+  // 添加用户选择的可选行程信息
+  const [selectedOptionalTours, setSelectedOptionalTours] = useState({});
+  const [optionalToursDetails, setOptionalToursDetails] = useState({}); // 存储可选行程的详细信息
   
   // 添加推荐旅游产品数据
   const [recommendedTours, setRecommendedTours] = useState([
@@ -99,10 +103,13 @@ const OrderSuccess = () => {
         status: 'confirmed',
         paymentStatus: 'unpaid',
         createdAt: new Date().toISOString(),
-        total: receivedBookingData.totalPrice || receivedBookingData.total_price || 0,
-        
-        // 保存所有可能用于确认单的数据
-        pickupLocation: receivedBookingData.pickupLocation || receivedBookingData.pickup_location || '',
+                  total: receivedBookingData.totalPrice || receivedBookingData.total_price || 0,
+          
+          // 提取用户选择的可选行程信息
+          selectedOptionalTours: receivedBookingData.selectedOptionalTours || null,
+          
+          // 保存所有可能用于确认单的数据
+          pickupLocation: receivedBookingData.pickupLocation || receivedBookingData.pickup_location || '',
         pickupDate: receivedBookingData.pickupDate || receivedBookingData.pickup_date || '',
         departureDate: receivedBookingData.departureDate || receivedBookingData.departure_date || 
                       receivedBookingData.tourStartDate || receivedBookingData.tour_start_date || '',
@@ -187,6 +194,9 @@ const OrderSuccess = () => {
           createdAt: apiOrderData.created_at || apiOrderData.createdAt || new Date().toISOString(),
           total: apiOrderData.total_price || apiOrderData.totalPrice || 0,
           
+          // 提取用户选择的可选行程信息
+          selectedOptionalTours: apiOrderData.selectedOptionalTours || apiOrderData.selected_optional_tours || null,
+          
           // 保存所有可能用于确认单的数据
           pickupLocation: apiOrderData.pickupLocation || apiOrderData.pickup_location || '',
           pickupDate: apiOrderData.pickupDate || apiOrderData.pickup_date || '',
@@ -257,6 +267,30 @@ const OrderSuccess = () => {
     }
   };
   
+  // 处理用户选择的可选行程
+  useEffect(() => {
+    if (orderData && orderData.selectedOptionalTours) {
+      try {
+        let parsedOptionalTours = {};
+        
+        // 如果是字符串，解析JSON
+        if (typeof orderData.selectedOptionalTours === 'string') {
+          parsedOptionalTours = JSON.parse(orderData.selectedOptionalTours);
+        } else if (typeof orderData.selectedOptionalTours === 'object') {
+          parsedOptionalTours = orderData.selectedOptionalTours;
+        }
+        
+        console.log('用户选择的可选行程:', parsedOptionalTours);
+        setSelectedOptionalTours(parsedOptionalTours);
+        
+        // 获取选择的行程详情
+        fetchOptionalToursDetails(parsedOptionalTours);
+      } catch (error) {
+        console.error('解析选择的可选行程失败:', error);
+      }
+    }
+  }, [orderData]);
+
   // 获取行程信息
   useEffect(() => {
     if (orderData && orderData.tour && orderData.tour.id) {
@@ -267,6 +301,33 @@ const OrderSuccess = () => {
     }
   }, [orderData]);
   
+  // 获取用户选择的可选行程详情
+  const fetchOptionalToursDetails = async (selectedTours) => {
+    if (!selectedTours || Object.keys(selectedTours).length === 0) return;
+    
+    try {
+      const headers = addAuthHeaders();
+      const tourDetails = {};
+      
+      // 为每个选择的行程获取详情
+      for (const [day, tourId] of Object.entries(selectedTours)) {
+        try {
+          const response = await axios.get(`/api/user/day-tours/${tourId}`, { headers });
+          if (response.data && (response.data.code === 1 || response.data.code === 200)) {
+            tourDetails[day] = response.data.data;
+            console.log(`第${day}天选择的行程详情:`, response.data.data);
+          }
+        } catch (error) {
+          console.error(`获取第${day}天行程详情失败:`, error);
+        }
+      }
+      
+      setOptionalToursDetails(tourDetails);
+    } catch (error) {
+      console.error('获取可选行程详情失败:', error);
+    }
+  };
+
   // 获取旅游产品的行程信息
   const fetchTourItinerary = async (tourId, tourType) => {
     if (!tourId) return;
@@ -540,41 +601,81 @@ const OrderSuccess = () => {
                           /* 团队游显示详细行程 */
                           itineraryData.itinerary && itineraryData.itinerary.length > 0 && (
                             <Accordion defaultActiveKey="0" className="itinerary-accordion">
-                              {itineraryData.itinerary.sort((a, b) => a.day_number - b.day_number).map((day, index) => (
-                                <Accordion.Item eventKey={String(index)} key={index} className="mb-2 border">
-                                  <Accordion.Header>
-                                    <div className="d-flex align-items-center">
-                                      <Badge bg="primary" className="me-2">Day {day.day_number || (index + 1)}</Badge>
-                                      <span className="fw-medium">{day.title ? day.title.replace(`第${day.day_number || (index + 1)}天: `, '').replace(`第${day.day_number || (index + 1)}天：`, '') : `第${day.day_number || (index + 1)}天行程安排`}</span>
-                                    </div>
-                                  </Accordion.Header>
-                                  <Accordion.Body>
-                                    <div className="itinerary-content">
-                                      {day.description && (
-                                        <div className="mb-3">
-                                          <div dangerouslySetInnerHTML={{ __html: day.description }} />
-                                        </div>
-                                      )}
-                                      
-                                      <div className="d-flex flex-wrap">
-                                        {day.accommodation && (
-                                          <div className="me-4 mb-2">
-                                            <FaBed className="me-1 text-primary" />
-                                            <span className="text-muted">住宿:</span> {day.accommodation}
-                                          </div>
-                                        )}
-                                        
-                                        {day.meals && (
-                                          <div className="me-4 mb-2">
-                                            <FaUtensils className="me-1 text-primary" />
-                                            <span className="text-muted">餐食:</span> {day.meals}
-                                          </div>
+                              {itineraryData.itinerary.sort((a, b) => a.day_number - b.day_number).map((day, index) => {
+                                const dayNumber = day.day_number || (index + 1);
+                                const selectedTourForDay = optionalToursDetails[dayNumber];
+                                
+                                return (
+                                  <Accordion.Item eventKey={String(index)} key={index} className="mb-2 border">
+                                    <Accordion.Header>
+                                      <div className="d-flex align-items-center">
+                                        <Badge bg="primary" className="me-2">Day {dayNumber}</Badge>
+                                        <span className="fw-medium">
+                                          {selectedTourForDay ? (
+                                            // 显示用户选择的具体行程
+                                            selectedTourForDay.title || selectedTourForDay.name || `第${dayNumber}天行程安排`
+                                          ) : (
+                                            // 显示默认行程
+                                            day.title ? day.title.replace(`第${dayNumber}天: `, '').replace(`第${dayNumber}天：`, '') : `第${dayNumber}天行程安排`
+                                          )}
+                                        </span>
+                                        {selectedTourForDay && (
+                                          <Badge bg="success" className="ms-2">已选择</Badge>
                                         )}
                                       </div>
-                                    </div>
-                                  </Accordion.Body>
-                                </Accordion.Item>
-                              ))}
+                                    </Accordion.Header>
+                                    <Accordion.Body>
+                                      <div className="itinerary-content">
+                                        {selectedTourForDay ? (
+                                          // 显示用户选择的行程详情
+                                          <>
+                                            <div className="mb-3">
+                                              <div dangerouslySetInnerHTML={{ 
+                                                __html: selectedTourForDay.description || selectedTourForDay.content || '暂无详细描述' 
+                                              }} />
+                                            </div>
+                                            {selectedTourForDay.duration && (
+                                              <div className="mb-2">
+                                                <FaClock className="me-1 text-primary" />
+                                                <span className="text-muted">时长:</span> {selectedTourForDay.duration}
+                                              </div>
+                                            )}
+                                            {selectedTourForDay.inclusions && (
+                                              <div className="mb-2">
+                                                <FaCheckCircle className="me-1 text-success" />
+                                                <span className="text-muted">包含:</span> {selectedTourForDay.inclusions}
+                                              </div>
+                                            )}
+                                          </>
+                                        ) : (
+                                          // 显示默认行程
+                                          day.description && (
+                                            <div className="mb-3">
+                                              <div dangerouslySetInnerHTML={{ __html: day.description }} />
+                                            </div>
+                                          )
+                                        )}
+                                        
+                                        <div className="d-flex flex-wrap">
+                                          {day.accommodation && (
+                                            <div className="me-4 mb-2">
+                                              <FaBed className="me-1 text-primary" />
+                                              <span className="text-muted">住宿:</span> {day.accommodation}
+                                            </div>
+                                          )}
+                                          
+                                          {day.meals && (
+                                            <div className="me-4 mb-2">
+                                              <FaUtensils className="me-1 text-primary" />
+                                              <span className="text-muted">餐食:</span> {day.meals}
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </Accordion.Body>
+                                  </Accordion.Item>
+                                );
+                              })}
                             </Accordion>
                           )
                         )}

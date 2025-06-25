@@ -1,12 +1,7 @@
 /**
- * 安全的认证工具函数 - 支持HttpOnly Cookies和CSRF保护
+ * 安全的认证工具函数 - 支持HttpOnly Cookies
  */
 import { STORAGE_KEYS } from './constants';
-
-// CSRF Token管理
-let csrfToken = null;
-
-// 加密密钥（实际项目中应该从环境变量获取）
 
 
 /**
@@ -46,32 +41,7 @@ const isTokenExpired = (token) => {
   }
 };
 
-/**
- * 获取CSRF Token - 已禁用
- * @deprecated CSRF保护已禁用，使用JWT和CORS白名单保护
- */
-export const getCSRFToken = () => {
-  return null;
-};
 
-/**
- * 设置CSRF Token
- */
-/**
- * 设置CSRF Token - 已禁用
- * @deprecated CSRF保护已禁用，使用JWT和CORS白名单保护
- */
-export const setCSRFToken = (token) => {
-  // CSRF已禁用，不执行任何操作
-};
-
-/**
- * 清除CSRF Token - 已禁用
- * @deprecated CSRF保护已禁用，使用JWT和CORS白名单保护
- */
-export const clearCSRFToken = () => {
-  // CSRF已禁用，不执行任何操作
-};
 
 /**
  * 获取所有cookies
@@ -217,13 +187,20 @@ export const getTokenSecure = () => {
  * 设置认证token
  */
 export const setToken = (token, userType = 'regular') => {
-  console.warn('setToken已废弃，请使用基于Cookie的认证');
-  // 临时保持兼容性
-  if (userType === 'agent' || userType === 'agent_operator') {
-    localStorage.setItem('token', token);
-  } else {
-    localStorage.setItem('authentication', token);
-  }
+  console.warn('⚠️ setToken已废弃，系统已切换到Cookie-only认证模式');
+  console.log('🍪 Token将由后端通过HttpOnly Cookie自动管理，无需前端存储');
+  
+  // 完全禁用token存储到localStorage
+  // 如果有代码仍在调用setToken，将显示此警告但不执行任何存储操作
+  
+  // 清除可能存在的旧token
+  const tokenKeys = ['token', 'authentication', 'userToken', 'jwt'];
+  tokenKeys.forEach(key => {
+    if (localStorage.getItem(key)) {
+      localStorage.removeItem(key);
+      console.log(`🧹 已清除旧的${key}`);
+    }
+  });
 };
 
 /**
@@ -409,22 +386,63 @@ export const getUserInfoFromCookie = () => {
  */
 export const secureLogout = async () => {
   try {
-    // 调用后端登出API（清除HttpOnly Cookie）
-    const response = await fetch('/api/auth/logout', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
-      }
-    });
+    // 根据用户类型调用不同的登出接口
+    const userType = localStorage.getItem('userType') || 'regular';
+    const isAgentUser = userType === 'agent' || userType === 'agent_operator';
     
-    if (!response.ok) {
-      console.warn('后端登出失败，继续前端清理');
+    if (isAgentUser) {
+      console.log('代理商用户安全登出，调用专用接口');
+      // 代理商用户调用专用接口
+      const response = await fetch('/api/agent/logout', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+      
+      // 检查是否有额外的Cookie清理指令
+      if (response.ok) {
+        const clearCookiesHeader = response.headers.get('X-Clear-Cookies');
+        if (clearCookiesHeader) {
+          console.log('执行后端Cookie清理指令:', clearCookiesHeader);
+          clearCookiesFromBrowser(clearCookiesHeader.split(','));
+        }
+      } else {
+        console.warn('代理商登出接口失败，尝试通用接口');
+        // 如果代理商接口失败，尝试通用接口作为备用
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        });
+      }
+    } else {
+      console.log('普通用户安全登出');
+      // 普通用户调用通用接口
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+      
+      if (!response.ok) {
+        console.warn('后端登出失败，继续前端清理');
+      }
     }
   } catch (error) {
     console.error('登出请求失败:', error);
   }
+  
+  // 强制清理前端Cookie（兜底清理）
+  forceClearAllCookies();
   
   // 清除前端数据
   clearAllLocalStorage();
@@ -433,16 +451,45 @@ export const secureLogout = async () => {
 };
 
 /**
- * 初始化CSRF保护
+ * 从浏览器强制清理指定的Cookie
+ * @param {Array} cookieNames Cookie名称数组
  */
-/**
- * 初始化CSRF保护 - 已禁用
- * @deprecated CSRF保护已禁用，使用JWT和CORS白名单保护
- */
-export const initializeCSRFProtection = async () => {
-  // CSRF已禁用，直接返回成功
-  return true;
+const clearCookiesFromBrowser = (cookieNames) => {
+  cookieNames.forEach(cookieName => {
+    const trimmedName = cookieName.trim();
+    // 清理不同路径下的Cookie
+    const paths = ['/', '/api', '/agent'];
+    const domains = ['', 'localhost', window.location.hostname];
+    
+    paths.forEach(path => {
+      domains.forEach(domain => {
+        try {
+          // 设置过期时间为过去的时间来删除Cookie
+          const expireDate = new Date(0).toUTCString();
+          let cookieString = `${trimmedName}=; expires=${expireDate}; path=${path};`;
+          if (domain) {
+            cookieString += ` domain=${domain};`;
+          }
+          document.cookie = cookieString;
+          console.debug(`清理Cookie: ${cookieString}`);
+        } catch (e) {
+          console.debug(`清理Cookie失败: ${trimmedName} 在 ${domain}${path}`, e);
+        }
+      });
+    });
+  });
 };
+
+/**
+ * 强制清理所有认证相关的Cookie（兜底清理）
+ */
+const forceClearAllCookies = () => {
+  const cookiesToClear = ['authToken', 'refreshToken', 'userInfo', 'token', 'jwt', 'agentToken'];
+  console.log('执行强制Cookie清理');
+  clearCookiesFromBrowser(cookiesToClear);
+};
+
+
 
 /**
  * 获取用户类型

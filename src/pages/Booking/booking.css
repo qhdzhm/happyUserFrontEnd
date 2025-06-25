@@ -1,1975 +1,1139 @@
-/* 现代化预订表单样式 */
-:root {
-  --primary-color: #2563eb; /* 主色蓝色 */
-  --primary-dark: #1d4ed8;
-  --primary-light: #dbeafe;
-  --secondary-color: #fb7185; /* 次要色红色 */
-  --accent-color: #f59e0b; /* 强调色橙色 */
-  --accent-light: #fef3c7;
-  --accent-dark: #d97706;
-  --success-color: #10b981; /* 成功色绿色 */
-  --success-light: #d1fae5;
-  --danger-color: #ef4444; /* 危险色红色 */
-  --danger-light: #fee2e2;
-  --text-color: #334155;
-  --text-light: #64748b;
-  --border-color: #e2e8f0;
-  --background-light: #f8fafc;
-  --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-}
-
-/* 日历弹出层样式 */
-.react-datepicker-popper {
-  z-index: 9999 !important; /* 确保日历显示在其他元素之上 */
-}
-
-/* 自定义日期时间选择器样式，使日期和时间显示在同一行 */
-.date-time-popper .react-datepicker {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  font-size: 14px;
-}
-
-.date-time-popper .react-datepicker__month-container {
-  float: none;
-}
-
-.date-time-popper .react-datepicker__time-container {
-  border-left: 1px solid #ccc;
-  float: none;
-  width: 100px;
-}
-
-.date-time-popper .react-datepicker__header--time {
-  padding-bottom: 8px;
-}
-
-.date-time-popper .react-datepicker__time {
-  height: 200px;
-}
-
-.date-time-popper .react-datepicker__time-list {
-  height: 180px !important;
-  overflow-y: auto;
-}
-
-.react-datepicker-wrapper,
-.react-datepicker__input-container {
-  display: block;
-  width: 100%;
-}
-
-.react-datepicker__input-container input {
-  width: 100%;
-  position: relative;
-  z-index: 1;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 12px 15px;
-  color: var(--text-color);
-  background-color: #fff;
-  transition: all 0.3s ease;
-}
-
-.react-datepicker__input-container input:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-  outline: none;
-}
-
-/* 航班信息输入框样式 */
-.flight-info-inputs {
-  position: relative;
-  z-index: 1;
-}
-
-.booking-section {
-  padding: 60px 0;
-  background-color: var(--background-light);
-}
-
-.booking-section .form-control {
-  background-color: #fff;
-  border: 1px solid var(--border-color);
-  color: var(--text-color);
-  padding: 12px 15px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-.booking-section .form-control:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-.booking-section label {
-  color: var(--text-color);
-  font-weight: 600;
-  margin-bottom: 8px;
-  font-size: 14px;
-}
-
-.booking-section .form-select {
-  padding: 12px 15px;
-  border-radius: 8px;
-  background-color: #fff;
-  border: 1px solid var(--border-color);
-}
-
-.booking-form-warp {
-  background-color: #fff;
-  box-shadow: var(--box-shadow);
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-.form-title {
-  background-color: var(--primary-color);
-  color: white;
-  border-bottom: none !important;
-}
-
-.form-title h3 {
-  color: white;
-  font-weight: 600;
-}
-
-/* 按钮样式 */
-.primaryBtn {
-  background-color: var(--primary-color) !important;
-  border: none !important;
-  padding: 12px 24px !important;
-  font-weight: 600 !important;
-  border-radius: 8px !important;
-  transition: all 0.3s ease !important;
-}
-
-.primaryBtn:hover {
-  background-color: var(--primary-dark) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-}
-
-/* 乘客卡片样式 */
-.passenger-card {
-  position: relative;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  background-color: #fff;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.passenger-card:hover {
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.passenger-card .form-label {
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  display: block;
-  color: #495057;
-}
-
-.passenger-card .form-control,
-.passenger-card .form-select {
-  margin-bottom: 1rem;
-}
-
-.passenger-title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #e9ecef;
-}
-
-/* 确保输入框和字段有足够间距 */
-.passenger-card .row > [class^="col"] {
-  margin-bottom: 0.75rem;
-}
-
-/* 确保图标与文字不重叠 */
-.passenger-card .position-relative .form-control {
-  padding-left: 40px;
-}
-
-.passenger-card .position-relative svg {
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
-}
-
-/* 文本解析器卡片样式 */
-/*
-.text-parser-card {
-  border: 2px dashed #007bff;
-  border-radius: 10px;
-  background: #f8f9ff;
-  transition: all 0.3s ease;
-}
-
-.text-parser-card:hover {
-  border-color: #0056b3;
-  background: #f0f2ff;
-}
-
-.text-parser-card textarea {
-  border: none;
-  background: transparent;
-  resize: vertical;
-  min-height: 150px;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-}
-
-.text-parser-card textarea:focus {
-  box-shadow: none;
-  background: transparent;
-}
-*/
-
-/* 快速解析按钮样式 */
-/*
-.quick-parse-btn {
-  background: linear-gradient(45deg, #007bff, #0056b3);
-  border: none;
-  border-radius: 25px;
-  padding: 10px 20px;
-  color: white;
-  font-weight: 500;
-  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
-  transition: all 0.3s ease;
-}
-
-.quick-parse-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
-  background: linear-gradient(45deg, #0056b3, #003d82);
-}
-*/
-
-/* 解析文本框样式 */
-/*
-.parse-textarea {
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-  font-size: 14px;
-  line-height: 1.5;
-  border: 2px dashed #007bff;
-  border-radius: 8px;
-  background: #f8f9ff;
-  transition: all 0.3s ease;
-}
-
-.parse-textarea:focus {
-  border-color: #0056b3;
-  background: #ffffff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
-*/
-
-/* 快速填充按钮样式 */
-/*
-.quick-parse-btn {
-  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-  border: none;
-  border-radius: 50px;
-  color: white;
-  transition: all 0.3s ease;
-}
-
-.quick-parse-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
-}
-*/
-
-/* 解析模态窗样式 */
-.modal-content {
-  border-radius: 10px;
-  border: none;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.modal-header {
-  border-bottom: 1px solid #eee;
-  padding: 15px 20px;
-}
-
-.modal-body {
-  padding: 20px;
-}
-
-.modal-footer {
-  border-top: 1px solid #eee;
-  padding: 15px 20px;
-}
-
-.parse-textarea {
-  font-family: monospace;
-  font-size: 0.9rem;
-  resize: none;
-  border: 1px solid #dee2e6;
-  border-radius: 5px;
-  transition: all 0.3s ease;
-}
-
-.parse-textarea:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
-}
-
-/* 右侧卡片样式 */
-.card-info {
-  border-radius: 16px;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  margin-bottom: 24px;
-  border: none;
-  box-shadow: var(--box-shadow);
-}
-
-.card-info .card-header {
-  background-color: var(--primary-light);
-  border-bottom: 1px solid var(--border-color);
-  padding: 20px;
-}
-
-.card-info .card-header h1, 
-.card-info .card-header h2 {
-  color: var(--primary-color);
-  margin: 0;
-  font-weight: 600;
-}
-
-.card-info .card-body {
-  padding: 20px;
-}
-
-.card-info .card-footer {
-  background-color: #f8fafc;
-  border-top: 1px solid var(--border-color);
-  padding: 15px 20px;
-}
-
-/* 价格区域样式 */
-.badge {
-  padding: 5px 8px;
-  font-size: 11px;
-  border-radius: 6px;
-}
-
-.badge.bg-primary {
-  background-color: var(--primary-color) !important;
-  color: white;
-}
-
-.badge.bg-accent {
-  background-color: var(--accent-color) !important;
-  color: white;
-}
-
-.badge.bg-success {
-  background-color: var(--success-color) !important;
-  color: white;
-}
-
-.badge.bg-danger {
-  background-color: var(--danger-color) !important;
-  color: white;
-}
-
-/* 文本颜色类 */
-.text-primary {
-  color: var(--primary-color) !important;
-}
-
-.text-accent {
-  color: var(--accent-color) !important;
-}
-
-.text-success {
-  color: var(--success-color) !important;
-}
-
-.text-danger {
-  color: var(--danger-color) !important;
-}
-
-.list-group-item {
-  padding: 12px 0;
-  border-color: var(--border-color);
-}
-
-/* 服务列表样式 */
-.service-list {
-  list-style: none;
-  padding-left: 0;
-}
-
-.service-list li {
-  margin-bottom: 12px;
-  color: var(--text-color);
-  position: relative;
-  padding-left: 28px;
-}
-
-.service-list li:before {
-  content: "✓";
-  color: var(--primary-color);
-  position: absolute;
-  left: 0;
-  font-weight: bold;
-}
-
-/* 产品摘要信息样式 */
-.card-info h5 {
-  margin-bottom: 8px;
-  font-size: 14px;
-  color: var(--text-light);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.card-info p {
-  margin-bottom: 8px;
-  color: var(--text-color);
-  font-weight: 500;
-}
-
-/* 行程日期图标样式 */
-.card-info .d-flex.align-items-center {
-  margin-bottom: 12px;
-  padding: 10px;
-  background-color: #f1f5f9;
-  border-radius: 8px;
-}
-
-.card-info .fa-calendar-alt {
-  font-size: 16px;
-}
-
-/* 确保所有文本使用横向排列 */
-.booking-section * {
-  writing-mode: horizontal-tb !important;
-}
-
-/* 复选框和单选框样式 */
-.form-check-input {
-  width: 18px !important;
-  height: 18px !important;
-  margin-top: 0.25em !important;
-  border: 2px solid var(--primary-color);
-}
-
-.form-check-input:checked {
-  background-color: var(--primary-color) !important;
-  border-color: var(--primary-color) !important;
-}
-
-/* 响应式调整 */
-@media (max-width: 768px) {
-  .booking-section {
-    padding: 40px 0;
-  }
-  
-  .card-info {
-    margin-top: 24px;
-  }
-}
-
-/* 添加步骤指示器样式 */
-.step-indicator {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-  padding: 20px;
-  background-color: #f8fafc;
-  border-radius: 12px;
-}
-
-.step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  z-index: 1;
-}
-
-.step-number {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background-color: #e2e8f0;
-  color: var(--text-color);
-  font-weight: bold;
-  margin-bottom: 8px;
-  transition: all 0.3s ease;
-}
-
-.step.active .step-number {
-  background-color: var(--primary-color);
-  color: white;
-}
-
-.step-title {
-  font-size: 14px;
-  color: var(--text-light);
-  font-weight: 500;
-}
-
-.step.active .step-title {
-  color: var(--primary-color);
-  font-weight: 600;
-}
-
-.step-connector {
-  flex-grow: 1;
-  height: 3px;
-  background-color: #e2e8f0;
-  position: relative;
-  z-index: 0;
-  margin: 0 15px;
-}
-
-/* 添加节段标题样式 */
-.section-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #0B5ED7;
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-}
-
-.section-title h4 {
-  color: var(--primary-color);
-  font-weight: 600;
-  font-size: 18px;
-  margin: 0;
-}
-
-/* 产品卡片样式 */
-.product-card {
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-}
-
-.product-card h4 {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: var(--text-color);
-}
-
-/* 日期卡片样式 */
-.date-card {
-  background-color: #f8fafc;
-  border-radius: 12px;
-  padding: 15px;
-  margin-top: 10px;
-}
-
-.date-card p {
-  margin-bottom: 5px;
-}
-
-/* 价格列表样式 */
-.price-list {
-  background-color: #f8fafc;
-  border-radius: 12px;
-  overflow: hidden;
-  margin-top: 10px;
-}
-
-.price-list .list-group-item {
-  background-color: transparent;
-  padding: 12px 15px;
-}
-
-.discount-item {
-  background-color: var(--accent-light) !important;
-  border-left: 3px solid var(--accent-color) !important;
-}
-
-.total-section {
-  background-color: var(--primary-light);
-}
-
-.total-price {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--primary-color);
-}
-
-/* 行程亮点样式 */
-.tour-highlights {
-  margin-top: 10px;
-}
-
-.highlight-item {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 20px;
-}
-
-.highlight-icon {
-  font-size: 24px;
-  color: var(--primary-color);
-  margin-right: 15px;
-  min-width: 24px;
-}
-
-.highlight-item h5 {
-  font-size: 16px;
-  margin-bottom: 5px;
-  color: var(--text-color);
-  text-transform: none;
-  letter-spacing: normal;
-}
-
-.highlight-item p {
-  font-size: 14px;
-  color: var(--text-light);
-  margin: 0;
-}
-
-/* 支付方式图标 */
-.payment-methods {
-  border-top: 1px solid var(--border-color);
-  padding-top: 15px;
-}
-
-.payment-icons {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.payment-icon {
-  height: 30px;
-  width: auto;
-  opacity: 0.7;
-  transition: opacity 0.3s ease;
-}
-
-.payment-icon:hover {
-  opacity: 1;
-}
-
-/* 代理商信息样式 */
-.agent-info {
-  margin-top: 10px;
-}
-
-.agent-info .info-item {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 15px;
-}
-
-.agent-info .info-icon {
-  font-size: 18px;
-  color: var(--primary-color);
-  margin-right: 12px;
-  min-width: 20px;
-}
-
-.agent-info h5 {
-  font-size: 14px;
-  margin-bottom: 4px;
-  color: var(--text-light);
-  font-weight: 500;
-}
-
-.agent-info p {
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--text-color);
-  margin: 0;
-}
-
-.agent-notice {
-  padding-top: 10px;
-  border-top: 1px dashed var(--border-color);
-}
-
-/* 预订页面样式 */
-.booking-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-.booking-form {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-
-.booking-title {
-  font-weight: 600;
-  color: #343a40;
-  margin-bottom: 1.5rem;
-}
-
-.form-section {
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  padding: 1.25rem;
-  margin-bottom: 1.5rem;
-  border: 1px solid #e9ecef;
-}
-
-/* 价格摘要样式 */
-.price-summary {
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-  margin-bottom: 1.5rem;
-  position: relative; /* 添加相对定位 */
-  display: flex;
-  flex-direction: column;
-}
-
-.price-title {
-  font-weight: 600;
-  color: #0B5ED7;
-  margin-bottom: 1rem;
-}
-
-.price-item {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-}
-
-.price-total {
-  font-weight: 700;
-  font-size: 1.25rem;
-  color: #0B5ED7;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e9ecef;
-}
-
-.discount-badge {
-  background-color: #d4edda;
-  color: #155724;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  margin-left: 0.5rem;
-}
-
-/* 提交按钮 */
-.submit-btn {
-  background-color: #0B5ED7;
-  border-color: #0a58ca;
-  font-weight: 600;
-  padding: 0.75rem 1.5rem;
-  font-size: 1.1rem;
-  transition: all 0.3s ease;
-}
-
-.submit-btn:hover {
-  background-color: #0a58ca;
-  border-color: #084298;
-  transform: translateY(-2px);
-}
-
-/* 响应式调整 */
-@media (max-width: 768px) {
-  .price-summary {
-    position: static;
-    margin-top: 2rem;
-  }
-}
-
-/* 行程亮点、费用包含和费用不包含列表样式 */
-.highlights-list, .included-list, .excluded-list {
-  list-style: none;
-  padding-left: 0;
-  margin-bottom: 0;
-}
-
-.highlights-list li, .included-list li, .excluded-list li {
-  margin-bottom: 12px;
-  position: relative;
-  display: flex;
-  align-items: flex-start;
-}
-
-.highlights-list li:last-child, 
-.included-list li:last-child, 
-.excluded-list li:last-child {
-  margin-bottom: 0;
-}
-
-.highlights-list li .text-primary,
-.included-list li .text-success,
-.excluded-list li .text-danger {
-  flex-shrink: 0;
-  font-size: 16px;
-  margin-top: 2px;
-}
-
-.highlights-list li span,
-.included-list li span,
-.excluded-list li span {
-  line-height: 1.5;
-  color: var(--text-color);
-}
-
-/* 时间线样式 */
-.timeline {
-  position: relative;
-  padding-left: 20px;
-  margin-left: 10px;
-  border-left: 2px solid #e9ecef;
-}
-
-.timeline-item {
-  position: relative;
-  padding-bottom: 15px;
-}
-
-.timeline-marker {
-  position: absolute;
-  left: -27px;
-  top: 0;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: #0d6efd;
-  border: 2px solid #fff;
-  box-shadow: 0 0 0 2px #e9ecef;
-}
-
-.timeline-content {
-  padding-left: 10px;
-}
-
-/* 产品信息卡片样式 */
-.passenger-card {
-  transition: all 0.3s ease;
-  border: 1px solid #dee2e6;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.passenger-card:hover {
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-/* 产品信息展示 */
-.product-info-card {
-  margin-bottom: 2rem;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-.product-info-card .card-header {
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #dee2e6;
-}
-
-.product-info-badge {
-  font-size: 0.85rem;
-  padding: 0.35rem 0.8rem;
-  border-radius: 20px;
-}
-
-/* 增强表单组件样式 */
-.form-control:focus {
-  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
-}
-
-.form-select:focus {
-  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
-}
-
-/* 折叠/展开按钮样式 */
-.collapsible-header {
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* 增强价格详情样式 */
-.price-details-section .card {
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-.price-details-section .card-header {
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #dee2e6;
-}
-
-/* 整体页面样式 */
+/* Booking 页面样式 */
 .booking-page {
-  background-color: #f8f9fa;
+  background: linear-gradient(135deg, #fafbfc 0%, #f5f7fa 100%);
   min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+/* 修复日期选择器被截断的问题 */
+.booking-card {
+  overflow: visible !important;
+}
+
+.booking-card .card-body {
+  overflow: visible !important;
+}
+
+.booking-form-section {
+  overflow: visible !important;
+}
+
+.form-group {
+  overflow: visible !important;
 }
 
 .booking-title {
-  font-weight: 600;
-  color: #343a40;
-}
-
-/* 步骤指示器样式 */
-/*
-.booking-steps {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
   margin-bottom: 2rem;
 }
 
-.booking-step {
-  position: relative;
-}
-
-.booking-step::after {
-  content: '';
-  position: absolute;
-  top: 20px;
-  right: -50%;
-  width: 100%;
-  height: 2px;
-  background-color: #e9ecef;
-  z-index: 1;
-}
-
-.booking-step:last-child::after {
-  display: none;
-}
-
-.step-circle {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #e9ecef;
-  color: #6c757d;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 10px;
-  position: relative;
-  z-index: 2;
-  font-weight: bold;
-  transition: all 0.3s ease;
-}
-
-.booking-step.active .step-circle {
-  background-color: #0d6efd;
-  color: white;
-}
-
-.step-name {
-  font-size: 14px;
-  color: #6c757d;
-  transition: all 0.3s ease;
-}
-
-.booking-step.active .step-name {
-  color: #0d6efd;
-  font-weight: 600;
-}
-*/
-
-/* 产品信息卡片样式 */
-.tour-info-card {
-  border: none;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.tour-info-card:hover {
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-}
-
-.tour-info-card .card-header {
-  border-bottom: none;
-}
-
-.tour-info-card .card-body {
-  padding: 1.5rem;
-}
-
-.highlights-list, .inclusions-list, .exclusions-list {
-  padding-left: 1.5rem;
-  margin-bottom: 0;
-}
-
-.highlights-list li, .inclusions-list li, .exclusions-list li {
-  margin-bottom: 0.5rem;
-  position: relative;
-}
-
-.itinerary-day {
-  margin-bottom: 0.5rem;
-}
-
-/* 选项卡样式 */
-.booking-tabs .nav-link {
-  border: none;
-  border-radius: 0;
-  color: #6c757d;
-  padding: 0.75rem 1rem;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.booking-tabs .nav-link.active {
-  color: #0d6efd;
-  background-color: transparent;
-  border-bottom: 2px solid #0d6efd;
-}
-
-.booking-tabs .nav-link:hover:not(.active) {
-  color: #0d6efd;
-  background-color: rgba(13, 110, 253, 0.05);
-}
-
-/* 订单摘要卡片样式 */
-.order-summary {
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-  margin-bottom: 1.5rem;
-  position: relative; /* 添加相对定位 */
-  display: flex;
-  flex-direction: column;
-}
-
-.order-summary .card-header {
-  background-color: var(--primary-color);
-}
-
-.order-summary .card-body {
-  flex: 1;
-  padding-bottom: 75px; /* 为底部按钮留出空间 */
-}
-
-.order-summary-footer {
+/* 价格计算盒子样式 - 从产品详情页复制 */
+.booking-sidebar {
   position: sticky;
-  bottom: 0;
+  top: 20px;
+}
+
+.booking-card {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   background: white;
-  padding: 15px;
-  border-top: 1px solid var(--border-color);
-  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
 }
 
-.order-summary .card-header {
+.booking-card:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.booking-card-header {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: white;
+  border-bottom: none;
+  border-radius: 16px 16px 0 0 !important;
+  padding: 20px 24px;
+}
+
+.booking-card-header h5 {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+/* 价格显示 */
+.price-section {
+  text-align: center;
+  padding: 20px 0;
+  border-bottom: 1px solid #e8eaed;
+}
+
+.price-display-large {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.currency {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #ff6b35;
+}
+
+.price-amount {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #ff6b35;
+  line-height: 1;
+}
+
+.price-unit {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #666;
+  margin-left: 4px;
+}
+
+.price-note {
+  text-align: center;
+  margin-top: 8px;
+}
+
+.price-note small {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+/* 基本信息 */
+.tour-basic-info {
+  padding: 16px 0;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.info-row:last-child {
   border-bottom: none;
 }
 
-.price-list .list-group-item {
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
-}
-
-/* 帮助卡片样式 */
-.help-card {
-  border: none;
-}
-
-.help-card .card-header {
-  background-color: #f8f9fa;
-  border-bottom: none;
-}
-
-.contact-info {
+.info-label {
+  font-weight: 500;
+  color: #666;
+  flex-shrink: 0;
+  width: 80px;
   font-size: 0.9rem;
 }
 
-/* 乘客信息卡片样式 */
-.passenger-card {
-  border: 1px solid rgba(0, 0, 0, 0.125);
-  border-radius: 0.25rem;
-  margin-bottom: 1rem;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-  transition: all 0.3s ease;
+.info-value {
+  flex: 1;
+  text-align: right;
+  color: #1a1a1a;
+  font-weight: 500;
+  font-size: 0.9rem;
 }
 
-.passenger-card:hover {
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+.service-promises {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: flex-end;
 }
 
-.passenger-card .card-header {
-  background-color: rgba(0, 0, 0, 0.03);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-  padding: 0.75rem 1rem;
+.service-promises .badge {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  font-weight: 500;
 }
 
-.passenger-card .card-body {
-  padding: 1rem;
+/* 表单样式 */
+.passenger-form-section {
+  margin-bottom: 24px;
 }
 
-.delete-passenger {
-  background-color: #f8d7da;
-  color: #842029;
-  border: none;
-  border-radius: 4px;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
+.passenger-header {
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e8eaed;
+}
+
+.passenger-header h6 {
+  margin: 0;
+  color: #1a1a1a;
+  font-weight: 600;
   display: flex;
   align-items: center;
-}
-
-.delete-passenger:hover {
-  background-color: #f5c2c7;
-}
-
-/* 响应式调整 */
-@media (max-width: 768px) {
-  /*
-  .booking-step::after {
-    right: -25%;
-    width: 50%;
-  }
-  
-  .step-circle {
-    width: 30px;
-    height: 30px;
-    font-size: 0.8rem;
-  }
-  
-  .step-name {
-    font-size: 0.8rem;
-  }
-  */
-  
-  .booking-tabs .nav-link {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.9rem;
-  }
-}
-
-/* 左右布局样式 */
-.form-section {
-  border-radius: 0.25rem;
-  position: relative;
-}
-
-.form-section:not(:last-child) {
-  padding-bottom: 1rem;
-  margin-bottom: 1rem;
-}
-
-.form-section h5 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 1.25rem;
-}
-
-.form-section h6 {
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.sticky-sidebar {
-  position: sticky;
-  top: 20px;
-  z-index: 100;
-  max-height: calc(100vh - 40px); /* 设置最大高度为视口高度减去上下边距 */
-  overflow-y: auto; /* 内容过长时显示滚动条 */
-}
-
-/* 表单美化 */
-.form-control:focus, .form-select:focus {
-  border-color: #86b7fe;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
 .form-label {
   font-weight: 500;
-  font-size: 0.9rem;
-  color: #495057;
+  color: #444;
+  margin-bottom: 8px;
 }
 
-/* 响应式调整 */
-@media (max-width: 991.98px) {
-  .sticky-sidebar {
-    position: relative !important;
-    top: auto !important;
-    left: auto !important;
-    width: auto !important;
-    z-index: auto !important;
-    max-height: none !important;
-    overflow-y: visible !important;
-  }
-  
-  .tour-summary {
-    margin-bottom: 1.5rem;
-  }
-  
-  /* 添加底部边距，避免底部固定按钮遮挡内容 */
-  .booking-page {
-    padding-bottom: 80px;
-  }
-  
-  /* 确保订单摘要卡片在移动设备上有合适的边距 */
-  .order-summary {
-    margin-bottom: 2rem;
-  }
-}
-
-/* 针对特小屏幕设备的优化 */
-@media (max-width: 576px) {
-  /*
-  .booking-steps .step-circle {
-    width: 28px;
-    height: 28px;
-    font-size: 0.75rem;
-  }
-  
-  .booking-steps .step-name {
-    font-size: 0.7rem;
-  }
-  */
-  
-  /* 减小表单标题的大小 */
-  .form-section h5 {
-    font-size: 0.95rem;
-  }
-}
-
-/* 航班输入框特定样式 */
-.flight-input-field {
-  position: relative;
-  z-index: 100;
-  background-color: #fff !important;
-  border: 1px solid var(--primary-color) !important;
-}
-
-.flight-input-field:focus {
-  z-index: 101;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2) !important;
-}
-
-/* 日历图标位置调整 */
-.position-absolute.top-0.end-0.pe-3.pt-2 {
-  z-index: 2;
-  color: var(--text-color);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  height: 100%;
-  padding-top: 0 !important;
-  pointer-events: none; /* 允许点击穿透到输入框 */
-}
-
-/* 修复日期选择器的定位容器样式 */
-.position-relative {
-  width: 100%; 
-  display: block;
-}
-
-/* 确保日期选择器输入框边框正确显示 */
-.position-relative .form-control {
-  border: 1px solid var(--border-color) !important;
-  border-radius: 8px !important;
-  padding: 12px 15px !important;
-  width: 100% !important;
-  display: block !important;
-  box-shadow: none !important;
-  background-color: #fff !important;
-  color: var(--text-color) !important;
-  font-size: 1rem !important;
-  transition: all 0.3s ease !important;
-  height: auto !important;
-}
-
-.position-relative .form-control:focus {
-  border-color: var(--primary-color) !important;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
-}
-
-/* 确保日期选择器在移动设备上正确显示 */
-@media (max-width: 768px) {
-  .position-relative .form-control {
-    font-size: 16px !important; /* 防止iOS缩放 */
-  }
-}
-
-/* 修复日期选择器输入框内的文本可见性 */
-.react-datepicker__input-container input {
-  color: var(--text-color) !important;
-  font-size: 1rem !important;
-  font-weight: normal !important;
-  opacity: 1 !important;
-}
-
-/* 日历图标样式 */
-.position-absolute svg {
-  color: var(--text-light);
-  font-size: 18px;
-}
-
-/* 日期选择器容器，确保间距正确 */
-.position-relative {
-  margin-bottom: 15px;
-}
-
-/* 粘性滚动相关样式 - 优化版 */
-.sticky-sidebar {
-  transition: all 0.3s ease;
-}
-
-.sticky-sidebar[style*="position: fixed"] {
-  /* Firefox */
-  scrollbar-width: none;
-  /* IE and Edge */
-  -ms-overflow-style: none;
-  /* 为聊天窗口预留空间 */
-  right: 100px !important; /* 为聊天窗口留出空间 */
-  width: 320px !important; /* 减小宽度 */
-}
-
-.sticky-sidebar::-webkit-scrollbar {
-  display: none;
-}
-
-.order-summary {
-  transition: all 0.3s ease;
+.form-control {
+  border: 1px solid #ddd;
   border-radius: 8px;
-  overflow: hidden;
-}
-
-.order-summary.sticky-active {
-  border: 3px solid #28a745 !important;
-  box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3) !important;
-  transform: translateY(-5px) scale(1.02);
-}
-
-/* 简化版订单摘要 - 粘性状态 */
-.order-summary.simplified.is-sticky {
-  max-height: 500px !important; /* 限制最大高度 */
-  overflow-y: auto;
-}
-
-/* 隐藏粘性状态下的详细信息 */
-.order-summary.simplified.is-sticky .product-image {
-  display: none; /* 隐藏产品图片 */
-}
-
-.order-summary.simplified.is-sticky .product-highlights {
-  display: none; /* 隐藏产品亮点 */
-}
-
-.order-summary.simplified.is-sticky .price-breakdown {
-  display: none; /* 隐藏详细价格明细 */
-}
-
-.order-summary.simplified.is-sticky .booking-details {
-  max-height: 100px;
-  overflow: hidden;
-}
-
-.order-summary.simplified.is-sticky .booking-details .detail-item:nth-child(n+3) {
-  display: none; /* 只显示前2个详情项 */
-}
-
-/* 强调总价 */
-.order-summary.simplified.is-sticky .total-price {
-  font-size: 1.4rem !important;
-  font-weight: bold !important;
-  color: #28a745 !important;
-  padding: 15px 0 !important;
-  border-top: 2px solid #e9ecef;
-  margin-top: 15px;
-}
-
-/* 粘性状态指示器 */
-.sticky-indicator {
-  position: absolute;
-  top: -12px;
-  right: 15px;
-  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-  color: white;
-  padding: 4px 12px;
-  border-radius: 15px;
-  font-size: 11px;
-  font-weight: bold;
-  z-index: 1001;
-  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
-  animation: slideInDown 0.5s ease-out, pulse 3s infinite 1s;
-  border: 2px solid white;
-}
-
-@keyframes slideInDown {
-  0% {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes pulse {
-  0%, 100% { 
-    transform: scale(1);
-    opacity: 1; 
-  }
-  50% { 
-    transform: scale(1.05);
-    opacity: 0.8; 
-  }
-}
-
-/* 粘性状态下的整体样式 */
-.sticky-sidebar.is-sticky {
-  animation: stickyActivate 0.3s ease-out;
-}
-
-@keyframes stickyActivate {
-  0% {
-    transform: translateY(-10px);
-    opacity: 0.8;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-/* 优化移动端体验 */
-@media (max-width: 767.98px) {
-  .sticky-sidebar {
-    margin-top: 20px;
-  }
-  
-  .order-summary {
-    margin-bottom: 80px; /* 为底部固定按钮留出空间 */
-  }
-}
-
-/* 预订表单样式 */
-.booking-page {
-  min-height: 100vh;
-}
-
-.form-section {
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  background: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.form-section h5 {
-  color: #495057;
-  font-weight: 600;
-}
-
-/*
-.booking-steps {
-  margin-bottom: 2rem;
-}
-
-.booking-step {
-  position: relative;
-}
-
-.step-circle {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #e9ecef;
-  color: #6c757d;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  margin: 0 auto 10px;
+  padding: 12px 16px;
+  font-size: 0.95rem;
   transition: all 0.3s ease;
 }
 
-.booking-step.active .step-circle {
-  background: #007bff;
-  color: white;
-}
-
-.step-name {
-  font-size: 0.875rem;
-  color: #6c757d;
-  font-weight: 500;
-}
-
-.booking-step.active .step-name {
-  color: #007bff;
-  font-weight: 600;
-}
-*/
-
-/* 价格列表样式 */
-.price-list .list-group-item {
-  padding: 0.75rem 0;
-  border: none;
-  border-bottom: 1px solid #f8f9fa;
-}
-
-.price-list .list-group-item:last-child {
-  border-bottom: none;
-  font-size: 1.1rem;
-  padding-top: 1rem;
-}
-
-/* 移动端底部按钮 */
-.fixed-bottom {
-  border-top: 1px solid #dee2e6;
-}
-
-/* 快速填充按钮 */
-/*
-.quick-parse-btn {
-  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-  border: none;
-  border-radius: 50px;
-  color: white;
-  transition: all 0.3s ease;
-}
-
-.quick-parse-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
-}
-*/
-
-/* 文本解析弹窗 */
-/*
-.parse-textarea {
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-  font-size: 14px;
-  line-height: 1.5;
-}
-*/
-
-/* 乘客卡片样式 */
-.passenger-card {
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-.passenger-card:hover {
+.form-control:focus {
   border-color: #007bff;
-  box-shadow: 0 2px 8px rgba(0,123,255,0.15);
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-/* 日期时间选择器样式 */
-.date-time-picker {
-  position: relative;
-  z-index: 1000;
+.form-control:hover {
+  border-color: #007bff;
 }
 
-.date-time-popper {
-  z-index: 1050 !important;
+/* 数量控制 */
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-/* 航班输入字段样式 */
-.flight-input-field {
-  font-family: 'Courier New', monospace;
-  font-weight: 500;
+.quantity-display {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  min-width: 30px;
+  text-align: center;
 }
 
-/* 帮助卡片样式 */
-.help-card {
-  border: 1px solid #e9ecef;
+/* 提交按钮 */
+.booking-submit-btn {
+  background: #ff6b35;
+  border: none;
+  padding: 12px 32px;
+  font-weight: 600;
   border-radius: 8px;
+  transition: all 0.3s ease;
 }
 
-.help-card .card-header {
-  background: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
+.booking-submit-btn:hover {
+  background: #e55a2b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+
+.booking-submit-btn:focus {
+  box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.25);
+}
+
+/* 帮助卡片 */
+.help-card {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  background: white;
+}
+
+.help-card-header {
+  background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+  color: white;
+  border-bottom: none;
+  border-radius: 16px 16px 0 0 !important;
+  padding: 16px 20px;
+}
+
+.help-card-header h5 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .contact-info {
-  font-size: 0.9rem;
+  padding: 8px 0;
 }
 
-/* 产品信息卡片 */
-.tour-info-card {
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
+.phone-contact {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.tour-info-card .card-header {
-  background: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
+.contact-icon {
+  color: #28a745;
+  font-size: 1.2rem;
 }
 
-/* 响应式调整 */
-@media (max-width: 767.98px) {
-  /*
-  .booking-steps .col {
-    margin-bottom: 1rem;
-  }
-  
-  .step-circle {
-    width: 35px;
-    height: 35px;
-    font-size: 0.875rem;
-  }
-  
-  .step-name {
-    font-size: 0.75rem;
-  }
-  */
-  
-  .form-section {
-    margin-bottom: 1rem;
-    padding: 1rem;
-  }
-  
-  /*
-  .quick-parse-btn {
-    font-size: 0.875rem;
-    padding: 8px 16px;
-  }
-  */
+.phone-number {
+  font-weight: 600;
+  color: #1a1a1a;
+  font-size: 1.1rem;
 }
 
-/* 确保粘性元素在正确的层级 */
-.sticky-sidebar {
-  position: relative;
-  z-index: 10;
+.help-actions {
+  display: flex;
+  gap: 8px;
 }
 
-/* 当粘性激活时的特殊样式 */
-.sticky-sidebar[style*="position: fixed"] {
-  z-index: 1000;
-}
-
-/* 订单摘要页脚样式 */
-.order-summary-footer {
-  padding: 1rem;
-  border-top: 1px solid #e9ecef;
-  background: #f8f9fa;
-  border-radius: 0 0 8px 8px;
-}
-
-.payment-info {
-  font-size: 0.875rem;
-  color: #6c757d;
-}
-
-/* 儿童年龄输入区域 */
-.children-ages {
-  background: #f8f9fa;
-  border-radius: 8px;
-  padding: 1rem;
-  border: 1px solid #e9ecef;
-}
-
-.children-ages .form-label {
-  font-size: 0.875rem;
+.help-actions .btn {
+  flex: 1;
+  font-size: 0.85rem;
+  padding: 8px 12px;
+  border-radius: 6px;
   font-weight: 500;
-  color: #495057;
-}
-
-/* 简化版订单摘要样式 */
-.order-summary.simplified {
-  border: 1px solid #e9ecef;
-  border-radius: 12px;
   transition: all 0.3s ease;
 }
 
-.order-summary.simplified.is-sticky {
-  border-color: #dee2e6;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+.help-actions .btn:hover {
+  transform: translateY(-1px);
 }
 
-.order-summary.simplified .card-header {
-  border-radius: 10px 10px 0 0 !important;
-  padding: 12px 20px;
+/* 日期时间组合输入 */
+.d-flex.gap-2 {
+  gap: 8px !important;
+}
+
+.d-flex.gap-2 .form-control {
+  flex: 1;
+}
+
+.d-flex.gap-2 input[type="time"] {
+  max-width: 120px;
+}
+
+/* 响应式设计 */
+@media (max-width: 991px) {
+  .booking-sidebar {
+    position: static;
+    margin-top: 32px;
+  }
+  
+  .booking-card {
+    margin-bottom: 24px;
+  }
+}
+
+@media (max-width: 767px) {
+  .booking-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .price-amount {
+    font-size: 2rem;
+  }
+  
+  .currency {
+    font-size: 1.2rem;
+  }
+  
+  .info-row {
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+  }
+  
+  .info-label {
+    width: auto;
+    font-size: 0.85rem;
+  }
+  
+  .info-value {
+    text-align: left;
+    font-size: 0.9rem;
+  }
+  
+  .service-promises {
+    justify-content: flex-start;
+  }
+  
+  .help-actions {
+    flex-direction: column;
+  }
+  
+  .d-flex.gap-2 {
+    flex-direction: column;
+  }
+  
+  .d-flex.gap-2 input[type="time"] {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 575px) {
+  .booking-page {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  
+  .booking-card-header,
+  .booking-card .card-body {
+    padding: 16px;
+  }
+  
+  .help-card-header,
+  .help-card .card-body {
+    padding: 12px 16px;
+  }
+  
+  .price-display-large {
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  
+  .price-amount {
+    font-size: 1.8rem;
+  }
+  
+  .currency {
+    font-size: 1rem;
+  }
+  
+  .passenger-form-section {
+    margin-bottom: 20px;
+  }
+}
+
+/* 表单验证状态 */
+.was-validated .form-control:valid {
+  border-color: #28a745;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='m2.3 6.73.8-.8-.8-.8-1.4 1.4L.5 6.5l.8.8 2.2-2.2-.8-.8-.8.8 1.6 1.6z'/%3e%3c/svg%3e");
+}
+
+.was-validated .form-control:invalid {
+  border-color: #dc3545;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 4.6 2.4 2.4m0-2.4L5.8 7'/%3e%3c/svg%3e");
+}
+
+/* 加载状态 */
+.booking-submit-btn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+.booking-submit-btn:disabled:hover {
+  background: #6c757d;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 卡片动画 */
+.booking-card,
+.help-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* DatePicker 样式调整 */
+/* HTML5 日期输入框样式 */
+input[type="date"] {
+  width: 100%;
+  padding: 0.375rem 0.75rem;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
-.order-summary.simplified .card-body {
-  padding: 20px;
+input[type="date"]:focus {
+  color: #495057;
+  background-color: #fff;
+  border-color: #80bdff;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-.order-summary.simplified .total-price {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #007bff;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: invert(0.5);
 }
 
-.order-summary.simplified.is-sticky .total-price {
-  color: #28a745;
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  filter: invert(0.2);
 }
 
-.order-summary.simplified .product-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #007bff;
+/* 时间输入框样式 */
+.time-input {
+  font-family: 'Courier New', monospace;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+.time-input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* 折叠功能样式 */
+.selection-title {
   margin-bottom: 0.5rem;
-}
-
-.order-summary.simplified .product-details {
-  font-size: 0.875rem;
-  color: #6c757d;
-  line-height: 1.4;
-}
-
-.order-summary.simplified .price-section {
-  border-top: 2px solid #f8f9fa;
-  padding-top: 1rem;
-  margin-top: 1rem;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border-radius: 8px;
-  padding: 15px;
-}
-
-/* 简化版粘性指示器 */
-.order-summary.simplified .sticky-indicator {
-  position: absolute;
-  top: -8px;
-  right: 10px;
-  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.75rem;
   font-weight: 600;
-  animation: slideInDown 0.5s ease-out, pulse 3s infinite 1s;
-  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+  color: #333;
+  user-select: none;
 }
 
-/* 价格明细样式 */
-.price-breakdown {
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  padding: 12px;
-  background-color: #f8f9fa;
-  margin-bottom: 15px;
+.selection-title:hover {
+  color: #007bff;
 }
 
-.price-item {
-  padding: 6px 0;
-  font-size: 14px;
-  border-bottom: 1px solid #e9ecef;
+.selection-title svg {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+/* 确认预订按钮样式 */
+.booking-action-section {
+  border-top: 1px solid #dee2e6;
+  padding-top: 1rem;
+}
+
+.booking-submit-btn {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+  transition: all 0.3s ease;
+}
+
+.booking-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+/* 用户选择概括样式 */
+.booking-summary {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  padding: 1rem;
+  border: 1px solid #dee2e6;
+}
+
+.summary-title {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+
+.summary-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.summary-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 0.25rem 0;
 }
 
-.price-item:last-child {
-  border-bottom: none;
-}
-
-.price-item span:first-child {
-  color: #6c757d;
+.summary-label {
   font-size: 0.875rem;
-}
-
-.price-item span:last-child {
-  font-weight: 500;
-  color: #495057;
-}
-
-.price-item.text-warning span:first-child {
-  color: #856404;
-}
-
-.price-item.text-warning span:last-child {
-  color: #f39c12 !important;
-  font-weight: 600;
-}
-
-.price-item.text-info span:first-child {
-  color: #0c5460;
-}
-
-.price-item.text-info span:last-child {
-  color: #17a2b8 !important;
-  font-weight: 600;
-}
-
-.price-item.text-success span:first-child {
-  color: #155724;
-}
-
-.price-item.text-success span:last-child {
-  color: #28a745 !important;
-  font-weight: 600;
-}
-
-/* 产品详情图标样式 */
-.product-details i {
   color: #6c757d;
-  font-size: 12px;
-  width: 16px;
-  text-align: center;
+  font-weight: 500;
+  min-width: 60px;
 }
 
-/* 价格明细图标样式 */
-.price-item i {
-  color: inherit;
-  font-size: 12px;
-  width: 16px;
-  text-align: center;
-  margin-right: 4px;
+.summary-value {
+  font-size: 0.875rem;
+  color: #495057;
+  font-weight: 500;
+  text-align: right;
+  flex: 1;
 }
 
-/* 总价区域增强样式 */
-.order-summary.simplified .total-price {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #dc3545;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+.summary-value svg {
+  font-size: 0.75rem;
 }
 
-/* 增强的产品信息展示样式 */
-.product-header {
-  border-bottom: 1px solid #eee;
-  padding-bottom: 12px;
+/* 服务承诺样式 */
+.service-promises-section .summary-title {
+  margin-bottom: 0.5rem;
 }
 
-.product-image img {
-  transition: transform 0.3s ease;
-  border: 1px solid #eee;
-}
-
-.product-image img:hover {
-  transform: scale(1.02);
-}
-
-.product-title {
-  color: #333;
-  line-height: 1.3;
-  margin: 0;
-}
-
-.product-meta {
+.service-promises-section .service-promises {
   display: flex;
-  align-items: center;
   flex-wrap: wrap;
   gap: 0.25rem;
 }
 
-.product-meta .badge {
-  font-size: 10px;
-  padding: 0.2rem 0.4rem;
+/* 错误提示样式 */
+.invalid-feedback {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #dc3545;
 }
 
-.product-highlights {
-  background-color: #f8f9fa;
-  padding: 10px;
-  border-radius: 6px;
-  border-left: 3px solid #ffc107;
+/* Badge 样式调整 */
+.badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.35em 0.65em;
 }
 
-.highlights-list {
-  margin: 0;
+/* 价格计算盒子交互样式 - 从产品详情页复制 */
+/* 酒店选择横向布局 */
+.package-selection {
+  margin-bottom: 1rem;
 }
 
-.highlight-item {
+.package-options-horizontal {
   display: flex;
-  align-items: flex-start;
-  line-height: 1.3;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.highlight-item .fa-check {
-  margin-top: 2px;
-  flex-shrink: 0;
+.package-option-small {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: white;
+  min-width: 120px;
+  flex: 1;
 }
 
-.booking-details {
-  background-color: #fff;
+.package-option-small:hover {
+  border-color: #ff6b35;
+  background: #fff8f6;
 }
 
-.detail-item {
+.package-option-small.selected {
+  border-color: #ff6b35;
+  background: #fff8f6;
+  box-shadow: 0 2px 4px rgba(255, 107, 53, 0.1);
+}
+
+.package-radio-small {
+  margin-right: 8px;
+}
+
+.package-radio-small .form-check-input {
+  width: 16px;
+  height: 16px;
+}
+
+.package-info-small {
+  flex: 1;
+}
+
+.package-name-small {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 2px;
+}
+
+.package-desc-small {
+  font-size: 0.75rem;
+  color: #666;
+  line-height: 1.2;
+}
+
+/* 人数选择横向布局 */
+.traveler-selection {
+  margin-bottom: 1rem;
+}
+
+.traveler-options-horizontal {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.traveler-item-small {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: white;
+}
+
+.traveler-icon-small {
+  font-size: 1.2rem;
+}
+
+.traveler-label-small {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #333;
+  min-width: 30px;
+}
+
+.quantity-controls-small {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.quantity-btn-small {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #666;
+  transition: all 0.2s ease;
+}
+
+.quantity-btn-small:hover {
+  border-color: #ff6b35;
+  color: #ff6b35;
+  background: #fff8f6;
+}
+
+.quantity-display-small {
+  min-width: 20px;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #333;
+}
+
+/* 儿童年龄横向布局 */
+.child-ages-horizontal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+.age-label-small {
+  font-size: 0.8rem;
+  color: #666;
+  white-space: nowrap;
+}
+
+.age-inputs-horizontal {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.age-select-small {
+  padding: 4px 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  background: white;
+  min-width: 50px;
+  cursor: pointer;
+}
+
+.age-select-small:focus {
+  outline: none;
+  border-color: #ff6b35;
+  box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.1);
+}
+
+/* 房间选择横向布局 */
+.room-selection {
+  margin-bottom: 1rem;
+}
+
+.room-options-horizontal {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.room-item-small {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: white;
+}
+
+.room-item-small:hover {
+  border-color: #ff6b35;
+  background: #fff8f6;
+}
+
+.room-type-item-small {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: white;
+}
+
+.room-type-item-small:hover {
+  border-color: #ff6b35;
+  background: #fff8f6;
+}
+
+.room-icon-small {
+  font-size: 1rem;
+}
+
+.room-label-small {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #333;
+  min-width: 50px;
+}
+
+.room-type-select-small {
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 80px;
+}
+
+.room-type-select-small:focus {
+  outline: none;
+  border-color: #ff6b35;
+  box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.1);
+}
+
+.room-type-select-small:hover {
+  border-color: #ff6b35;
+}
+
+.room-types-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.room-type-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.room-number {
+  font-size: 0.75rem;
+  color: #666;
+  white-space: nowrap;
+}
+
+/* 日期选择横向布局 */
+.date-selection {
+  margin-bottom: 1rem;
+}
+
+.date-options-horizontal {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.date-item-small {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 140px;
+}
+
+.date-label-small {
+  font-size: 0.8rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.date-picker-small {
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.date-picker-small:focus {
+  outline: none;
+  border-color: #ff6b35;
+  box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.1);
+}
+
+.date-picker-small::placeholder {
+  color: #999;
+  font-size: 0.8rem;
+}
+
+/* 可选行程样式 */
+.optional-tours-selection {
+  margin-bottom: 1rem;
+}
+
+.optional-summary-small {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.optional-day-small {
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+.day-label-small {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+.tour-options-small {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tour-option-small {
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tour-option-small:hover {
+  border-color: #ff6b35;
+  background: #fff8f6;
+}
+
+.tour-option-small.selected {
+  border-color: #ff6b35;
+  background: #fff8f6;
+  box-shadow: 0 1px 3px rgba(255, 107, 53, 0.1);
+}
+
+.tour-name-small {
+  font-size: 0.8rem;
+  color: #333;
+  flex: 1;
+}
+
+.tour-option-small .form-check-input {
+  margin-right: 6px;
+  width: 14px;
+  height: 14px;
+}
+
+.tour-option-small .badge {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+}
+
+.fixed-tours-dropdown {
+  margin-bottom: 1rem;
+}
+
+.fixed-tours-details {
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+}
+
+.fixed-tours-summary {
+  padding: 8px 12px;
+  background: #f8f9fa;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.fixed-tours-summary:hover {
+  background: #e9ecef;
+}
+
+.fixed-tours-summary::-webkit-details-marker {
+  display: none;
+}
+
+.dropdown-icon {
+  transition: transform 0.3s ease;
+}
+
+.fixed-tours-details[open] .dropdown-icon {
+  transform: rotate(180deg);
+}
+
+.fixed-tours-content {
+  padding: 8px 12px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.fixed-day-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 4px 0;
-  border-bottom: 1px solid #f0f0f0;
 }
 
-.detail-item:last-child {
+.fixed-day-item:last-child {
   border-bottom: none;
 }
 
-.detail-item .small {
-  font-size: 12px;
-}
-
-.order-summary .product-title-section h6 {
-  margin-bottom: 4px;
-}
-
-.order-summary .small.fw-semibold {
+.fixed-day-item .day-label-small {
+  font-size: 0.8rem;
   font-weight: 600;
-  color: #495057;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: #666;
+  min-width: 50px;
+  margin-bottom: 0;
 }
 
-/* 响应式调整 */
-@media (max-width: 576px) {
-  .product-image {
-    margin-bottom: 8px;
+.fixed-tour-name {
+  font-size: 0.8rem;
+  color: #333;
+  flex: 1;
+}
+
+.original-price-small {
+  font-size: 0.85rem;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.discount-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.discount-badges .badge {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+}
+
+.selection-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 价格计算盒子响应式调整 */
+@media (max-width: 768px) {
+  .package-options-horizontal {
+    flex-direction: column;
   }
   
-  .product-meta {
-    font-size: 11px;
+  .package-option-small {
+    min-width: auto;
   }
   
-  .product-highlights {
-    padding: 8px;
+  .traveler-options-horizontal {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
   }
   
-  .highlight-item {
-    font-size: 11px;
+  .date-options-horizontal {
+    flex-direction: column;
   }
   
-  .detail-item .small {
-    font-size: 11px;
+  .date-item-small {
+    min-width: auto;
   }
-}
 
-/* 图标统一样式 */
-.order-summary .fa-check,
-.order-summary .fa-star,
-.order-summary .fa-calendar-alt,
-.order-summary .fa-calendar-day,
-.order-summary .fa-users,
-.order-summary .fa-hotel,
-.order-summary .fa-bed,
-.order-summary .fa-clock {
-  font-size: 10px;
-  width: 12px;
-  text-align: center;
-}
+  .room-options-horizontal {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .room-item-small,
+  .room-type-item-small {
+    min-width: auto;
+    max-width: none;
+  }
 
-/* 产品信息卡片增强 */
-.order-summary .card-body > div:first-child {
-  border-bottom: 1px solid #eee;
-  margin-bottom: 16px;
-  padding-bottom: 16px;
-}
+  .room-types-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
 
-/* 订单摘要区域也隐藏滚动条 */
-.order-summary {
-  /* Firefox */
-  scrollbar-width: none;
-  /* IE and Edge */
-  -ms-overflow-style: none;
-}
+  .tour-options-small {
+    gap: 2px;
+  }
 
-.order-summary::-webkit-scrollbar {
-  display: none;
-}
+  .tour-option-small {
+    padding: 4px 6px;
+  }
+
+  .tour-option-small .badge {
+    font-size: 0.6rem;
+    padding: 1px 4px;
+  }
+
+  .day-label-small .badge {
+    font-size: 0.6rem;
+  }
+
+  .fixed-tours-summary {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+  }
+
+  .fixed-day-item .day-label-small {
+    font-size: 0.75rem;
+    min-width: 45px;
+  }
+
+  .fixed-tour-name {
+    font-size: 0.75rem;
+  }
+} 

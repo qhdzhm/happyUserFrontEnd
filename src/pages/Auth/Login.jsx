@@ -29,6 +29,12 @@ const Login = () => {
   // 当认证状态改变时，重定向到之前的页面
   useEffect(() => {
     if (isAuthenticated) {
+      // 检查用户类型，确保只有普通用户才跳转到首页
+      const userInfo = JSON.parse(localStorage.getItem('user') || '{}');
+      const userType = userInfo.userType || localStorage.getItem('userType');
+      
+
+      
       // 普通用户登录成功后跳转到首页
       console.log('🏠 普通用户登录成功，跳转到首页');
       

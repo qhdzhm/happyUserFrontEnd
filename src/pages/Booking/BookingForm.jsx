@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Container, Row, Col, Button, Dropdown, Form, Spinner } from 'react-bootstrap';
+import { Container, Row, Col, Button, Dropdown, Form, Spinner, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { FaSearch, FaChevronDown, FaCalendarAlt, FaUsers, FaTimes } from 'react-icons/fa';
+import { FaSearch, FaChevronDown, FaCalendarAlt, FaUsers, FaTimes, FaExclamationTriangle } from 'react-icons/fa';
 import { getAllDayTours, getAllGroupTours } from '../../utils/api';
 import './BookingForm.css';
 
@@ -14,13 +14,11 @@ const BookingForm = () => {
   // 获取用户信息，判断是否为中介
   const { isAuthenticated, user, userType } = useSelector(state => state.auth);
   
-  // 更全面的中介检测逻辑
+  // 统一的中介身份验证逻辑（包括agent主账号和操作员）
   const localUserType = localStorage.getItem('userType');
   const isAgent = userType === 'agent' || 
-                  userType === 'operator' || 
                   userType === 'agent_operator' ||
                   localUserType === 'agent' || 
-                  localUserType === 'operator' ||
                   localUserType === 'agent_operator';
   
   // 调试信息
@@ -45,6 +43,9 @@ const BookingForm = () => {
   // 引用
   const suggestionsRef = useRef(null);
   const guestDropdownRef = useRef(null);
+  
+  // 弹窗状态
+  const [showProductModal, setShowProductModal] = useState(false);
   
   // 产品类型选项
   const tourTypeOptions = ['一日游', '多日游'];
@@ -321,6 +322,12 @@ const BookingForm = () => {
 
   // 处理搜索
   const handleSearch = () => {
+    // 如果是agent用户但没有选择产品，显示弹窗提示
+    if (isAgent && !selectedTour) {
+      setShowProductModal(true);
+      return;
+    }
+
     if (!startDate) {
       alert('请选择出发日期');
       return;
@@ -648,7 +655,7 @@ const BookingForm = () => {
                     className="search-button"
                     onClick={handleSearch}
                   >
-                    <FaSearch /> 立即搜索
+                    <FaSearch /> {isAgent ? '立即下单' : '立即搜索'}
                   </Button>
                 </div>
               </div>
@@ -656,6 +663,40 @@ const BookingForm = () => {
           </Col>
         </Row>
       </Container>
+
+      {/* 产品选择提示弹窗 */}
+      <Modal 
+        show={showProductModal} 
+        onHide={() => setShowProductModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <FaExclamationTriangle className="text-warning me-2" />
+            请选择产品
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p className="mb-3">请先选择您要预订的旅游产品，然后再进行下单操作。</p>
+          <div className="alert alert-info">
+            <strong>操作步骤：</strong>
+            <ol className="mb-0 mt-2">
+              <li>选择产品类型（一日游/多日游）</li>
+              <li>在搜索框中输入关键词或选择具体产品</li>
+              <li>选择出发日期和旅客数量</li>
+              <li>点击"立即下单"</li>
+            </ol>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button 
+            variant="primary" 
+            onClick={() => setShowProductModal(false)}
+          >
+            我知道了
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

@@ -87,7 +87,7 @@ const Header = () => {
       }, 100);
     });
   };
- 
+
   return (
     <>
       {/* 主导航栏 */}
@@ -170,7 +170,11 @@ const Header = () => {
                     </>
                   ) : (
                     <>
-                      <NavLink className="booking-btn d-block d-sm-none mt-3" to="/booking-form" onClick={closeMenu}>
+                      <NavLink 
+                        className="booking-btn d-block d-sm-none mt-3" 
+                        to="/booking-form" 
+                        onClick={closeMenu}
+                      >
                         立即预订
                       </NavLink>
                       <div className="user-info d-block d-sm-none mt-2">
@@ -218,7 +222,10 @@ const Header = () => {
                 </>
               ) : (
                 <div className="d-flex align-items-center">
-                  <NavLink to="/booking-form" className="booking-btn d-none d-sm-inline-block me-3">
+                  <NavLink 
+                    to="/booking-form" 
+                    className="booking-btn d-none d-sm-inline-block me-3"
+                  >
                     立即预订
                   </NavLink>
                   <Dropdown>

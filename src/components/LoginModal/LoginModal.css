@@ -1,0 +1,104 @@
+.login-modal .modal-dialog {
+  max-width: 450px;
+}
+
+.login-modal .modal-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+}
+
+.login-modal .modal-header .btn-close {
+  filter: invert(1);
+}
+
+.login-modal .modal-body {
+  padding: 2rem;
+}
+
+.login-modal .nav-pills .nav-link {
+  border-radius: 25px;
+  padding: 10px 30px;
+  margin: 0 5px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.login-modal .nav-pills .nav-link:not(.active) {
+  background-color: #f8f9fa;
+  color: #6c757d;
+}
+
+.login-modal .nav-pills .nav-link.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+}
+
+.login-modal .input-group-text {
+  background-color: #f8f9fa;
+  border-right: none;
+  color: #6c757d;
+}
+
+.login-modal .form-control {
+  border-left: none;
+  padding-left: 0;
+}
+
+.login-modal .form-control:focus {
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  border-color: #667eea;
+}
+
+.login-modal .btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 25px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.login-modal .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.login-modal .btn-success {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  border: none;
+  border-radius: 25px;
+  font-weight: 500;
+}
+
+.login-modal .btn-outline-secondary {
+  border-radius: 25px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.login-modal .modal-footer {
+  border-top: 1px solid #e9ecef;
+  padding: 1rem 2rem;
+}
+
+.login-modal .alert {
+  border-radius: 10px;
+}
+
+/* 响应式设计 */
+@media (max-width: 576px) {
+  .login-modal .modal-dialog {
+    margin: 1rem;
+    max-width: none;
+  }
+  
+  .login-modal .modal-body {
+    padding: 1.5rem;
+  }
+  
+  .login-modal .nav-pills .nav-link {
+    padding: 8px 20px;
+    font-size: 0.9rem;
+  }
+} 

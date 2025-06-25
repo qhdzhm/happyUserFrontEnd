@@ -18,15 +18,24 @@ const EditBooking = () => {
   const [error, setError] = useState(null);
   const [orderData, setOrderData] = useState(null);
   const [formData, setFormData] = useState({
-    tourStartDate: '',
-    tourEndDate: '',
+    // 航班信息
+    flightNumber: '',
+    returnFlightNumber: '',
+    arrivalLandingTime: '',
+    departureDepartureTime: '',
+    // 接送信息
     pickupDate: '',
     dropoffDate: '',
     pickupLocation: '',
     dropoffLocation: '',
+    // 联系人信息
     contactPerson: '',
     contactPhone: '',
+    // 其他信息
     specialRequests: '',
+    // 价格敏感字段（仅用于显示）
+    tourStartDate: '',
+    tourEndDate: '',
     hotelLevel: '',
     roomType: '',
     hotelRoomCount: 1,
@@ -98,15 +107,24 @@ const EditBooking = () => {
         
         // 填充表单数据
         setFormData({
-          tourStartDate: formatDateForInput(order.tourStartDate),
-          tourEndDate: formatDateForInput(order.tourEndDate),
+          // 航班信息 - 允许修改
+          flightNumber: order.flightNumber || '',
+          returnFlightNumber: order.returnFlightNumber || '',
+          arrivalLandingTime: order.arrivalLandingTime || '',
+          departureDepartureTime: order.departureDepartureTime || '',
+          // 接送信息 - 允许修改
           pickupDate: formatDateForInput(order.pickupDate),
           dropoffDate: formatDateForInput(order.dropoffDate),
           pickupLocation: order.pickupLocation || '',
           dropoffLocation: order.dropoffLocation || '',
+          // 联系人信息 - 允许修改
           contactPerson: order.contactPerson || '',
           contactPhone: order.contactPhone || '',
+          // 其他信息 - 允许修改
           specialRequests: order.specialRequests || '',
+          // 价格敏感字段 - 仅用于显示，不会提交
+          tourStartDate: formatDateForInput(order.tourStartDate),
+          tourEndDate: formatDateForInput(order.tourEndDate),
           hotelLevel: order.hotelLevel || '',
           roomType: order.roomType || '',
           hotelRoomCount: order.hotelRoomCount || 1,
@@ -148,9 +166,8 @@ const EditBooking = () => {
       'hotelLevel',           // 酒店等级
       'roomType',             // 房间类型
       'tourStartDate',        // 行程开始日期
-      'tourEndDate',          // 行程结束日期
-      'pickupLocation',       // 接机地点
-      'dropoffLocation'       // 送机地点
+      'tourEndDate'           // 行程结束日期
+      // 注意：接送地点和日期、航班信息现在允许修改
     ];
     return priceSensitiveFields.includes(fieldName);
   };
@@ -212,18 +229,40 @@ const EditBooking = () => {
       setSubmitting(true);
       
       const headers = addAuthHeaders();
-      const updateData = {
+      // 准备更新数据 - 只发送允许修改的字段，过滤掉价格敏感字段和空值
+      const rawFields = {
         bookingId: parseInt(bookingId),
-        ...formData,
-        // 只发送日期部分，不包含时间（后端期望LocalDate类型）
-        tourStartDate: formData.tourStartDate || null,
-        tourEndDate: formData.tourEndDate || null,
+        // 航班信息 - 允许修改
+        flightNumber: formData.flightNumber,
+        returnFlightNumber: formData.returnFlightNumber,
+        arrivalLandingTime: formData.arrivalLandingTime,
+        departureDepartureTime: formData.departureDepartureTime,
+        // 接送信息 - 允许修改
         pickupDate: formData.pickupDate || null,
         dropoffDate: formData.dropoffDate || null,
-        hotelRoomCount: parseInt(formData.hotelRoomCount),
-        adultCount: parseInt(formData.adultCount),
-        childCount: parseInt(formData.childCount)
+        pickupLocation: formData.pickupLocation,
+        dropoffLocation: formData.dropoffLocation,
+        // 联系人信息 - 允许修改
+        contactPerson: formData.contactPerson,
+        contactPhone: formData.contactPhone,
+        // 其他非价格相关信息 - 允许修改
+        specialRequests: formData.specialRequests
+        // 注意：移除了价格敏感字段，包括：
+        // tourStartDate, tourEndDate, adultCount, childCount,
+        // hotelLevel, roomType, hotelRoomCount
       };
+      
+      // 过滤掉空字符串和null值，只发送有实际值的字段
+      const allowedFields = Object.fromEntries(
+        Object.entries(rawFields).filter(([key, value]) => {
+          // bookingId必须保留
+          if (key === 'bookingId') return true;
+          // 过滤掉空字符串、null、undefined
+          return value !== '' && value !== null && value !== undefined;
+        })
+      );
+      
+      const updateData = allowedFields;
       
       console.log('发送的更新数据:', updateData);
       
@@ -388,37 +427,79 @@ const EditBooking = () => {
                 <h5 className="mb-0">基本信息</h5>
               </Card.Header>
               <Card.Body>
+                <Alert variant="warning" className="mb-3">
+                  <FaInfoCircle className="me-2" />
+                  <strong>注意：</strong>行程日期、人数、酒店信息等影响价格的字段不能修改。如需更改这些信息，请联系客服。
+                </Alert>
+
+                {/* 航班信息 */}
+                <h6 className="mb-3 text-primary">航班信息</h6>
                 <Row>
                   <Col md={6} className="mb-3">
                     <Form.Group>
-                      <Form.Label>
-                        {renderFieldLabel('行程开始日期', 'tourStartDate', <FaCalendarAlt />)}
-                      </Form.Label>
+                      <Form.Label>到达航班号</Form.Label>
                       <Form.Control
-                        type="date"
-                        name="tourStartDate"
-                        value={formData.tourStartDate}
+                        type="text"
+                        name="flightNumber"
+                        value={formData.flightNumber}
                         onChange={handleInputChange}
-                        disabled={isFieldDisabled('tourStartDate')}
+                        placeholder="如：CA123"
+                        disabled={isFieldDisabled('flightNumber')}
                       />
                     </Form.Group>
                   </Col>
                   <Col md={6} className="mb-3">
                     <Form.Group>
-                      <Form.Label>
-                        {renderFieldLabel('行程结束日期', 'tourEndDate', <FaCalendarAlt />)}
-                      </Form.Label>
+                      <Form.Label>离开航班号</Form.Label>
                       <Form.Control
-                        type="date"
-                        name="tourEndDate"
-                        value={formData.tourEndDate}
+                        type="text"
+                        name="returnFlightNumber"
+                        value={formData.returnFlightNumber}
                         onChange={handleInputChange}
-                        disabled={isFieldDisabled('tourEndDate')}
+                        placeholder="如：CA456"
+                        disabled={isFieldDisabled('returnFlightNumber')}
                       />
                     </Form.Group>
                   </Col>
                 </Row>
 
+                <Row>
+                  <Col md={6} className="mb-3">
+                    <Form.Group>
+                      <Form.Label>到达时间</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="arrivalLandingTime"
+                        value={formData.arrivalLandingTime}
+                        onChange={handleInputChange}
+                        placeholder="如：1430（14:30）"
+                        disabled={isFieldDisabled('arrivalLandingTime')}
+                      />
+                      <Form.Text className="text-muted">
+                        请输入4位数字，如：1430表示14:30
+                      </Form.Text>
+                    </Form.Group>
+                  </Col>
+                  <Col md={6} className="mb-3">
+                    <Form.Group>
+                      <Form.Label>离开时间</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="departureDepartureTime"
+                        value={formData.departureDepartureTime}
+                        onChange={handleInputChange}
+                        placeholder="如：1645（16:45）"
+                        disabled={isFieldDisabled('departureDepartureTime')}
+                      />
+                      <Form.Text className="text-muted">
+                        请输入4位数字，如：1645表示16:45
+                      </Form.Text>
+                    </Form.Group>
+                  </Col>
+                </Row>
+
+                {/* 联系人信息 */}
+                <h6 className="mb-3 text-primary mt-4">联系人信息</h6>
                 <Row>
                   <Col md={6} className="mb-3">
                     <Form.Group>
@@ -447,54 +528,6 @@ const EditBooking = () => {
                         onChange={handleInputChange}
                         placeholder="请输入联系电话"
                         disabled={isFieldDisabled('contactPhone')}
-                      />
-                    </Form.Group>
-                  </Col>
-                </Row>
-
-                <Row>
-                  <Col md={4} className="mb-3">
-                    <Form.Group>
-                      <Form.Label>
-                        {renderFieldLabel('成人数量', 'adultCount')}
-                      </Form.Label>
-                      <Form.Control
-                        type="number"
-                        name="adultCount"
-                        value={formData.adultCount}
-                        onChange={handleInputChange}
-                        min="1"
-                        disabled={isFieldDisabled('adultCount')}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={4} className="mb-3">
-                    <Form.Group>
-                      <Form.Label>
-                        {renderFieldLabel('儿童数量', 'childCount')}
-                      </Form.Label>
-                      <Form.Control
-                        type="number"
-                        name="childCount"
-                        value={formData.childCount}
-                        onChange={handleInputChange}
-                        min="0"
-                        disabled={isFieldDisabled('childCount')}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={4} className="mb-3">
-                    <Form.Group>
-                      <Form.Label>
-                        {renderFieldLabel('房间数量', 'hotelRoomCount')}
-                      </Form.Label>
-                      <Form.Control
-                        type="number"
-                        name="hotelRoomCount"
-                        value={formData.hotelRoomCount}
-                        onChange={handleInputChange}
-                        min="1"
-                        disabled={isFieldDisabled('hotelRoomCount')}
                       />
                     </Form.Group>
                   </Col>
@@ -574,54 +607,8 @@ const EditBooking = () => {
               </Card.Body>
             </Card>
 
-            {/* 酒店信息 */}
-            {orderData.tourType === 'group_tour' && (
-              <Card className="mb-4">
-                <Card.Header>
-                  <h5 className="mb-0">酒店信息</h5>
-                </Card.Header>
-                <Card.Body>
-                  <Row>
-                    <Col md={6} className="mb-3">
-                      <Form.Group>
-                        <Form.Label>
-                          {renderFieldLabel('酒店等级', 'hotelLevel')}
-                        </Form.Label>
-                        <Form.Select
-                          name="hotelLevel"
-                          value={formData.hotelLevel}
-                          onChange={handleInputChange}
-                          disabled={isFieldDisabled('hotelLevel')}
-                        >
-                          <option value="">请选择酒店等级</option>
-                          <option value="3星">3星</option>
-                          <option value="4星">4星</option>
-                          <option value="5星">5星</option>
-                        </Form.Select>
-                      </Form.Group>
-                    </Col>
-                    <Col md={6} className="mb-3">
-                      <Form.Group>
-                        <Form.Label>
-                          {renderFieldLabel('房间类型', 'roomType')}
-                        </Form.Label>
-                        <Form.Select
-                          name="roomType"
-                          value={formData.roomType}
-                          onChange={handleInputChange}
-                          disabled={isFieldDisabled('roomType')}
-                        >
-                          <option value="">请选择房间类型</option>
-                          <option value="标准双人间">标准双人间</option>
-                          <option value="豪华双人间">豪华双人间</option>
-                          <option value="套房">套房</option>
-                        </Form.Select>
-                      </Form.Group>
-                    </Col>
-                  </Row>
-                </Card.Body>
-              </Card>
-            )}
+            {/* 酒店信息已移除，不允许在订单修改中编辑 */}
+            {/* 移除字段：酒店等级、房间类型等 */}
 
             {/* 特殊要求 */}
             <Card className="mb-4">

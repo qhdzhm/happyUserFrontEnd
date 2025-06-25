@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie调试工具</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .cookie-item { 
+            background: #f5f5f5; 
+            padding: 10px; 
+            margin: 5px 0; 
+            border-radius: 4px; 
+            word-break: break-all;
+        }
+        .button { 
+            background: #007cba; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            margin: 5px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+        }
+        .button:hover { background: #005a87; }
+        .button.danger { background: #dc3545; }
+        .button.danger:hover { background: #c82333; }
+        .section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cookie调试工具</h1>
+        
+        <div class="section">
+            <h2>当前Cookie列表</h2>
+            <button class="button" onclick="refreshCookies()">刷新Cookie列表</button>
+            <div id="cookieList"></div>
+        </div>
+        
+        <div class="section">
+            <h2>Cookie清理工具</h2>
+            <button class="button danger" onclick="clearAuthCookies()">清理认证Cookie</button>
+            <button class="button danger" onclick="clearAllCookies()">清理所有Cookie</button>
+            <button class="button danger" onclick="forceLogout()">强制登出</button>
+        </div>
+        
+        <div class="section">
+            <h2>操作日志</h2>
+            <div id="logOutput" style="height: 200px; overflow-y: auto; background: #f8f9fa; padding: 10px; border: 1px solid #ddd;"></div>
+            <button class="button" onclick="clearLog()">清空日志</button>
+        </div>
+    </div>
+
+    <script>
+        function log(message) {
+            const logOutput = document.getElementById('logOutput');
+            const time = new Date().toLocaleTimeString();
+            logOutput.innerHTML += `[${time}] ${message}<br>`;
+            logOutput.scrollTop = logOutput.scrollHeight;
+            console.log(message);
+        }
+
+        function refreshCookies() {
+            const cookieList = document.getElementById('cookieList');
+            const cookies = document.cookie.split(';');
+            
+            if (cookies.length === 1 && cookies[0] === '') {
+                cookieList.innerHTML = '<p>没有找到Cookie</p>';
+                log('当前没有Cookie');
+                return;
+            }
+            
+            cookieList.innerHTML = '';
+            cookies.forEach(cookie => {
+                const [name, value] = cookie.trim().split('=');
+                const div = document.createElement('div');
+                div.className = 'cookie-item';
+                div.innerHTML = `<strong>${name}</strong>: ${value || '(空值)'}`;
+                cookieList.appendChild(div);
+            });
+            
+            log(`找到 ${cookies.length} 个Cookie`);
+        }
+
+        function clearCookie(name, path = '/', domain = '') {
+            let cookieString = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path};`;
+            if (domain) {
+                cookieString += ` domain=${domain};`;
+            }
+            document.cookie = cookieString;
+            log(`清理Cookie: ${name} (path: ${path}, domain: ${domain})`);
+        }
+
+        function clearAuthCookies() {
+            const authCookies = ['authToken', 'refreshToken', 'userInfo', 'token', 'jwt', 'agentToken'];
+            const paths = ['/', '/api', '/agent'];
+            const domains = ['', 'localhost', window.location.hostname];
+            
+            log('开始清理认证Cookie...');
+            
+            authCookies.forEach(cookieName => {
+                paths.forEach(path => {
+                    domains.forEach(domain => {
+                        clearCookie(cookieName, path, domain);
+                    });
+                });
+            });
+            
+            log('认证Cookie清理完成');
+            setTimeout(refreshCookies, 100);
+        }
+
+        function clearAllCookies() {
+            const cookies = document.cookie.split(';');
+            const paths = ['/', '/api', '/agent'];
+            const domains = ['', 'localhost', window.location.hostname];
+            
+            log('开始清理所有Cookie...');
+            
+            cookies.forEach(cookie => {
+                const cookieName = cookie.trim().split('=')[0];
+                if (cookieName) {
+                    paths.forEach(path => {
+                        domains.forEach(domain => {
+                            clearCookie(cookieName, path, domain);
+                        });
+                    });
+                }
+            });
+            
+            log('所有Cookie清理完成');
+            setTimeout(refreshCookies, 100);
+        }
+
+        async function forceLogout() {
+            log('执行强制登出...');
+            
+            try {
+                // 调用后端登出接口
+                const response = await fetch('/api/agent/logout', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                if (response.ok) {
+                    log('后端登出成功');
+                    // 检查清理指令
+                    const clearCookiesHeader = response.headers.get('X-Clear-Cookies');
+                    if (clearCookiesHeader) {
+                        log('收到Cookie清理指令: ' + clearCookiesHeader);
+                    }
+                } else {
+                    log('后端登出失败: ' + response.status);
+                }
+            } catch (error) {
+                log('登出请求异常: ' + error.message);
+            }
+            
+            // 强制清理前端Cookie
+            clearAuthCookies();
+            
+            // 清理localStorage
+            localStorage.clear();
+            sessionStorage.clear();
+            log('LocalStorage和SessionStorage已清理');
+            
+            log('强制登出完成');
+        }
+
+        function clearLog() {
+            document.getElementById('logOutput').innerHTML = '';
+        }
+
+        // 页面加载时自动刷新Cookie列表
+        window.onload = function() {
+            refreshCookies();
+            log('Cookie调试工具已加载');
+        };
+    </script>
+</body>
+</html> 

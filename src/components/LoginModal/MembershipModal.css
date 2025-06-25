@@ -1,0 +1,200 @@
+.membership-modal .modal-dialog {
+  max-width: 380px;
+}
+
+.membership-modal .modal-content {
+  border-radius: 20px;
+  border: none;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  color: #333;
+}
+
+.membership-modal .modal-header {
+  padding: 15px 20px 0;
+}
+
+.membership-modal .modal-body {
+  padding: 20px;
+}
+
+.membership-modal .member-icon {
+  width: 80px;
+  height: 80px;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  backdrop-filter: blur(10px);
+}
+
+.membership-modal h4 {
+  color: #333;
+  font-weight: 600;
+}
+
+.membership-modal .text-muted {
+  color: #666 !important;
+}
+
+.membership-modal .member-benefits {
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 15px;
+  padding: 15px;
+  backdrop-filter: blur(10px);
+}
+
+.membership-modal .benefit-item {
+  color: #555;
+}
+
+.membership-modal .login-btn {
+  background: #667eea !important;
+  border: none !important;
+  border-radius: 25px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+  color: white !important;
+  text-shadow: none !important;
+  transform: none !important;
+}
+
+.membership-modal .login-btn:hover {
+  background: #5a6fd8 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4) !important;
+  color: white !important;
+}
+
+.membership-modal .skip-btn {
+  border: 2px solid #dee2e6;
+  color: #666;
+  border-radius: 25px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  background: transparent;
+}
+
+.membership-modal .skip-btn:hover {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+  color: #495057;
+  transform: translateY(-1px);
+}
+
+.membership-modal .btn-link {
+  color: #667eea !important;
+  text-decoration: none !important;
+}
+
+.membership-modal .btn-link:hover {
+  color: #5a6fd8 !important;
+}
+
+/* 登录表单样式 */
+.membership-modal.login-form .modal-content {
+  background: white;
+  color: #333;
+}
+
+.membership-modal.login-form .member-icon {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.membership-modal.login-form .text-primary {
+  color: #667eea !important;
+}
+
+.membership-modal.login-form h5 {
+  color: #333;
+}
+
+.membership-modal.login-form .text-muted {
+  color: #666 !important;
+}
+
+.membership-modal.login-form .form-control {
+  border-radius: 15px;
+  border: 2px solid #e9ecef;
+  padding: 12px 20px;
+  transition: all 0.3s ease;
+}
+
+.membership-modal.login-form .form-control:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.membership-modal.login-form .login-btn {
+  background: #667eea !important;
+  border: none !important;
+  border-radius: 25px !important;
+  color: white !important;
+  text-shadow: none !important;
+  transform: none !important;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+}
+
+.membership-modal.login-form .login-btn:hover {
+  background: #5a6fd8 !important;
+  color: white !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4) !important;
+}
+
+.membership-modal.login-form .btn-link {
+  color: #666 !important;
+}
+
+.membership-modal.login-form .btn-link:hover {
+  color: #667eea !important;
+}
+
+/* 响应式设计 */
+@media (max-width: 576px) {
+  .membership-modal .modal-dialog {
+    max-width: 95%;
+    margin: 10px auto;
+  }
+  
+  .membership-modal .modal-body {
+    padding: 15px;
+  }
+  
+  .membership-modal .member-icon {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+/* 动画效果 */
+.membership-modal .modal-content {
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.membership-modal .member-icon {
+  animation: iconPulse 2s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+} 

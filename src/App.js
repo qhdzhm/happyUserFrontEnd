@@ -12,7 +12,10 @@ import ErrorHandler from './components/Error/ErrorHandler';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import GlobalChatBot from './components/ChatBot/GlobalChatBot';
+
 import { initTokenManager } from './utils/tokenManager';
+import './utils/debugAuth'; // 导入调试工具
+import { autoCleanupOnStart } from './utils/cleanupAuth'; // 导入认证清理工具
 
 // 缓存自动清理的时间间隔 (30分钟)
 const CACHE_AUTO_CLEAR_INTERVAL = 30 * 60 * 1000;
@@ -24,9 +27,38 @@ function App() {
   const dispatch = useDispatch();
   const { loading, tokenValidated } = useSelector(state => state.auth);
   
-  // 当组件挂载时，验证token有效性并初始化CSRF保护
+  // 当组件挂载时，只进行基础初始化，不自动验证token
   useEffect(() => {
-    dispatch(validateToken());
+    // 🧹 首先运行认证清理，移除旧的token数据
+    autoCleanupOnStart();
+    
+    // 检查当前页面是否需要立即验证token
+    const currentPath = window.location.pathname;
+    const isProtectedPage = currentPath.startsWith('/booking') || 
+                           currentPath.startsWith('/checkout') || 
+                           currentPath.startsWith('/profile') || 
+                           currentPath.startsWith('/orders') || 
+                           currentPath.startsWith('/payment') || 
+                           currentPath.startsWith('/agent-center') || 
+                           currentPath.startsWith('/credit-transactions');
+    
+    // 检查当前是否已经有有效认证
+    const { isAuthenticated } = require('./utils/auth');
+    const hasValidAuth = isAuthenticated();
+    
+    // 只在访问受保护页面或已经有认证状态时才进行token验证
+    if (isProtectedPage || hasValidAuth) {
+      console.log('🔒 需要token验证，原因:', isProtectedPage ? '访问受保护页面' : '已有认证状态');
+      console.log('🔒 当前路径:', currentPath);
+      dispatch(validateToken());
+    } else {
+      console.log('ℹ️ 当前页面无需立即验证token:', currentPath);
+      // 手动设置tokenValidated为true，避免显示加载状态
+      setTimeout(() => {
+        const { setTokenValidated } = require('./store/slices/authSlice');
+        dispatch(setTokenValidated());
+      }, 100);
+    }
     
     // 初始化TokenManager
     try {

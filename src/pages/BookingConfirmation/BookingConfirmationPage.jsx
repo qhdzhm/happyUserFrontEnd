@@ -27,7 +27,10 @@ const BookingConfirmationPage = () => {
       const tourType = booking.tour.type || 'day-tour';
       const originalPrice = booking.tour.originalPrice || booking.tour.price;
       const agentId = localStorage.getItem('agentId');
-      const isAgent = localStorage.getItem('userType') === 'agent';
+      // 统一的中介身份验证逻辑（包括agent主账号和操作员）
+  const localUserType = localStorage.getItem('userType');
+  const isAgent = localUserType === 'agent' || 
+                  localUserType === 'agent_operator';
       
       // 如果不是代理商，无需验证折扣价格
       if (!isAgent || !agentId) return booking;

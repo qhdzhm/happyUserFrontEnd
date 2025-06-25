@@ -15,12 +15,16 @@ const MainLayout = ({ children }) => {
   const userType = user?.userType || localStorage.getItem('userType');
   const isAgent = userType === 'agent' || userType === 'agent_operator';
   
-  // 定义不需要显示Header和Footer的页面路径
-  const authRoutes = ['/login', '/agent-login', '/register', '/wx-callback'];
-  const isAuthPage = authRoutes.includes(location.pathname);
+  // 定义不需要显示Header和Footer的页面路径（只有代理商登录页面需要隐藏）
+  const agentAuthRoutes = ['/agent-login', '/wx-callback'];
+  const isAgentAuthPage = agentAuthRoutes.includes(location.pathname);
+  
+  // 普通用户认证页面（需要显示Header和Footer）
+  const regularAuthRoutes = ['/login', '/register'];
+  const isRegularAuthPage = regularAuthRoutes.includes(location.pathname);
   
   // 检查是否为代理商模式（登录后的代理商或操作员）
-  const isAgentMode = isAgent && !isAuthPage;
+  const isAgentMode = isAgent && !isAgentAuthPage;
 
   
   useEffect(() => {
@@ -51,8 +55,8 @@ const MainLayout = ({ children }) => {
     };
   }, [location, isAgentMode]);
 
-  // 如果是认证页面，只渲染children，不显示任何导航
-  if (isAuthPage) {
+  // 如果是代理商认证页面，只渲染children，不显示任何导航
+  if (isAgentAuthPage) {
     return <>{children}</>;
   }
 

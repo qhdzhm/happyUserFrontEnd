@@ -65,7 +65,8 @@ const CustomerReviews = ({ tourId, tourType, reviews = [], loading = false }) =>
           helpful: 10
         }
       ];
-      setDisplayReviews(mockReviews);
+      // 避免无限循环，只在初始化时设置
+      setDisplayReviews(prev => prev.length === 0 ? mockReviews : prev);
     } else {
       setDisplayReviews(reviews);
     }

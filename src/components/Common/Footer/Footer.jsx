@@ -96,7 +96,7 @@ const Footer = () => {
         </Container>
         
         <div className="footer-copyright">
-          <p>HAPPY TASSIE TRAVEL | 版权所有 © 2024 澳大利亚塔斯马尼亚旅行社</p>
+          <p>HAPPY TASSIE HOLIDAY | 版权所有 © 2024 澳大利亚假日集团</p>
         </div>
       </div>
     </footer>

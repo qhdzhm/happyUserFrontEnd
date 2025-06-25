@@ -179,18 +179,53 @@ const ProtectedRoute = ({
   
   // 检查是否已登录（使用多重验证）
   const isUserAuthenticated = () => {
-    if (shouldUseCookieAuth()) {
-      return isAuthenticated() && userInfo;
-    } else {
-      const { getToken } = require('../../../utils/auth');
-      const token = getToken();
-      return reduxAuth && token && token !== 'cookie-auth-enabled' && userInfo;
+    // 首先检查基本认证状态
+    const basicAuth = isAuthenticated();
+    if (!basicAuth) {
+      console.log('🚫 基本认证检查失败');
+      return false;
     }
+    
+    // 检查用户信息
+    if (!userInfo) {
+      console.log('🚫 无法获取用户信息');
+      return false;
+    }
+    
+    // 如果使用Cookie认证，认证状态OK且有用户信息就足够了
+    if (shouldUseCookieAuth()) {
+      console.log('✅ Cookie认证模式验证通过');
+      return true;
+    }
+    
+    // 对于Token认证，进行更宽松的检查
+    const { getToken } = require('../../../utils/auth');
+    const token = getToken();
+    
+    // 只要有token（任何形式的token）且基本认证通过就行
+    if (token && basicAuth) {
+      console.log('✅ Token认证模式验证通过');
+      return true;
+    }
+    
+    // 备用检查：如果Redux状态说已认证，也认为有效
+    if (reduxAuth && userInfo.userType) {
+      console.log('✅ Redux状态认证验证通过');
+      return true;
+    }
+    
+    console.log('🚫 所有认证检查都失败');
+    return false;
   };
   
   if (!isUserAuthenticated()) {
     console.log('🚫 用户未认证，重定向到登录页');
-    return <Navigate to="/login" state={{ 
+    // 根据用户类型选择合适的登录页面
+    const loginPath = userInfo?.userType === 'agent' || userInfo?.userType === 'agent_operator' 
+      ? '/agent-login' 
+      : '/login';
+    
+    return <Navigate to={loginPath} state={{ 
       from: location.pathname, 
       message: '您需要登录才能访问此页面' 
     }} replace />;

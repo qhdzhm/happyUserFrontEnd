@@ -22,7 +22,12 @@ const TourDetail = () => {
   // 从Redux获取用户角色和代理商ID
   const userType = useSelector(state => state.auth.userType);
   const agentId = useSelector(state => state.auth.id);
-  const isAgent = userType === 'agent';
+  // 统一的中介身份验证逻辑（包括agent主账号和操作员）
+  const localUserType = localStorage.getItem('userType');
+  const isAgent = userType === 'agent' || 
+                  userType === 'agent_operator' ||
+                  localUserType === 'agent' || 
+                  localUserType === 'agent_operator';
 
   useEffect(() => {
     const fetchTourData = async () => {

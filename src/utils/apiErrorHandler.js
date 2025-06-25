@@ -54,7 +54,15 @@ export const handleApiError = (error, fallbackMessage = '请求失败') => {
         data?.code === 401;
       
       if (isJwtExpired && !isRedirecting) {
-        isRedirecting = true;
+        // 检查是否是受保护的页面才需要跳转
+        const currentPath = window.location.pathname;
+        const isProtectedPage = currentPath.startsWith('/booking') || 
+                               currentPath.startsWith('/checkout') || 
+                               currentPath.startsWith('/profile') || 
+                               currentPath.startsWith('/orders') || 
+                               currentPath.startsWith('/payment') || 
+                               currentPath.startsWith('/agent-center') || 
+                               currentPath.startsWith('/credit-transactions');
         
         // 清除用户登录信息
         clearToken();
@@ -62,14 +70,22 @@ export const handleApiError = (error, fallbackMessage = '请求失败') => {
         localStorage.removeItem('userType');
         localStorage.removeItem('agentId');
         
-        // 静默跳转，不显示提示
-        // 立即跳转到登录页面
-        window.location.href = '/login';
-        
-        // 延迟重置重定向状态
-        setTimeout(() => {
-          isRedirecting = false;
-        }, 1000);
+        // 只有在访问受保护页面时才进行重定向
+        if (isProtectedPage && currentPath !== '/login' && currentPath !== '/agent-login' && currentPath !== '/register') {
+          isRedirecting = true;
+          
+          console.log('🔄 API错误处理：检测到JWT过期，需要重新登录');
+          // 静默跳转，不显示提示
+          // 立即跳转到登录页面
+          window.location.href = '/login';
+          
+          // 延迟重置重定向状态
+          setTimeout(() => {
+            isRedirecting = false;
+          }, 1000);
+        } else {
+          console.log('ℹ️ API错误处理：JWT过期但当前页面不需要强制登录');
+        }
       }
       
       return new ApiError('用户未授权，请重新登录', status, data);

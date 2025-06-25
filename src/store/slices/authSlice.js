@@ -591,6 +591,11 @@ const authSlice = createSlice({
     // 清除错误
     clearError: (state) => {
       state.error = null;
+    },
+    // 设置token验证状态
+    setTokenValidated: (state) => {
+      state.tokenValidated = true;
+      state.loading = false;
     }
   },
   extraReducers: (builder) => {
@@ -651,9 +656,18 @@ const authSlice = createSlice({
         
         console.log('Token验证失败:', action.payload, 'localStorage已清理');
         
-        // 如果页面上有用户正在操作，给出友好提示
+        // 检查是否是受保护的页面才需要跳转
         const currentPath = window.location.pathname;
-        if (currentPath !== '/login' && currentPath !== '/agent-login' && currentPath !== '/register') {
+        const isProtectedPage = currentPath.startsWith('/booking') || 
+                               currentPath.startsWith('/checkout') || 
+                               currentPath.startsWith('/profile') || 
+                               currentPath.startsWith('/orders') || 
+                               currentPath.startsWith('/payment') || 
+                               currentPath.startsWith('/agent-center') || 
+                               currentPath.startsWith('/credit-transactions');
+        
+        // 只有在访问受保护页面且不是登录页面时才进行重定向
+        if (isProtectedPage && currentPath !== '/login' && currentPath !== '/agent-login' && currentPath !== '/register') {
           // 导入toast进行通知
           setTimeout(() => {
             try {
@@ -662,7 +676,7 @@ const authSlice = createSlice({
               const isAgent = userType === 'agent' || userType === 'agent_operator';
               
               toast.warning(
-                isAgent ? '登录已过期，请重新登录' : '登录已过期，请重新登录',
+                '您需要登录才能访问此页面',
                 {
                   position: "top-center",
                   autoClose: 5000,
@@ -673,18 +687,42 @@ const authSlice = createSlice({
                 }
               );
               
-              // 3秒后自动跳转到登录页面
+              // 2秒后跳转到登录页面
               setTimeout(() => {
-                window.location.href = isAgent ? '/agent-login' : '/login';
-              }, 3000);
+                const currentPath = window.location.pathname;
+                const isOnAgentPage = currentPath.startsWith('/agent') || 
+                                      currentPath.includes('agent') ||
+                                      window.location.href.includes('agent');
+                                      
+                if (isAgent || isOnAgentPage) {
+                  console.log('🔄 需要Agent登录，重定向到agent登录页面');
+                  window.location.href = '/agent-login';
+                } else {
+                  console.log('🔄 需要用户登录，重定向到登录页面');
+                  window.location.href = '/login';
+                }
+              }, 2000);
             } catch (error) {
               // 如果toast加载失败，直接跳转
               console.warn('无法显示提示消息，直接跳转');
               const userType = localStorage.getItem('userType');
               const isAgent = userType === 'agent' || userType === 'agent_operator';
-              window.location.href = isAgent ? '/agent-login' : '/login';
+              const currentPath = window.location.pathname;
+              const isOnAgentPage = currentPath.startsWith('/agent') || 
+                                    currentPath.includes('agent') ||
+                                    window.location.href.includes('agent');
+                                    
+              if (isAgent || isOnAgentPage) {
+                console.log('🔄 需要Agent登录，直接重定向到agent登录页面');
+                window.location.href = '/agent-login';
+              } else {
+                console.log('🔄 需要用户登录，直接重定向到登录页面');
+                window.location.href = '/login';
+              }
             }
           }, 1000);
+        } else {
+          console.log('ℹ️ 当前页面不需要登录验证，跳过自动重定向');
         }
       })
       // 登录
@@ -902,7 +940,7 @@ const authSlice = createSlice({
 });
 
 // 导出actions
-export const { logout, clearError, setAuth } = authSlice.actions;
+export const { logout, clearError, setAuth, setTokenValidated } = authSlice.actions;
 
 // 导出reducer
 export default authSlice.reducer; 

@@ -21,7 +21,10 @@ const Cards = ({destination}) => {
   const navigate = useNavigate();
   const [discountPrice, setDiscountPrice] = useState(destination.discountPrice);
   const [loading, setLoading] = useState(false);
-  const isAgent = localStorage.getItem('userType') === 'agent';
+  // 统一的中介身份验证逻辑（包括agent主账号和操作员）
+  const localUserType = localStorage.getItem('userType');
+  const isAgent = localUserType === 'agent' || 
+                  localUserType === 'agent_operator';
   const agentId = localStorage.getItem('agentId');
   const requestInProgressRef = useRef(false);
   // 图片加载状态
@@ -240,43 +243,10 @@ const Cards = ({destination}) => {
   // 折扣标签
   const discountPercent = getDiscountPercentage();
 
-  // 处理预订按钮点击
+  // 处理预订按钮点击 - 直接跳转到产品详情页
   const handleBookNow = () => {
-    // 获取当前日期和7天后的日期
-    const startDate = new Date();
-    const endDate = new Date();
-    endDate.setDate(endDate.getDate() + 7);
-    
-    // 确定产品类型
-    let tourType = 'day';
-    
-    // 从链接中判断
-    if (getDetailLink().includes('group-tours')) {
-      tourType = 'group';
-    }
-    
-    // 构造URL参数
-    const params = new URLSearchParams();
-    params.append('tourId', destination.id);
-    params.append('tourName', destination.name || destination.title || '');
-    params.append('type', tourType);
-    params.append('price', hasDiscount() ? discountPrice : destination.price);
-    params.append('arrivalDate', startDate.toISOString().split('T')[0]);
-    params.append('departureDate', endDate.toISOString().split('T')[0]);
-    
-    // 检查用户是否已登录，使用Redux状态
-    if (isAuthenticated) {
-      // 已登录，导航到预订页面
-      navigate(`/booking?${params.toString()}`);
-    } else {
-      // 未登录，导航到登录页面，并传递跳转信息
-      navigate('/login', { 
-        state: { 
-          from: `/booking?${params.toString()}`, 
-          message: "请先登录后再进行预订" 
-        } 
-      });
-    }
+    // 直接跳转到产品详情页，让用户先浏览详情再决定是否下单
+    navigate(getDetailLink());
   };
 
   return (
@@ -361,7 +331,7 @@ const Cards = ({destination}) => {
               查看详情
             </NavLink>
             <button onClick={handleBookNow} className="product-tour-card-book-btn">
-              <FaShoppingCart className="me-1" /> 立即预订
+              <FaShoppingCart className="me-1" /> 查看详情
             </button>
           </div>
         </div>

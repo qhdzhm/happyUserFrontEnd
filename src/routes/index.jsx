@@ -102,7 +102,8 @@ const AppRoutes = () => {
         {/* 购物车和结账 */}
         <Route path="/cart" element={<Cart />} />
         
-
+        {/* 游客预订页面 - 不需要登录 */}
+        <Route path="/guest-booking" element={<Booking />} />
         
         {/* 受保护的路由 */}
         <Route path="/checkout" element={
